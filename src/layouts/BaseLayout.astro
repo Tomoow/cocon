@@ -1,0 +1,30 @@
+---
+/**
+ * Base layout: imports global Tailwind styles and provides semantic document shell.
+ * Use this for all pages; design tokens and component-specific styles come next.
+ */
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Static site built with Astro, Tailwind, and Netlify.' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen antialiased">
+    <slot />
+  </body>
+</html>

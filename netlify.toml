@@ -1,0 +1,22 @@
+# Netlify build and deploy configuration
+# https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+  # Ensure Node version for consistent builds (optional)
+  # environment = { NODE_VERSION = "20" }
+
+# Netlify CMS admin: serve the admin SPA at /admin
+[[redirects]]
+  from = "/admin/*"
+  to = "/admin/index.html"
+  status = 200
+
+# Security headers (performance and security best practices)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

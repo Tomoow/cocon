@@ -1,0 +1,18 @@
+# Netlify CMS configuration
+# Collections will be added when components exist; fields map exactly to components (no flexible layout).
+
+backend:
+  name: git-gateway
+  branch: main
+
+# Optional: uncomment when using Netlify Identity
+# publish_mode: editorial_workflow
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+# Placeholder: add collections only when we have Astro components to map to.
+# Each collection = one content type; fields match component props (length limits, required).
+# collections: []
+
+locale: "en"
