@@ -1,0 +1,293 @@
+---
+/**
+ * Hero: 100vh, bg image 15% opacity, floating ellipses, heading + typing effect,
+ * subtext, 2 CTAs, Lynn in front of ellipse (bottom clip), parallax on right.
+ */
+import { Image } from 'astro:assets';
+import Button from './Button.astro';
+import ChevronDown from '@lucide/astro/icons/chevron-down';
+import heroPicture from '../assets/images/hero/hero-picture.png';
+
+const typingPhrases = [
+  'voor algemene klachten',
+  'voor bekkenbodemtherapie',
+  'tijdens en na je zwangerschap',
+  'voor gerichte revalidatie',
+  'met persoonlijke begeleiding',
+];
+---
+
+<section class="hero relative min-h-screen overflow-hidden flex flex-col" aria-label="Welkom">
+  <!-- Background image at 15% opacity -->
+  <div
+    class="absolute inset-0 bg-cover bg-center bg-no-repeat"
+    style="background-image: url('/images/hero/hero-bg.png'); opacity: 0.15;"
+    aria-hidden="true"
+  />
+
+  <!-- Decorative floating ellipses (above bg, below content) -->
+  <div class="hero-ellipses pointer-events-none absolute inset-0 z-[1] overflow-hidden" aria-hidden="true">
+    <img src="/images/hero/floating-ellipse.svg" alt="" class="hero-ellipse hero-ellipse-1" width="140" height="90" loading="eager" fetchpriority="high" />
+    <img src="/images/hero/floating-ellipse.svg" alt="" class="hero-ellipse hero-ellipse-2" width="100" height="140" loading="eager" />
+    <img src="/images/hero/floating-ellipse.svg" alt="" class="hero-ellipse hero-ellipse-3" width="180" height="110" loading="eager" />
+    <img src="/images/hero/floating-ellipse.svg" alt="" class="hero-ellipse hero-ellipse-4" width="120" height="160" loading="eager" />
+    <img src="/images/hero/floating-ellipse.svg" alt="" class="hero-ellipse hero-ellipse-5" width="80" height="110" loading="eager" />
+  </div>
+
+  <!-- Content: text left, Lynn right; more top padding on tablet/mobile -->
+  <div class="hero-content container-content relative z-10 flex flex-1 flex-wrap items-center gap-8 pt-[7.5rem] pb-16 md:pt-[7.5rem] md:gap-12 lg:pt-[5.5rem] lg:gap-16">
+    <!-- Left: text + CTAs; min-width so right wraps when row can't fit both -->
+    <div class="hero-text-block flex min-w-[320px] flex-1 flex-col gap-6 text-left">
+      <h1 class="hero-heading">
+        <span class="hero-heading-static">Kinesitherapie op maat</span>
+        <br />
+        <span class="hero-typing-line" data-typing-phrases={JSON.stringify(typingPhrases)}>
+          <span class="hero-typing" id="hero-typing-text" aria-live="polite" />
+          <span class="hero-cursor" id="hero-typing-cursor" aria-hidden="true" />
+        </span>
+      </h1>
+      <p class="hero-subtext">
+        Als kinesist begeleid ik je bij algemene klachten, zwangerschapsgerelateerde veranderingen, bekkenbodemproblemen en revalidatie na blessure of operatie.
+      </p>
+      <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
+        <Button href="/afspraak" showArrow>
+          Maak een afspraak
+        </Button>
+        <Button href="/tarieven" variant="secondary">
+          Bekijk onze tarieven
+        </Button>
+      </div>
+    </div>
+
+    <!-- Right: hero picture (Lynn in orange ellipse); 480px on desktop, capped when wrapped -->
+    <div class="hero-parallax relative flex flex-[0_0_380px] justify-center lg:flex-[0_0_480px]" id="hero-parallax">
+      <div class="hero-picture-wrapper relative w-full min-w-[300px] max-w-[480px]">
+        <Image
+          src={heroPicture}
+          alt="Lynn"
+          width={480}
+          height={600}
+          format="webp"
+          widths={[316, 380, 442, 480]}
+          sizes="(max-width: 768px) 316px, (max-width: 1199px) 380px, 480px"
+          priority
+          class="hero-picture w-full object-contain object-center"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator: white ellipse (like IconButton), chevron bounce, smooth scroll to expertise -->
+  <a
+    href="#content-after-hero"
+    id="hero-scroll-btn"
+    class="hero-scroll-btn absolute bottom-6 left-1/2 z-10 flex w-9 h-11 -translate-x-1/2 items-center justify-center rounded-[50%] bg-surface text-primary shadow-md transition-opacity hover:opacity-90 active:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+    aria-label="Scroll naar beneden"
+  >
+    <span class="hero-scroll-btn__icon" aria-hidden="true">
+      <ChevronDown class="size-6" />
+    </span>
+  </a>
+</section>
+
+<style>
+  /* Container query: when Lynn wraps, center her horizontally */
+  .hero-content {
+    container-type: inline-size;
+    container-name: hero-content;
+  }
+  /* When Lynn wraps: full row width but extra padding + unit capped at 480px so she doesn't get too big */
+  @container hero-content (max-width: 750px) {
+    .hero-parallax {
+      width: 100%;
+      flex: 0 0 100%;
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
+  /* Heading: 32px (2rem) on mobile, 60px (3.75rem) on desktop. Typing line: 24px (1.5rem) on mobile, 40px (2.5rem) on desktop. Subtext: 16px (1rem) on mobile, 20px (1.25rem) on tablet/desktop. */
+  .hero-heading-static {
+    font-family: 'Raleway', sans-serif;
+    font-size: 2rem; /* 32px */
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+  .hero-typing-line {
+    display: inline-block;
+    font-family: 'Spectral', serif;
+    font-size: 1.5rem; /* 24px */
+    font-style: italic;
+    color: var(--color-primary);
+  }
+
+  @media (min-width: 768px) {
+    .hero-heading-static {
+      font-size: 3.75rem; /* 60px */
+    }
+    .hero-typing-line {
+      font-size: 2.5rem; /* 40px */
+    }
+  }
+  .hero-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    margin-left: 2px;
+    vertical-align: baseline;
+    background-color: var(--color-accent);
+    animation: hero-cursor-blink 1s step-end infinite;
+  }
+  @keyframes hero-cursor-blink {
+    50% { opacity: 0; }
+  }
+  .hero-subtext {
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem; /* 16px on mobile */
+    font-weight: 400;
+    color: var(--color-text-secondary);
+  }
+
+  @media (min-width: 768px) {
+    .hero-subtext {
+      font-size: 1.25rem; /* 20px on tablet/desktop */
+    }
+  }
+
+  /* Floating ellipses: SVG asset at different sizes, subtle float animation */
+  .hero-ellipse {
+    position: absolute;
+    object-fit: contain;
+    animation: hero-float 14s ease-in-out infinite;
+  }
+  .hero-ellipse-1 { width: 140px; height: 90px; top: 8%; left: 5%; animation-delay: 0s; }
+  .hero-ellipse-2 { width: 100px; height: 140px; top: 22%; right: 12%; animation-delay: -2s; }
+  .hero-ellipse-3 { width: 180px; height: 110px; bottom: 28%; left: 8%; animation-delay: -4s; }
+  .hero-ellipse-4 { width: 120px; height: 160px; bottom: 12%; right: 18%; animation-delay: -6s; }
+  .hero-ellipse-5 { width: 80px; height: 110px; top: 48%; left: 48%; animation-delay: -8s; }
+  @keyframes hero-float {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(6px, -8px); }
+    50% { transform: translate(-4px, 6px); }
+    75% { transform: translate(8px, 4px); }
+  }
+
+  /* Scroll indicator: white ellipse (36×44px, 45deg) like IconButton, chevron bounces */
+  .hero-scroll-btn {
+    cursor: pointer;
+    transform: translateX(-50%) rotate(45deg);
+  }
+  .hero-scroll-btn__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-45deg);
+    animation: hero-chevron-bounce 2s ease-in-out infinite;
+  }
+  @keyframes hero-chevron-bounce {
+    0%, 100% { transform: rotate(-45deg) translateY(0); }
+    50% { transform: rotate(-45deg) translateY(4px); }
+  }
+
+  /* Hero picture: single image (Lynn in orange ellipse), 480px wide */
+  .hero-picture-wrapper {
+    max-height: min(85vh, 600px);
+  }
+  .hero-picture {
+    display: block;
+    height: auto;
+    max-height: min(85vh, 600px);
+    object-fit: contain;
+    object-position: center center;
+  }
+</style>
+
+<script>
+  (function () {
+    const typingLine = document.querySelector('.hero-typing-line[data-typing-phrases]');
+    const phrases = typingLine ? JSON.parse(typingLine.getAttribute('data-typing-phrases') || '[]') : [];
+    const el = document.getElementById('hero-typing-text');
+    const cursor = document.getElementById('hero-typing-cursor');
+    if (!el || !cursor || !phrases.length) return;
+
+    const TYPE_SPEED_MS = 90;
+    const DELETE_SPEED_MS = 60;
+    const PAUSE_AFTER_TYPE_MS = 2000;
+    const PAUSE_AFTER_DELETE_MS = 600;
+
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let timeoutId = null;
+
+    function scheduleNext(delay) {
+      timeoutId = window.setTimeout(tick, delay);
+    }
+
+    function tick() {
+      const phrase = phrases[phraseIndex];
+      if (isDeleting) {
+        if (charIndex > 0) {
+          charIndex--;
+          el.textContent = phrase.slice(0, charIndex);
+          scheduleNext(DELETE_SPEED_MS);
+        } else {
+          isDeleting = false;
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+          scheduleNext(PAUSE_AFTER_DELETE_MS);
+        }
+      } else {
+        if (charIndex < phrase.length) {
+          charIndex++;
+          el.textContent = phrase.slice(0, charIndex);
+          scheduleNext(TYPE_SPEED_MS);
+        } else {
+          isDeleting = true;
+          scheduleNext(PAUSE_AFTER_TYPE_MS);
+        }
+      }
+    }
+
+    el.textContent = '';
+    charIndex = 0;
+    scheduleNext(500);
+
+    window.addEventListener('beforeunload', function () {
+      if (timeoutId != null) window.clearTimeout(timeoutId);
+    });
+
+    // Defer non-critical: Parallax and scroll button can wait
+    setTimeout(() => {
+      /* Parallax: Lynn + ellipse move slower on scroll */
+      const parallax = document.getElementById('hero-parallax');
+      if (parallax) {
+        let ticking = false;
+        function updateParallax() {
+          const rect = parallax.getBoundingClientRect();
+          const centerY = rect.top + rect.height / 2;
+          const viewportCenter = window.innerHeight / 2;
+          const offset = (centerY - viewportCenter) * 0.2;
+          parallax.style.transform = `translateY(${offset}px)`;
+          ticking = false;
+        }
+        window.addEventListener('scroll', () => {
+          if (!ticking) {
+            requestAnimationFrame(updateParallax);
+            ticking = true;
+          }
+        });
+        updateParallax();
+      }
+
+      /* Smooth scroll to expertise section when clicking the scroll indicator */
+      const scrollBtn = document.getElementById('hero-scroll-btn');
+      const contentAfterHero = document.getElementById('content-after-hero');
+      if (scrollBtn && contentAfterHero) {
+        scrollBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          contentAfterHero.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+    }, 0);
+  })();
+</script>

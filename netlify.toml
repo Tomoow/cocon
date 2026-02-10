@@ -1,5 +1,8 @@
 # Netlify build and deploy configuration
 # https://docs.netlify.com/configure-builds/file-based-configuration/
+#
+# For sitemap and robots.txt: set SITE_URL in Netlify (Site settings → Environment)
+# to your production URL, e.g. https://cocon.be
 
 [build]
   command = "npm run build"
@@ -20,3 +23,4 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    # Note: Netlify automatically enables Brotli/Gzip compression based on Accept-Encoding

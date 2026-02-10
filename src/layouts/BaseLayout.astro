@@ -4,6 +4,9 @@
  * Use this for all pages; design tokens and component-specific styles come next.
  */
 import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BackToTop from '../components/BackToTop.astro';
 
 interface Props {
   title: string;
@@ -17,14 +20,70 @@ const { title, description = 'Static site built with Astro, Tailwind, and Netlif
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <!-- Favicon: SVG as default (best practice), PNG fallbacks for older contexts -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="32x32" href="/favicon-32x32.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,500;0,600;1,400&family=Spectral:ital,wght@0,400;1,400&display=swap" as="style" />
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,500;0,600;1,400&family=Spectral:ital,wght@0,400;1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,500;0,600;1,400&family=Spectral:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+    </noscript>
   </head>
-  <body class="min-h-screen antialiased">
-    <slot />
+  <body class="min-h-screen antialiased bg-background-subtle">
+    <!-- Shared clipPath for info card image: angle other way, wider, bloater (fuller oval) -->
+    <svg aria-hidden="true" style="position: absolute; width: 0; height: 0;">
+      <defs>
+        <clipPath id="info-card-ellipse" clipPathUnits="objectBoundingBox">
+          <ellipse cx="0.32" cy="0.8" rx="0.6" ry="0.8" transform="rotate(-22 0.5 0.7) matrix(0.507372 0.861727 0.87022 -0.492664 -0.15 0.35)" />
+        </clipPath>
+      </defs>
+    </svg>
+    <Header currentPath={Astro.url.pathname} />
+    <main id="main-content">
+      <slot />
+    </main>
+    <Footer currentPath={Astro.url.pathname} />
+    <BackToTop />
   </body>
 </html>
+
+<script>
+  // Defer non-critical: Fade-in animation not needed for initial render
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFadeIn);
+  } else {
+    setTimeout(initFadeIn, 0);
+  }
+  
+  function initFadeIn() {
+    const elements = document.querySelectorAll('.fade-in');
+
+    if (elements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            // Unobserve after animation to prevent re-triggering
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.1, // Trigger when 10% of element is visible
+        rootMargin: '0px 0px -50px 0px', // Start animation slightly before element enters viewport
+      }
+    );
+
+    elements.forEach((el) => observer.observe(el));
+  }
+</script>

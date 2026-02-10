@@ -1,0 +1,64 @@
+---
+/**
+ * BackToTop: floating ellipse button (chevron up) bottom-right.
+ * Shown when user has scrolled past the hero; click scrolls to top smoothly.
+ */
+import ChevronUp from '@lucide/astro/icons/chevron-up';
+---
+
+<button
+  type="button"
+  id="back-to-top"
+  class="back-to-top fixed bottom-6 right-6 z-[90] flex w-9 h-11 items-center justify-center rounded-[50%] bg-surface text-primary shadow-md transition-[opacity,visibility] duration-300 hover:opacity-90 active:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+  aria-label="Terug naar boven"
+  style="opacity: 0; visibility: hidden;"
+>
+  <span class="back-to-top__icon" aria-hidden="true">
+    <ChevronUp class="size-6" />
+  </span>
+</button>
+
+<style>
+  .back-to-top {
+    cursor: pointer;
+    transform: rotate(45deg);
+  }
+  .back-to-top.visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  .back-to-top__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-45deg);
+  }
+</style>
+
+<script>
+  // Defer non-critical: BackToTop only needed after scroll
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBackToTop);
+  } else {
+    initBackToTop();
+  }
+  
+  function initBackToTop() {
+    const btn = document.getElementById('back-to-top');
+    if (!btn) return;
+
+    function updateVisibility() {
+      const pastHero = window.scrollY > window.innerHeight;
+      btn.classList.toggle('visible', pastHero);
+    }
+
+    window.addEventListener('scroll', () => {
+      requestAnimationFrame(updateVisibility);
+    }, { passive: true });
+    updateVisibility();
+
+    btn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+</script>

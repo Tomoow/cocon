@@ -1,0 +1,415 @@
+---
+/**
+ * ReviewSection: Figma 20-114 (3 cards row) + 22-7472 (carousel with stacked deck).
+ * Two modes: 3 cards in one row when width allows; else 1 card + auto carousel with deck stack.
+ * Dots: active dot = rounded rectangle that fills orange over 7s; 7s auto-advance; drag to swipe.
+ */
+import ReviewCard from './ReviewCard.astro';
+import Button from './Button.astro';
+import SectionHeading from './SectionHeading.astro';
+
+export interface ReviewData {
+  quote: string;
+  authorName: string;
+  authorRole?: string;
+}
+
+interface Props {
+  reviews: ReviewData[];
+  /** CTA link (e.g. /contact or external review URL) */
+  ctaHref?: string;
+}
+
+const { reviews, ctaHref = '#' } = Astro.props;
+const REVIEW_COUNT = 3;
+const AUTO_ADVANCE_MS = 7000;
+const BREAKPOINT_PX = 1040;
+---
+
+<section class="review-section" aria-labelledby="review-heading" data-review-section>
+  <header class="review-section__heading">
+    <SectionHeading
+      subtitle="Eerlijke feedback over onze zorg en begeleiding."
+      id="review-heading"
+    >
+      <span slot="title">Wat onze patiënten <span class="review-section__title-accent">zeggen</span></span>
+    </SectionHeading>
+  </header>
+
+  <!-- Desktop: 3 cards in one row when container is wide enough -->
+  <div class="review-section__grid" data-review-grid aria-hidden="false">
+    {reviews.slice(0, REVIEW_COUNT).map((r) => (
+      <ReviewCard quote={r.quote} authorName={r.authorName} authorRole={r.authorRole} />
+    ))}
+  </div>
+
+  <!-- Narrow: stacked-deck carousel, 1 visible card + 2 behind -->
+  <div class="review-section__carousel" data-review-carousel aria-hidden="false">
+    <div class="review-section__deck" data-review-deck>
+      {reviews.slice(0, REVIEW_COUNT).map((r, i) => (
+        <div class="review-section__card-wrap" data-review-card-wrap data-index={i}>
+          <ReviewCard quote={r.quote} authorName={r.authorName} authorRole={r.authorRole} index={i} />
+        </div>
+      ))}
+    </div>
+    <div class="review-section__dots" role="tablist" aria-label="Review slides">
+      {[0, 1, 2].map((i) => (
+        <button
+          type="button"
+          class="review-section__dot-btn"
+          role="tab"
+          aria-selected={i === 0 ? 'true' : 'false'}
+          aria-label={`Kaart ${i + 1}`}
+          data-dot-index={i}
+        >
+          <span class="review-section__dot-track">
+            <span class="review-section__dot-fill" data-dot-fill aria-hidden="true" />
+          </span>
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- CTA button: shared between grid and carousel, centered -->
+  <div class="review-section__cta-wrapper">
+    <Button href={ctaHref} variant="tertiary" showArrow={true} class="review-section__cta">
+      Laat een recensie achter
+    </Button>
+  </div>
+</section>
+
+<style>
+  .review-section {
+    position: relative;
+    overflow: visible;
+  }
+
+
+  .review-section__title-accent {
+    color: var(--color-primary);
+  }
+
+  /* Grid: 3 cards, visible when container wide enough (e.g. ≥1040px) */
+  .review-section__grid {
+    display: none;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+
+  .review-section__grid :global(.review-card) {
+    height: 100%;
+  }
+
+  .review-section__grid :global(.review-card__inner) {
+    height: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .review-section__grid {
+      display: grid;
+    }
+    .review-section__carousel {
+      display: none !important;
+    }
+  }
+
+  /* Carousel: stacked deck + dots + CTA - only on mobile (< 768px) */
+  .review-section__carousel {
+    display: block;
+    margin-top: 0;
+  }
+
+  @media (min-width: 768px) {
+    .review-section__carousel {
+      display: none;
+    }
+  }
+
+  /* Deck width = content width minus total peek (2 cards × peek each) so front card + stacked peek stay inside content */
+  .review-section__deck {
+    --review-stack-peek: 1.3125rem; /* ~21px: each stacked card peeks this much; 2 × peek = total reserved on right */
+    position: relative;
+    width: calc(100% - 2 * var(--review-stack-peek));
+    max-width: calc(42rem - 2 * var(--review-stack-peek));
+    margin: 0 auto;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .review-section__card-wrap {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease, z-index 0s;
+    pointer-events: none;
+  }
+
+  .review-section__card-wrap :global(.review-card) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .review-section__card-wrap :global(.review-card__inner) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .review-section__card-wrap[data-active] {
+    position: relative;
+    pointer-events: auto;
+    z-index: 3;
+    height: 100%;
+  }
+
+  .review-section__card-wrap[data-behind="1"] {
+    z-index: 2;
+    transform: translate(var(--review-stack-peek), 0) scale(0.96);
+    opacity: 0.92;
+  }
+
+  .review-section__card-wrap[data-behind="2"] {
+    z-index: 1;
+    transform: translate(calc(2 * var(--review-stack-peek)), 0) scale(0.92);
+    opacity: 0.85;
+  }
+
+  .review-section__dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .review-section__dot-btn {
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+
+  .review-section__dot-btn[aria-selected="true"] {
+    width: 3rem;
+    height: 0.5rem;
+  }
+
+  .review-section__dot-btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .review-section__dot-track {
+    display: block;
+    width: 100%;
+    height: 0.5rem;
+    border-radius: 999px;
+    background-color: var(--color-background-muted);
+    overflow: hidden;
+  }
+
+  .review-section__dot-btn[aria-selected="false"] .review-section__dot-track {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+  }
+
+  .review-section__dot-btn[aria-selected="false"] .review-section__dot-fill {
+    display: none;
+  }
+
+  .review-section__dot-fill {
+    display: block;
+    height: 100%;
+    width: 0;
+    background-color: var(--color-accent);
+    border-radius: 999px;
+    transform-origin: left;
+  }
+
+  .review-section__dot-btn[data-progress] .review-section__dot-fill {
+    animation: review-dot-fill 7s linear forwards;
+  }
+
+  @keyframes review-dot-fill {
+    to {
+      width: 100%;
+    }
+  }
+
+  .review-section__cta-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 2rem;
+  }
+
+  .review-section__cta {
+    margin: 0;
+  }
+
+  /* Tertiary button hover: light orange bg */
+  .review-section__cta:hover {
+    background-color: var(--color-background-muted-alt) !important;
+  }
+</style>
+
+<script>
+  // Defer non-critical: Review carousel not needed for initial render
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initReviewCarousel);
+  } else {
+    setTimeout(initReviewCarousel, 0);
+  }
+  
+  function initReviewCarousel() {
+    const section = document.querySelector('[data-review-section]');
+    const grid = section?.querySelector('[data-review-grid]');
+    const carousel = section?.querySelector('[data-review-carousel]');
+    const deck = section?.querySelector('[data-review-deck]');
+    const cardWraps = deck ? Array.from(deck.querySelectorAll('[data-review-card-wrap]')) : [];
+    const dotBtns = section ? Array.from(section.querySelectorAll('[data-dot-index]')) : [];
+    const AUTO_MS = 7000;
+
+    if (!deck || cardWraps.length === 0 || dotBtns.length === 0) return;
+
+    let activeIndex = 0;
+    let autoTimer: ReturnType<typeof setTimeout> | null = null;
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    function syncCardHeights() {
+      let maxHeight = 0;
+      const cards: HTMLElement[] = [];
+      cardWraps.forEach((wrap) => {
+        const card = wrap.querySelector('article') as HTMLElement | null;
+        if (card) {
+          cards.push(card);
+          card.style.height = 'auto';
+          const height = card.offsetHeight;
+          if (height > maxHeight) maxHeight = height;
+        }
+      });
+      if (maxHeight > 0) {
+        cards.forEach((card) => {
+          card.style.height = `${maxHeight}px`;
+        });
+        (deck as HTMLElement).style.height = `${maxHeight}px`;
+        cardWraps.forEach((wrap) => {
+          (wrap as HTMLElement).style.height = `${maxHeight}px`;
+        });
+      }
+    }
+
+    function setActive(index: number) {
+      const n = cardWraps.length;
+      activeIndex = ((index % n) + n) % n;
+
+      cardWraps.forEach((wrap, i) => {
+        wrap.removeAttribute('data-active');
+        wrap.removeAttribute('data-behind');
+        if (i === activeIndex) {
+          wrap.setAttribute('data-active', '');
+        } else {
+          const behind = (i - activeIndex + n) % n;
+          if (behind > 0) wrap.setAttribute('data-behind', String(behind));
+        }
+      });
+
+      dotBtns.forEach((btn, i) => {
+        const fill = btn.querySelector('[data-dot-fill]') as HTMLElement | null;
+        const isActive = i === activeIndex;
+        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        if (fill) {
+          fill.style.animation = 'none';
+          fill.offsetHeight;
+          if (isActive) {
+            btn.setAttribute('data-progress', '');
+            fill.style.animation = 'review-dot-fill 7s linear forwards';
+          } else {
+            btn.removeAttribute('data-progress');
+          }
+        }
+      });
+
+      if (autoTimer) clearTimeout(autoTimer);
+      autoTimer = setTimeout(() => setActive(activeIndex + 1), AUTO_MS);
+      
+      setTimeout(syncCardHeights, 50);
+    }
+
+    function go(delta: number) {
+      setActive(activeIndex + delta);
+    }
+
+    window.addEventListener('resize', () => {
+      setTimeout(syncCardHeights, 100);
+    });
+
+    dotBtns.forEach((btn, i) => {
+      btn.addEventListener('click', () => setActive(i));
+    });
+
+    deck.addEventListener('touchstart', (e: TouchEvent) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    deck.addEventListener('touchend', (e: TouchEvent) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 50) go(diff > 0 ? 1 : -1);
+    }, { passive: true });
+
+    let pointerStartX = 0;
+    let pointerStartY = 0;
+    let hasMoved = false;
+    
+    deck.addEventListener('pointerdown', (e: PointerEvent) => {
+      pointerStartX = e.clientX;
+      pointerStartY = e.clientY;
+      hasMoved = false;
+    });
+    
+    deck.addEventListener('pointermove', (e: PointerEvent) => {
+      if (pointerStartX !== 0) {
+        const diffX = Math.abs(pointerStartX - e.clientX);
+        const diffY = Math.abs(pointerStartY - e.clientY);
+        if (diffX > 10 || diffY > 10) {
+          hasMoved = true;
+        }
+      }
+    });
+    
+    deck.addEventListener('pointerup', (e: PointerEvent) => {
+      const diff = pointerStartX - e.clientX;
+      if (Math.abs(diff) > 50) {
+        go(diff > 0 ? 1 : -1);
+      } else if (!hasMoved && pointerStartX !== 0) {
+        go(1);
+      }
+      pointerStartX = 0;
+      pointerStartY = 0;
+      hasMoved = false;
+    });
+
+    setActive(0);
+    
+    setTimeout(() => {
+      syncCardHeights();
+    }, 100);
+  }
+</script>

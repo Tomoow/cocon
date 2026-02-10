@@ -1,17 +1,101 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ContactForm from '../components/ContactForm.astro';
+import Hero from '../components/Hero.astro';
+import ExpertisesCarousel from '../components/ExpertisesCarousel.astro';
+import AboutSection from '../components/AboutSection.astro';
+import ReviewSection from '../components/ReviewSection.astro';
+import PraktijkSection from '../components/PraktijkSection.astro';
+import expertise1 from '../assets/images/expertises/expertise-1.png';
+import expertise2 from '../assets/images/expertises/expertise-2.png';
+import expertise3 from '../assets/images/expertises/expertise-3.png';
+import expertise4 from '../assets/images/expertises/expertise-4.png';
+import expertise5 from '../assets/images/expertises/expertise-5.png';
+import expertise6 from '../assets/images/expertises/expertise-6.png';
+
+const expertisesCards = [
+  {
+    imageSrc: expertise1,
+    imageAlt: '', // Decorative; card title provides the same info (avoids redundant alt)
+    number: '01',
+    title: 'Bekkenbodem\u200Btherapie',
+    description: 'Heb je last van urineverlies, pijn bij het vrijen of een zwaar gevoel in de onderbuik? Bekkenbodemtherapie helpt bij klachten rond blaas, darmen en seksualiteit – bij vrouwen én mannen.',
+    backBullets: ['Intake en onderzoek op maat', 'Oefentherapie voor bekkenbodemspieren', 'Advies bij plasklachten en obstipatie', 'Begeleiding tijdens zwangerschap en na bevalling'],
+  },
+  {
+    imageSrc: expertise2,
+    imageAlt: '',
+    number: '02',
+    title: 'Pre- & postnatale kiné',
+    description: 'Fysiotherapie tijdens en na je zwangerschap. We begeleiden je bij bekkenpijn, herstel na de bevalling en het weer opbouwen van je conditie.',
+    backBullets: ['Bekkenpijn tijdens zwangerschap', 'Bevallingsvoorbereiding', 'Postnataal herstel', 'Bodymind en ademhaling'],
+  },
+  {
+    imageSrc: expertise3,
+    imageAlt: '',
+    number: '03',
+    title: 'Algemene kinesitherapie',
+    description: 'Bij pijn, spanning of beperkingen in bewegen. We zoeken samen naar de oorzaak en werken aan herstel met oefentherapie en hands-on technieken.',
+    backBullets: ['Pijnlijke gewrichten en spieren', 'Rug- en nekpijn', 'Sportblessures', 'Bewegingsadvies'],
+  },
+  {
+    imageSrc: expertise4,
+    imageAlt: '',
+    number: '04',
+    title: 'Pijn- & spierbehandeling',
+    description: 'Hardnekkige spierknopen of lokale pijn? Dry needling en manuele technieken kunnen verlichting geven en de doorbloeding verbeteren.',
+    backBullets: ['Dry needling', 'Spierknopen en triggerpoints', 'Lokale pijn', 'Manuele technieken'],
+  },
+  {
+    imageSrc: expertise5,
+    imageAlt: '',
+    number: '05',
+    title: 'Revalidatie & herstel',
+    description: 'Na een operatie of blessure helpen we je stap voor stap terug naar je dagelijkse activiteiten en sport.',
+    backBullets: ['Postoperatieve revalidatie', 'Blessureherstel', 'Functie-opbouw', 'Sporthervatting'],
+  },
+  {
+    imageSrc: expertise6,
+    imageAlt: '',
+    number: '06',
+    title: 'Dry Needling',
+    description: 'Bij chronische pijn of complexe klachten kan dry needling een onderdeel van de behandeling zijn om spieren te ontspannen.',
+    backBullets: ['Chronische spierpijn', 'Dry needling techniek', 'Samen met oefentherapie', 'Op maat van jouw klacht'],
+  },
+];
+
+const reviewData = [
+  {
+    quote: 'De zorg die ik bij Cocon ontving was ongekend. Ze namen de tijd om mijn behoeften echt te begrijpen en stelden een behandelplan op dat werkte voor mijn lichaam en mijn leven.',
+    authorName: 'Sophie M.',
+    authorRole: 'Patiënt',
+  },
+  {
+    quote: 'Professionele begeleiding en een warme aanpak. Ik voelde me van begin tot eind in goede handen.',
+    authorName: 'Marc D.',
+    authorRole: 'Patiënt',
+  },
+  {
+    quote: 'Na mijn zwangerschap heeft de perinatale kinesitherapie me enorm geholpen. Een echte aanrader.',
+    authorName: 'Emma V.',
+    authorRole: 'Patiënt',
+  },
+];
 ---
 
 <BaseLayout title="Home" description="Static site built with Astro, Tailwind, and Netlify.">
-  <main class="max-w-2xl mx-auto px-4 py-16">
-    <h1 class="text-2xl font-bold mb-8">Cocon</h1>
-    <p class="text-gray-600 mb-8">
-      Astro + Tailwind + Netlify (hosting, CMS, forms). Ready for design tokens and components.
-    </p>
-    <section aria-labelledby="contact-heading">
-      <h2 id="contact-heading" class="text-xl font-semibold mb-4">Contact (example form)</h2>
-      <ContactForm />
-    </section>
+  <Hero />
+  <main id="content-after-hero" class="main-with-ellipses">
+    <div class="expertise-ellipses" aria-hidden="true">
+      <img class="expertise-ellipses__left" src="/images/ellipse-left.svg" alt="" width="752" height="1025" loading="lazy" />
+      <img class="expertise-ellipses__right" src="/images/ellipse-right.svg" alt="" width="850" height="1159" loading="lazy" />
+    </div>
+    <div class="container-content pt-[6.25rem] pb-16 expertise-content-on-top">
+      <ExpertisesCarousel cards={expertisesCards} class="fade-in" />
+    </div>
   </main>
+  <AboutSection class="fade-in" />
+  <div class="container-content pt-16 pb-20 md:pt-24 md:pb-28 fade-in">
+    <ReviewSection reviews={reviewData} ctaHref="/contact" />
+  </div>
+  <PraktijkSection class="fade-in" />
 </BaseLayout>

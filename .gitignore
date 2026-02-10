@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Lighthouse report (run: npx lighthouse http://localhost:4321 --output=html --output-path=./lighthouse-report.html --view)
+lighthouse-report.html

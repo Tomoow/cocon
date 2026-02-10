@@ -1,0 +1,122 @@
+---
+/**
+ * ReviewCard: single testimonial card – quote icon, text, author (avatar, name, role).
+ * Used in ReviewSection grid and carousel. Matches Figma: white card, orange quote, italic text.
+ */
+interface Props {
+  quote: string;
+  authorName: string;
+  authorRole?: string;
+  /** Optional index for carousel stacking (set by parent) */
+  index?: number;
+}
+
+const { quote, authorName, authorRole = 'Patiënt', index = 0 } = Astro.props;
+---
+
+<article class="review-card" data-review-index={index}>
+  <div class="review-card__inner">
+    <span class="review-card__quotes" aria-hidden="true">
+      <img src="/images/quote.svg" alt="" width="45" height="30" class="review-card__quote-svg" loading="lazy" />
+    </span>
+    <blockquote class="review-card__quote">{quote}</blockquote>
+    <footer class="review-card__author">
+      <span class="review-card__avatar" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </span>
+      <div class="review-card__meta">
+        <cite class="review-card__name">{authorName}</cite>
+        <span class="review-card__role">{authorRole}</span>
+      </div>
+    </footer>
+  </div>
+</article>
+
+<style>
+  .review-card {
+    --review-card-radius: 1rem;
+    --review-card-padding: 1.5rem 1.5rem 1.75rem;
+    background-color: var(--color-surface);
+    border-radius: var(--review-card-radius);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    min-width: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease, z-index 0s;
+  }
+
+  .review-card__inner {
+    padding: var(--review-card-padding);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-height: 0;
+  }
+
+  .review-card__quotes {
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  .review-card__quote-svg {
+    display: block;
+    width: 2.8125rem;
+    height: auto;
+  }
+
+  .review-card__quote {
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--color-text-primary);
+    line-height: 1.5;
+    margin: 0 0 1.25rem 0;
+  }
+
+  .review-card__author {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: auto;
+    flex-shrink: 0;
+  }
+
+  .review-card__avatar {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background-color: var(--color-background-muted-alt);
+    color: var(--color-text-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .review-card__avatar svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .review-card__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .review-card__name {
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    font-style: normal;
+  }
+
+  .review-card__role {
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: var(--color-text-secondary);
+  }
+</style>

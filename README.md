@@ -16,6 +16,13 @@ Astro + Tailwind + Netlify (hosting, CMS, forms). Static site, no runtime backen
 | `npm run dev`     | Dev server at `http://localhost:4321` |
 | `npm run build`   | Production build → `dist/`          |
 | `npm run preview` | Preview production build locally   |
+| `npm run cms:proxy` | Local CMS backend (run with `npm run dev` to test `/admin` without deploying) |
+
+### Test the CMS locally (no deploy, no credits)
+
+1. **Terminal 1:** `npm run dev`
+2. **Terminal 2:** `npm run cms:proxy`
+3. Open **http://localhost:4321/admin** — the CMS uses the local proxy and writes to your repo (local commits only). No Netlify deploy or credits used.
 
 ## Netlify
 

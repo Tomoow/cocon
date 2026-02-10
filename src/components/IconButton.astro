@@ -1,0 +1,66 @@
+---
+/**
+ * Icon button with oval background (36×44px ellipse, 45deg) to match logo oval.
+ * True oval via border-radius: 50% on 36×44 box; 45deg rotation.
+ * With href: renders <a>. Without href: renders <button type="button">.
+ * Variant: default = always show green ellipse; tertiary = plain icon, ellipse on hover.
+ */
+interface Props {
+  href?: string;
+  label: string;
+  class?: string;
+  /** default = ellipse always visible; tertiary = plain icon, ellipse on hover */
+  variant?: 'default' | 'tertiary';
+  /** When true, adds data-tooltip-close for tooltip close button usage */
+  dataTooltipClose?: boolean;
+}
+
+const { href, label, class: className = '', variant = 'default', dataTooltipClose = false } = Astro.props;
+const isLink = href != null && href !== '';
+const isTertiary = variant === 'tertiary';
+
+const sizeClass = 'inline-flex items-center justify-center w-9 h-11';
+const defaultBgClass = 'icon-btn-default bg-background-muted text-primary transition-colors hover:opacity-80';
+const tertiaryBgClass = 'icon-btn-tertiary bg-transparent text-primary hover:bg-background-muted transition-colors';
+const focusClass = 'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
+const baseClass = `${sizeClass} ${isTertiary ? tertiaryBgClass : defaultBgClass} ${focusClass}`;
+const buttonClass = `${baseClass} border-0 cursor-pointer ${className}`;
+const dataAttrs = dataTooltipClose ? { 'data-tooltip-close': '' } : {};
+---
+
+{isLink ? (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label={label}
+    class={`${baseClass} ${className}`}
+    style="border-radius: 50%; transform: rotate(45deg);"
+    {...dataAttrs}
+  >
+    <span style="transform: rotate(-45deg);" aria-hidden="true">
+      <slot />
+    </span>
+  </a>
+) : (
+  <button
+    type="button"
+    aria-label={label}
+    class={buttonClass}
+    style="border-radius: 50%; transform: rotate(45deg);"
+    {...dataAttrs}
+  >
+    <span style="transform: rotate(-45deg);" aria-hidden="true">
+      <slot />
+    </span>
+  </button>
+)}
+
+<style>
+  .icon-btn-default:active {
+    background: color-mix(in srgb, var(--color-background-muted) 92%, black);
+  }
+  .icon-btn-tertiary:active {
+    background: color-mix(in srgb, var(--color-background-muted-alt) 92%, black);
+  }
+</style>

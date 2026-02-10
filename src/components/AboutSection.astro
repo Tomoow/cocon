@@ -1,0 +1,280 @@
+---
+/**
+ * AboutSection: full-width primary green block, text left, image right (zaakvoerster).
+ * Desktop: image fills right side (can extend past 1200px), rounded top-left & bottom-left.
+ * Mobile: image wraps below text, rounded top-left & top-right only.
+ */
+import { Image } from 'astro:assets';
+import Tooltip from './Tooltip.astro';
+import SectionHeading from './SectionHeading.astro';
+import zaakvoersterImage from '../assets/images/about/zaakvoerster.png';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<section class:list={['about-section', className]} aria-labelledby="about-heading">
+  <div class="about-section__inner">
+    <div class="about-section__content">
+      <div class="about-section__content-inner">
+      <SectionHeading
+        title="Het gezicht achter cocon"
+        subtitle="Kinesist met meer dan 5 jaar ervaring, gespecialiseerd in pelvische reëducatie en perinatale zorg. Ik volgde verschillende opleidingen om mensen met gerichte en deskundige kinesitherapie te begeleiden."
+        id="about-heading"
+        align="center"
+        titleColor="white"
+        subtitleColor="white"
+        class="about-section__heading section-heading--left-on-desktop"
+      />
+      <ul class="about-section__list">
+        <li class="about-section__item">
+          <span class="about-section__icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+              <path d="M6 12v5c3 3 9 3 12 0v-5" />
+            </svg>
+          </span>
+          <span>Master in de Revalidatiewetenschappen en de Kinesitherapie – KU Leuven</span>
+        </li>
+        <li class="about-section__item">
+          <span class="about-section__icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+              <path d="M6 12v5c3 3 9 3 12 0v-5" />
+            </svg>
+          </span>
+          <span>Postgraduaat Pelvische Reëducatie & Perinatale Kinesitherapie – SOMT University (Amersfoort)</span>
+        </li>
+        <li class="about-section__item">
+          <span class="about-section__icon about-section__icon--medal" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="6" />
+              <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
+            </svg>
+          </span>
+          <span>Bijzondere bekwaamheid in pelvische reëducatie en perinatale kinesitherapie – Gouden medaille op <Tooltip
+              contentText="Als er een gouden medaille achter hun naam staat, behaalden zij ook de bijzondere bekwaamheid in de pelvische reëducatie en perinatale kinesitherapie."
+              buttonText="Bezoek de website"
+              buttonHref="https://www.bicap.be"
+              id="tooltip-bicap"
+            >
+              <span class="about-section__bicap-trigger"><strong>BICAP</strong>
+                <span class="about-section__info-icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 16v-4" />
+                    <path d="M12 8h.01" />
+                  </svg>
+                </span>
+              </span>
+            </Tooltip></span>
+        </li>
+      </ul>
+      </div>
+    </div>
+    <div class="about-section__image-wrap">
+      <Image
+        src={zaakvoersterImage}
+        alt="Zaakvoerder kinesist"
+        width={412}
+        height={619}
+        format="webp"
+        widths={[412, 550, 682]}
+        sizes="(max-width: 767px) 412px, (max-width: 1199px) 550px, 682px"
+        loading="lazy"
+        class="about-section__image"
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-section {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 100vw;
+    background-color: var(--color-primary);
+    /* No overflow on section so position: sticky can stick to viewport; image clipped by __image-wrap */
+  }
+
+  .about-section__inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  /* <1024: text centered; section height from content (no full viewport) */
+  @media (max-width: 1023px) {
+    .about-section__inner {
+      min-height: 0;
+      justify-content: center;
+    }
+    .about-section__content {
+      margin-top: auto;
+      margin-bottom: auto;
+      align-self: center;
+      text-align: center;
+    }
+    .about-section__content-inner {
+      text-align: center;
+    }
+    .about-section__list {
+      align-items: flex-start;
+      text-align: left;
+    }
+    .about-section__item {
+      justify-content: flex-start;
+    }
+  }
+
+  .about-section__content {
+    font-family: 'Raleway', sans-serif;
+    max-width: 36rem;
+  }
+
+  .about-section__content-inner {
+    padding: 2rem var(--spacing-container-mobile) 2.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .about-section__content-inner {
+      padding-left: var(--spacing-container-tablet);
+      padding-right: var(--spacing-container-tablet);
+    }
+  }
+
+  .about-section__heading {
+    margin-bottom: 1.5rem;
+  }
+
+  .about-section__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .about-section__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    color: var(--color-white);
+    line-height: 1.5;
+  }
+
+  .about-section__icon {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-white);
+  }
+
+  .about-section__icon--medal {
+    color: var(--color-accent);
+  }
+
+  .about-section__bicap-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    color: inherit;
+    text-decoration: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+
+  .about-section__info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+    opacity: 0.9;
+  }
+
+  .about-section__bicap-trigger:hover .about-section__info-icon,
+  .about-section__bicap-trigger:focus-visible .about-section__info-icon {
+    opacity: 1;
+  }
+
+  .about-section__image-wrap {
+    flex-shrink: 0;
+    width: 100%;
+    min-height: 220px;
+    overflow: hidden;
+    /* Mobile: rounded top-left and top-right only */
+    border-top-left-radius: 50rem;
+    border-top-right-radius: 50rem;
+  }
+
+  .about-section__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  /* Desktop: section height from image column; sticky text sticks while scrolling */
+  @media (min-width: 1024px) {
+    .about-section__inner {
+      display: grid;
+      grid-template-columns: 1fr 50vw;
+      grid-template-rows: 1fr;
+      min-height: 0;
+      align-items: stretch;
+    }
+
+    .about-section__content {
+      min-width: 50vw;
+      max-width: 36rem;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .about-section__content-inner {
+      position: sticky;
+      top: 5rem; /* below fixed header (~80px) */
+      padding: 3rem var(--spacing-container-tablet) 3rem;
+      padding-left: max(var(--spacing-container-tablet), calc((100vw - var(--width-content-max)) / 2 + var(--spacing-container-tablet)));
+    }
+
+    .about-section__image-wrap {
+      position: relative;
+      /* Shorter than before: ~100vh so section is more compact, sticky still works */
+      min-height: 100vh;
+      margin-left: auto;
+      overflow: hidden;
+      border-top-right-radius: 0;
+      border-top-left-radius: 50rem;
+      border-bottom-left-radius: 50rem;
+    }
+
+    .about-section__image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .about-section__content-inner {
+      padding-left: max(var(--spacing-container-desktop), calc((100vw - var(--width-content-max)) / 2 + var(--spacing-container-desktop)));
+    }
+  }
+</style>

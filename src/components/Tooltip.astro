@@ -1,0 +1,408 @@
+---
+/**
+ * Tooltip: positioned with Floating UI (above/below based on space).
+ * Styled per Figma: cream bg, primary green border/text, orange quotation marks, italic text, secondary CTA.
+ * Max-width 31.25rem (500px). Stays open ≥1s on hover so user can move into it; click outside closes.
+ */
+import Button from './Button.astro';
+import IconButton from './IconButton.astro';
+
+interface Props {
+  contentText: string;
+  buttonText: string;
+  buttonHref: string;
+  /** Unique id for accessibility */
+  id?: string;
+}
+
+const { contentText, buttonText, buttonHref, id = 'tooltip-' + Math.random().toString(36).slice(2, 9) } = Astro.props;
+---
+
+<div class="tooltip-wrapper" data-tooltip-wrapper>
+  <div class="tooltip-trigger" data-tooltip-trigger id={`${id}-trigger`} role="button" tabindex="0" aria-describedby={id} aria-expanded="false">
+    <slot />
+  </div>
+  <div
+    id={id}
+    class="tooltip-panel"
+    data-tooltip-panel
+    role="tooltip"
+    hidden
+    aria-hidden="true"
+  >
+    <div class="tooltip-header">
+      <span class="tooltip-quotes" aria-hidden="true">
+        <img src="/images/quote.svg" alt="" width="45" height="30" class="tooltip-quote-svg" loading="lazy" />
+      </span>
+      <IconButton label="Sluit" variant="tertiary" class="tooltip-close" dataTooltipClose>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12" />
+        </svg>
+      </IconButton>
+    </div>
+    <p class="tooltip-text">{contentText}</p>
+    <div class="tooltip-actions">
+      <Button href={buttonHref} variant="secondary" class="tooltip-button">
+        {buttonText}
+      </Button>
+    </div>
+    <span class="tooltip-pointer" data-tooltip-pointer aria-hidden="true" />
+  </div>
+</div>
+
+<style>
+  .tooltip-wrapper {
+    display: inline-flex;
+    position: relative;
+  }
+
+  .tooltip-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+  }
+
+  .tooltip-trigger:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .tooltip-panel {
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    max-width: 31.25rem;
+    padding: 1.25rem 1.5rem 1.5rem;
+    background-color: var(--color-background-subtle);
+    border: 2px solid var(--color-primary);
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .tooltip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  /* Mobile: keep 16px from viewport left/right; panel width fits within that (shift padding 16 does the inset) */
+  @media (max-width: 767px) {
+    .tooltip-panel {
+      max-width: min(31.25rem, calc(100vw - 32px));
+      box-sizing: border-box;
+    }
+  }
+
+  .tooltip-panel[hidden] {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .tooltip-panel:not([hidden]) {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .tooltip-quotes {
+    display: block;
+    line-height: 1;
+  }
+
+  .tooltip-quote-svg {
+    display: block;
+    width: 2.8125rem;
+    height: auto;
+  }
+
+  .tooltip-text {
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--color-primary);
+    line-height: 1.5;
+    margin: 0 0 1.25rem 0;
+  }
+
+  .tooltip-actions {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .tooltip-button {
+    flex-shrink: 0;
+  }
+
+  .tooltip-panel :global(a.tooltip-button:hover),
+  .tooltip-panel :global(button.tooltip-button:hover) {
+    background-color: var(--color-background-muted) !important;
+    opacity: 1 !important;
+  }
+
+  .tooltip-pointer {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+  }
+
+  .tooltip-panel[data-placement='bottom'] .tooltip-pointer {
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-bottom: 10px solid var(--color-primary);
+  }
+
+  .tooltip-panel[data-placement='bottom'] .tooltip-pointer::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: -6px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 8px solid var(--color-background-subtle);
+  }
+
+  .tooltip-panel[data-placement='top'] .tooltip-pointer {
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-top: 10px solid var(--color-primary);
+  }
+
+  .tooltip-panel[data-placement='top'] .tooltip-pointer::before {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: -6px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid var(--color-background-subtle);
+  }
+
+  /* When panel is moved to body (to escape overflow clipping), ensure it still has layout/visibility */
+  :global(body > .tooltip-panel) {
+    position: fixed;
+    z-index: 9999;
+    max-width: 31.25rem;
+    padding: 1.25rem 1.5rem 1.5rem;
+    background-color: var(--color-background-subtle);
+    border: 2px solid var(--color-primary);
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+  @media (max-width: 767px) {
+    :global(body > .tooltip-panel) {
+      max-width: min(31.25rem, calc(100vw - 32px));
+      box-sizing: border-box;
+    }
+  }
+  :global(body > .tooltip-panel[hidden]) {
+    visibility: hidden;
+    pointer-events: none;
+  }
+  :global(body > .tooltip-panel:not([hidden])) {
+    visibility: visible;
+    pointer-events: auto;
+  }
+</style>
+
+<script>
+  const TOOLTIP_DEBUG = true;
+  function log(...args) {
+    if (typeof TOOLTIP_DEBUG !== 'undefined' && TOOLTIP_DEBUG) {
+      console.log('[Tooltip]', ...args);
+    }
+  }
+
+  function initTooltip() {
+    log('initTooltip() called, document.readyState:', document.readyState);
+    const wrapper = document.querySelector('[data-tooltip-wrapper]');
+    if (!wrapper) {
+      log('FAIL: no [data-tooltip-wrapper] found in DOM');
+      return;
+    }
+    log('Found wrapper:', wrapper);
+
+    const trigger = wrapper.querySelector('[data-tooltip-trigger]');
+    const panel = wrapper.querySelector('[data-tooltip-panel]');
+    if (!trigger || !panel) {
+      log('FAIL: trigger or panel not found', { trigger: !!trigger, panel: !!panel });
+      return;
+    }
+    log('Found trigger and panel, attaching events...');
+
+    (async function () {
+      let computePosition, flip, shift, offset;
+      try {
+        const floatingUi = await import('@floating-ui/dom');
+        computePosition = floatingUi.computePosition;
+        flip = floatingUi.flip;
+        shift = floatingUi.shift;
+        offset = floatingUi.offset;
+        log('Floating UI loaded, using computePosition + flip + shift + offset for dynamic placement');
+      } catch (err) {
+        log('FAIL: could not load @floating-ui/dom', err);
+        return;
+      }
+      const HOVER_STAY_MS = 1000;
+      let closeTimeout: ReturnType<typeof setTimeout> | null = null;
+      let isOpen = false;
+
+      /** On touch devices, a single tap fires mouseenter then click, so the tooltip opens and immediately closes. Use only click to toggle. */
+      const isTouchOrCoarse = 'ontouchstart' in window || window.matchMedia('(pointer: coarse)').matches;
+
+      function clearCloseTimeout() {
+        if (closeTimeout) {
+          clearTimeout(closeTimeout);
+          closeTimeout = null;
+        }
+      }
+
+      function updatePosition() {
+        computePosition(trigger, panel, {
+          placement: 'bottom',
+          strategy: 'fixed',
+          middleware: [
+            offset(10),
+            flip({ padding: 16 }),
+            shift({ padding: 16 }),
+          ],
+        }).then(({ x, y, placement }) => {
+          panel.style.left = `${x}px`;
+          panel.style.top = `${y}px`;
+          panel.setAttribute('data-placement', placement);
+          log('updatePosition:', { x, y, placement });
+        }).catch((err) => {
+          log('updatePosition error:', err);
+        });
+      }
+
+      function open() {
+        log('open() called');
+        clearCloseTimeout();
+        isOpen = true;
+        document.body.appendChild(panel);
+        panel.hidden = false;
+        panel.removeAttribute('hidden');
+        panel.setAttribute('aria-hidden', 'false');
+        trigger.setAttribute('aria-expanded', 'true');
+        requestAnimationFrame(() => {
+          updatePosition();
+        });
+      }
+
+      function scheduleClose() {
+        log('scheduleClose() – will close in', HOVER_STAY_MS, 'ms');
+        clearCloseTimeout();
+        closeTimeout = setTimeout(() => {
+          close();
+          closeTimeout = null;
+        }, HOVER_STAY_MS);
+      }
+
+      function close() {
+        log('close() called');
+        clearCloseTimeout();
+        isOpen = false;
+        panel.hidden = true;
+        panel.setAttribute('aria-hidden', 'true');
+        trigger.setAttribute('aria-expanded', 'false');
+        if (panel.parentNode !== wrapper) {
+          wrapper.appendChild(panel);
+        }
+      }
+
+      function handleTriggerEnter() {
+        log('trigger mouseenter');
+        clearCloseTimeout();
+        open();
+      }
+
+      function handleTriggerLeave() {
+        log('trigger mouseleave');
+        scheduleClose();
+      }
+
+      function handlePanelEnter() {
+        log('panel mouseenter');
+        clearCloseTimeout();
+      }
+
+      function handlePanelLeave() {
+        log('panel mouseleave');
+        scheduleClose();
+      }
+
+      if (!isTouchOrCoarse) {
+        trigger.addEventListener('mouseenter', handleTriggerEnter);
+        trigger.addEventListener('mouseleave', handleTriggerLeave);
+        panel.addEventListener('mouseenter', handlePanelEnter);
+        panel.addEventListener('mouseleave', handlePanelLeave);
+      }
+
+      trigger.addEventListener('click', (e) => {
+        log('trigger click, isOpen:', isOpen);
+        e.preventDefault();
+        e.stopPropagation();
+        if (isOpen) close();
+        else open();
+      });
+
+      trigger.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          e.stopPropagation();
+          if (isOpen) close();
+          else open();
+        }
+      });
+
+      const closeButton = panel.querySelector('[data-tooltip-close]');
+      if (closeButton) {
+        closeButton.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          close();
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        if (!isOpen) return;
+        const target = e.target as Node;
+        const outside = !wrapper.contains(target) && !panel.contains(target);
+        if (outside) {
+          log('click outside – closing');
+          close();
+        }
+      });
+
+      window.addEventListener('scroll', () => {
+        if (isOpen) updatePosition();
+      }, true);
+
+      window.addEventListener('resize', () => {
+        if (isOpen) updatePosition();
+      });
+
+      log('Tooltip init complete – hover or click the trigger to open.');
+    })();
+  }
+
+  function runInit() {
+    initTooltip();
+    if (!document.querySelector('[data-tooltip-wrapper]')) {
+      log('Wrapper not in DOM yet, retrying in 150ms...');
+      setTimeout(initTooltip, 150);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runInit);
+  } else {
+    runInit();
+  }
+</script>

@@ -1,0 +1,325 @@
+---
+/**
+ * InfoCard: flip card with image (ellipse mask), number ellipse overlay,
+ * title, description, "Meer info" CTA → flips to back with bullet points.
+ * Based on Figma node 18-760.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  imageSrc: ImageMetadata;
+  imageAlt: string;
+  number: string;
+  title: string;
+  description: string;
+  /** Bullet points shown on the back of the card */
+  backBullets: string[];
+}
+
+const { imageSrc, imageAlt, number, title, description, backBullets } = Astro.props;
+---
+
+<article class="info-card" data-flip-card>
+  <div class="info-card__inner">
+    <!-- Front: entire face clickable to flip -->
+    <div class="info-card__face info-card__front" data-flip-trigger role="button" tabindex="0" aria-label="Toon meer informatie" aria-expanded="false">
+      <div class="info-card__image-wrap">
+        <Image
+          src={imageSrc}
+          alt={imageAlt}
+          width={442}
+          height={285}
+          format="webp"
+          widths={[336, 442, 512]}
+          sizes="(max-width: 767px) 336px, (max-width: 1199px) 442px, 512px"
+          loading="lazy"
+          class="info-card__image"
+        />
+      </div>
+      <div class="info-card__body">
+        <span class="info-card__number" aria-hidden="true">
+          <span class="info-card__number-inner">{number}</span>
+        </span>
+        <h3 class="info-card__title">{title}</h3>
+        <p class="info-card__description">{description}</p>
+        <span class="info-card__cta">
+          Meer info
+          <span class="info-card__cta-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Back: entire face clickable to flip back; tabindex toggled by script so only visible face is focusable -->
+    <div class="info-card__face info-card__back" data-flip-trigger role="button" tabindex="-1" aria-label="Terug naar voorkant" aria-expanded="true">
+      <div class="info-card__back-body">
+        <h3 class="info-card__back-title">{title}</h3>
+        <ul class="info-card__back-list">
+          {backBullets.map((item) => (
+            <li class="info-card__back-item">{item}</li>
+          ))}
+        </ul>
+        <span class="info-card__back-cta">Terug</span>
+      </div>
+    </div>
+  </div>
+</article>
+
+<style>
+  .info-card {
+    font-family: 'Raleway', sans-serif;
+    perspective: 1000px;
+    height: 100%;
+  }
+
+  .info-card__inner {
+    position: relative;
+    width: 100%;
+    min-height: 0;
+    height: 100%;
+    transition: transform 0.6s ease;
+    transform-style: preserve-3d;
+  }
+
+  .info-card.is-flipped .info-card__inner {
+    transform: rotateY(180deg);
+  }
+
+  /* Front: relative so it sets card height; overflow hidden for rounded corners */
+  .info-card__front {
+    position: relative;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface);
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .info-card__front:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Back: absolute overlay, same size as inner when flipped */
+  .info-card__back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface);
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: auto;
+    cursor: pointer;
+    transform: rotateY(180deg);
+  }
+
+  .info-card__back:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Front: image with ellipse cutout from design source (floating-ellipse.svg shape) */
+  .info-card__image-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    flex-shrink: 0;
+    clip-path: url(#info-card-ellipse);
+    background: var(--color-background-muted);
+    overflow: hidden;
+  }
+
+  .info-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    transition: transform 0.4s ease;
+  }
+
+  .info-card:not(.is-flipped):hover .info-card__image {
+    transform: scale(1.05);
+  }
+
+  /* Number ellipse: part of text content; body grows so "Meer info" stays at bottom */
+  .info-card__body {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1.25rem 1.75rem;
+    gap: 0.75rem;
+    min-height: 0;
+    min-width: 0;
+  }
+
+  .info-card__number {
+    position: absolute;
+    top: -4.5rem;
+    left: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.75rem; /* 60px */
+    height: 4.5rem;
+    background: var(--color-background-muted);
+    border-radius: 50%;
+    transform: rotate(45deg);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .info-card__number-inner {
+    transform: rotate(-45deg);
+  }
+
+  .info-card__title {
+    font-size: 1.5rem; /* 24px */
+    font-weight: 600; /* semibold */
+    color: var(--color-primary);
+    margin: 0;
+    line-height: 1.2;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    min-width: 0;
+  }
+
+  .info-card__description {
+    font-size: 1rem; /* 16px */
+    font-weight: 400;
+    color: var(--color-primary);
+    margin: 0;
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .info-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--color-primary);
+    margin-top: auto;
+    margin-left: auto;
+    text-align: right;
+    pointer-events: none;
+  }
+
+  .info-card__cta-icon {
+    display: inline-flex;
+    transition: transform 0.2s ease-out;
+  }
+
+  .info-card__front:hover .info-card__cta-icon {
+    transform: translateX(2px);
+  }
+
+  /* Back */
+  .info-card__back-body {
+    padding: 1.5rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 1rem;
+  }
+
+  .info-card__back-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin: 0;
+  }
+
+  .info-card__back-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+  }
+
+  .info-card__back-item {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    padding-left: 1.25rem;
+    position: relative;
+    margin-bottom: 0.5rem;
+  }
+
+  .info-card__back-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 0.35rem;
+    height: 0.35rem;
+    background: var(--color-accent);
+    border-radius: 50%;
+  }
+
+  .info-card__back-cta {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-primary);
+    text-align: left;
+    margin-top: auto;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  // Defer non-critical: Card flip functionality not needed for initial render
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCardFlip);
+  } else {
+    setTimeout(initCardFlip, 0);
+  }
+  
+  function initCardFlip() {
+    function flipCard(card: Element) {
+      card.classList.toggle('is-flipped');
+      const expanded = card.classList.contains('is-flipped');
+      const front = card.querySelector('.info-card__front');
+      const back = card.querySelector('.info-card__back');
+      card.querySelectorAll('[data-flip-trigger]').forEach((el) => {
+        (el as HTMLElement).setAttribute('aria-expanded', String(expanded));
+      });
+      if (front && back) {
+        (front as HTMLElement).setAttribute('tabindex', expanded ? '-1' : '0');
+        (back as HTMLElement).setAttribute('tabindex', expanded ? '0' : '-1');
+        if (expanded) (back as HTMLElement).focus();
+      }
+    }
+
+    document.querySelectorAll('[data-flip-card]').forEach((card) => {
+      card.querySelectorAll('[data-flip-trigger]').forEach((trigger) => {
+        trigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          flipCard(card);
+        });
+        trigger.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            flipCard(card);
+          }
+        });
+      });
+    });
+  }
+</script>

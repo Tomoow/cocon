@@ -1,0 +1,305 @@
+---
+/**
+ * Header: pill-shaped bar, max-width 1200px, logo + nav + social + CTA.
+ * Active nav item has oval behind icon and semibold label; oval slides on page change.
+ */
+import Button from './Button.astro';
+import IconButton from './IconButton.astro';
+import House from '@lucide/astro/icons/house';
+import BadgeEuro from '@lucide/astro/icons/badge-euro';
+import Users from '@lucide/astro/icons/users';
+import MessageCircleQuestionMark from '@lucide/astro/icons/message-circle-question-mark';
+import Phone from '@lucide/astro/icons/phone';
+import Instagram from '@lucide/astro/icons/instagram';
+import Facebook from '@lucide/astro/icons/facebook';
+import Menu from '@lucide/astro/icons/menu';
+import X from '@lucide/astro/icons/x';
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '/' } = Astro.props;
+
+const navItems = [
+  { href: '/', label: 'Home', icon: House },
+  { href: '/tarieven', label: 'Tarieven', icon: BadgeEuro },
+  { href: '/over-ons', label: 'Over ons', icon: Users },
+  { href: '/faq', label: 'FAQ', icon: MessageCircleQuestionMark },
+  { href: '/contact', label: 'Contact', icon: Phone },
+];
+
+function isActive(href: string, path: string): boolean {
+  if (href === '/') return path === '/' || path === '';
+  return path.startsWith(href);
+}
+---
+
+<header class="fixed top-0 left-0 right-0 z-[100] w-full py-4">
+  <div class="container-content">
+    <div class="flex items-center justify-between gap-4 rounded-full bg-background-subtle px-4 py-3 shadow-sm">
+      <!-- Logo: always clickable, links to home -->
+      <a
+        href="/"
+        class="flex shrink-0 rounded-full transition-opacity hover:opacity-90 active:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        aria-label="Cocon home"
+        aria-current={currentPath === '/' || currentPath === '' ? 'page' : undefined}
+      >
+        <img src="/logo/cocon.svg" alt="" width="121" height="25" class="h-auto w-[5rem]" loading="eager" fetchpriority="high" />
+      </a>
+
+      <!-- Desktop: nav + sliding oval + social + CTA -->
+      <nav class="header-nav hidden items-center gap-6 lg:flex" aria-label="Main">
+        <div
+          id="header-nav-oval"
+          class="header-nav-oval pointer-events-none absolute rounded-[50%] transition-all duration-300 ease-out"
+          aria-hidden="true"
+        />
+        {navItems.map(({ href, label, icon: Icon }, i) => {
+          const active = isActive(href, currentPath);
+          return (
+            <a
+              href={href}
+              data-nav-index={i}
+              class="relative z-10 flex items-center gap-2 rounded-full text-text-primary no-underline transition-opacity hover:opacity-80 active:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
+              <span class="header-nav-icon flex items-center justify-center text-primary [&_svg]:size-5" aria-hidden="true">
+                <Icon />
+              </span>
+              <span class={active ? 'font-semibold' : ''}>{label}</span>
+            </a>
+          );
+        })}
+      </nav>
+
+      <!-- Desktop (lg): icon buttons + CTA -->
+      <div class="hidden items-center gap-3 lg:flex">
+        <IconButton href="https://instagram.com" label="Instagram">
+          <Instagram class="size-5" />
+        </IconButton>
+        <IconButton href="https://facebook.com" label="Facebook">
+          <Facebook class="size-5" />
+        </IconButton>
+        <Button href="/afspraak" showArrow class="shrink-0">
+          Afspraak maken
+        </Button>
+      </div>
+
+      <!-- iPad (md to lg): icon buttons + CTA + hamburger -->
+      <div class="hidden items-center gap-3 md:flex lg:hidden">
+        <IconButton href="https://instagram.com" label="Instagram">
+          <Instagram class="size-5" />
+        </IconButton>
+        <IconButton href="https://facebook.com" label="Facebook">
+          <Facebook class="size-5" />
+        </IconButton>
+        <Button href="/afspraak" showArrow class="shrink-0">
+          Afspraak maken
+        </Button>
+        <button
+          type="button"
+          aria-expanded="false"
+          aria-controls="header-menu"
+          aria-label="Open menu"
+          class="header-menu-toggle inline-flex items-center justify-center p-2 text-text-primary rounded-full hover:bg-background-muted active:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        >
+          <Menu class="size-6 header-menu-open-icon" aria-hidden="true" />
+          <X class="size-6 hidden header-menu-close-icon" aria-hidden="true" />
+        </button>
+      </div>
+
+      <!-- Mobile (< md): CTA + hamburger -->
+      <div class="flex items-center gap-3 md:hidden">
+        <Button href="/afspraak" class="shrink-0">Afspraak maken</Button>
+        <button
+          type="button"
+          aria-expanded="false"
+          aria-controls="header-menu"
+          aria-label="Open menu"
+          class="header-menu-toggle inline-flex items-center justify-center p-2 text-text-primary rounded-full hover:bg-background-muted active:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        >
+          <Menu class="size-6 header-menu-open-icon" aria-hidden="true" />
+          <X class="size-6 hidden header-menu-close-icon" aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu overlay -->
+  <div
+    id="header-menu"
+    class="fixed inset-0 z-50 hidden bg-black/20 pt-[calc(theme(spacing.4)+theme(spacing.6)+80px)] px-4"
+    aria-hidden="true"
+    inert
+  >
+    <div class="container-content rounded-3xl bg-surface p-6 shadow-lg" role="dialog" aria-label="Menu">
+      <nav class="flex flex-col gap-4" aria-label="Main">
+        {navItems.map(({ href, label, icon: Icon }) => {
+          const active = isActive(href, currentPath);
+          return (
+            <a
+              href={href}
+              class="header-menu-link relative flex items-center gap-3 py-2 pl-2 pr-3 text-text-primary no-underline transition-opacity hover:opacity-80 active:opacity-70 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              data-menu-close
+            >
+              <span class="header-menu-link-content relative inline-flex items-center gap-3">
+                {active && <span class="header-menu-active-oval pointer-events-none absolute inset-x-0 bottom-0 z-0 rounded-[50%]" aria-hidden="true" />}
+                <span class="relative z-10 flex shrink-0 text-primary [&_svg]:size-6" aria-hidden="true">
+                  <Icon />
+                </span>
+                <span class={`relative z-10 text-lg ${active ? 'font-semibold' : ''}`}>{label}</span>
+              </span>
+            </a>
+          );
+        })}
+      </nav>
+      <div class="mt-6 flex gap-3">
+        <IconButton href="https://instagram.com" label="Instagram">
+          <Instagram class="size-5" />
+        </IconButton>
+        <IconButton href="https://facebook.com" label="Facebook">
+          <Facebook class="size-5" />
+        </IconButton>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header-nav {
+    position: relative;
+  }
+  /* Active nav stroke: primary orange ~50%, elongated ellipse behind label, towards bottom */
+  .header-nav-oval {
+    --header-oval-height: 24px;
+    height: var(--header-oval-height);
+    min-width: 40px;
+    transform: rotate(0deg);
+    border-radius: 50%;
+    background: rgba(248, 118, 38, 0.25);
+    opacity: 0;
+    /* Position/size set by script to span full link, aligned to bottom */
+  }
+  /* Mobile menu: orange oval behind icon + label only, offset to bottom, behind content */
+  .header-menu-link {
+    min-height: 48px;
+  }
+  .header-menu-link-content {
+    padding-block: 2px;
+  }
+  .header-menu-active-oval {
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 22px;
+    background: rgba(248, 118, 38, 0.25);
+  }
+</style>
+
+<script>
+  (function () {
+    // Critical: Menu toggle needed immediately for mobile
+    const toggles = document.querySelectorAll('.header-menu-toggle');
+    const menu = document.getElementById('header-menu');
+    const openIcons = document.querySelectorAll('.header-menu-open-icon');
+    const closeIcons = document.querySelectorAll('.header-menu-close-icon');
+    if (!toggles.length || !menu || !openIcons.length || !closeIcons.length) return;
+
+    function openMenu() {
+      menu.classList.remove('hidden');
+      menu.removeAttribute('aria-hidden');
+      menu.removeAttribute('inert');
+      toggles.forEach((t) => {
+        t.setAttribute('aria-expanded', 'true');
+        t.setAttribute('aria-label', 'Close menu');
+      });
+      openIcons.forEach((el) => el.classList.add('hidden'));
+      closeIcons.forEach((el) => el.classList.remove('hidden'));
+    }
+
+    function closeMenu() {
+      menu.classList.add('hidden');
+      menu.setAttribute('aria-hidden', 'true');
+      menu.setAttribute('inert', '');
+      toggles.forEach((t) => {
+        t.setAttribute('aria-expanded', 'false');
+        t.setAttribute('aria-label', 'Open menu');
+      });
+      openIcons.forEach((el) => el.classList.remove('hidden'));
+      closeIcons.forEach((el) => el.classList.add('hidden'));
+    }
+
+    toggles.forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+        if (isOpen) closeMenu();
+        else openMenu();
+      });
+    });
+
+    menu.querySelectorAll('[data-menu-close]').forEach((el) => {
+      el.addEventListener('click', closeMenu);
+    });
+
+    menu.addEventListener('click', (e) => {
+      if (e.target === menu) closeMenu();
+    });
+
+    // Defer non-critical: Nav oval positioning can wait slightly
+    setTimeout(() => {
+      /* Sliding oval: position at active nav link, full width, stroke towards bottom; animate from previous on load */
+      const nav = document.querySelector('.header-nav');
+      const oval = document.getElementById('header-nav-oval');
+      const STORAGE_KEY = 'header-nav-prev-index';
+      const OVAL_HEIGHT = 24;
+      const OVAL_PADDING_X = 8;
+      if (!nav || !oval) return;
+      const links = nav.querySelectorAll('a[data-nav-index]');
+      const activeIndex = Array.from(links).findIndex((a) => {
+        const href = a.getAttribute('href') || '';
+        const path = window.location.pathname || '/';
+        if (href === '/') return path === '/' || path === '';
+        return path.startsWith(href);
+      });
+      const prevIndex = sessionStorage.getItem(STORAGE_KEY);
+      sessionStorage.removeItem(STORAGE_KEY);
+
+      function setOvalPosition(index) {
+        if (index < 0 || index >= links.length) return;
+        const link = links[index];
+        const navRect = nav.getBoundingClientRect();
+        const linkRect = link.getBoundingClientRect();
+        const width = linkRect.width + OVAL_PADDING_X * 2;
+        const left = linkRect.left - navRect.left - OVAL_PADDING_X;
+        const top = linkRect.top - navRect.top + linkRect.height - OVAL_HEIGHT + 10;
+        oval.style.width = `${width}px`;
+        oval.style.left = `${left}px`;
+        oval.style.top = `${top}px`;
+        oval.style.opacity = '1';
+      }
+
+      if (activeIndex >= 0) {
+        if (prevIndex !== null) {
+          const prev = parseInt(prevIndex, 10);
+          if (prev >= 0 && prev !== activeIndex) {
+            setOvalPosition(prev);
+            oval.offsetHeight;
+            requestAnimationFrame(() => {
+              setOvalPosition(activeIndex);
+            });
+          } else {
+            setOvalPosition(activeIndex);
+          }
+        } else {
+          setOvalPosition(activeIndex);
+        }
+      }
+
+      links.forEach((link, i) => {
+        link.addEventListener('click', () => {
+          sessionStorage.setItem(STORAGE_KEY, String(activeIndex >= 0 ? activeIndex : 0));
+        });
+      });
+    }, 0);
+  })();
+</script>

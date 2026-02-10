@@ -1,0 +1,385 @@
+---
+/**
+ * Footer: dark green background, Menu / Bedrijfsinformatie / Contact columns,
+ * Cocon logo with orange dot, legal bar. Figma: 22-7271 (mobile), 20-6703 (desktop).
+ */
+import IconButton from './IconButton.astro';
+import House from '@lucide/astro/icons/house';
+import BadgeEuro from '@lucide/astro/icons/badge-euro';
+import Users from '@lucide/astro/icons/users';
+import MessageCircleQuestionMark from '@lucide/astro/icons/message-circle-question-mark';
+import Phone from '@lucide/astro/icons/phone';
+import MapPin from '@lucide/astro/icons/map-pin';
+import Building2 from '@lucide/astro/icons/building-2';
+import Mail from '@lucide/astro/icons/mail';
+import Instagram from '@lucide/astro/icons/instagram';
+import Facebook from '@lucide/astro/icons/facebook';
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '/' } = Astro.props;
+
+const navItems = [
+  { href: '/', label: 'Home', icon: House },
+  { href: '/tarieven', label: 'Tarieven', icon: BadgeEuro },
+  { href: '/over-ons', label: 'Over ons', icon: Users },
+  { href: '/faq', label: 'FAQ', icon: MessageCircleQuestionMark },
+  { href: '/contact', label: 'Contact', icon: Phone },
+];
+
+function isActive(href: string, path: string): boolean {
+  if (href === '/') return path === '/' || path === '';
+  return path.startsWith(href);
+}
+---
+
+<footer class="footer" aria-label="Footer">
+  <div class="footer__inner container-content">
+    <div class="footer__columns">
+      <nav class="footer__block footer__block--menu" aria-label="Menu">
+        <h3 class="footer__heading">Menu</h3>
+        <ul class="footer__list">
+          {navItems.map(({ href, label, icon: Icon }) => {
+            const active = isActive(href, currentPath);
+            return (
+              <li>
+                {active ? (
+                  <span class:list={['footer__link', 'footer__link--active']} aria-current="page">
+                    <span class="footer__link-icon" aria-hidden="true">
+                      <Icon />
+                    </span>
+                    {label}
+                  </span>
+                ) : (
+                  <a
+                    href={href}
+                    class="footer__link"
+                  >
+                    <span class="footer__link-icon" aria-hidden="true">
+                      <Icon />
+                    </span>
+                    {label}
+                  </a>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
+      <div class="footer__block-group">
+      <div class="footer__block" aria-labelledby="footer-bedrijfsinformatie">
+        <h3 class="footer__heading" id="footer-bedrijfsinformatie">Bedrijfsinformatie</h3>
+        <ul class="footer__list">
+          <li>
+            <span class="footer__link footer__link--text">
+              <span class="footer__link-icon" aria-hidden="true">
+                <MapPin />
+              </span>
+              Klein-Holland 7 <span class="footer__dot" aria-hidden="true" /> 1840 Londerzeel
+            </span>
+          </li>
+          <li>
+            <span class="footer__link footer__link--text">
+              <span class="footer__link-icon" aria-hidden="true">
+                <Building2 />
+              </span>
+              BE123.000.000
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer__block" aria-labelledby="footer-contact">
+        <h3 class="footer__heading" id="footer-contact">Contact</h3>
+        <ul class="footer__list">
+          <li>
+            <a href="mailto:info@cocon.be" class="footer__link">
+              <span class="footer__link-icon" aria-hidden="true">
+                <Mail />
+              </span>
+              info@cocon.be
+            </a>
+          </li>
+          <li>
+            <a href="tel:0470000000" class="footer__link">
+              <span class="footer__link-icon" aria-hidden="true">
+                <Phone />
+              </span>
+              0470 00 00 00
+            </a>
+          </li>
+        </ul>
+        <div class="footer__socials">
+          <IconButton href="https://instagram.com" label="Instagram" class="footer__social-btn">
+            <Instagram class="size-5" />
+          </IconButton>
+          <IconButton href="https://facebook.com" label="Facebook" class="footer__social-btn">
+            <Facebook class="size-5" />
+          </IconButton>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <div class="footer__logo">
+      <a href="/" class="footer__logo-link" aria-label="Cocon home">
+        <img src="/logo/logo-on-dark.svg" alt="" width="500" height="103" class="footer__logo-img" loading="lazy" />
+      </a>
+    </div>
+
+    <div class="footer__legal">
+      <div class="footer__legal-links">
+        <a href="/voorwaarden" class="footer__legal-link">Voorwaarden</a>
+        <span class="footer__dot" aria-hidden="true" />
+        <a href="/privacy" class="footer__legal-link">Privacy</a>
+      </div>
+      <div class="footer__legal-copy">
+        © Cocon <span class="footer__dot" aria-hidden="true" /> Website By <a href="https://tomlievens.framer.website/" class="footer__legal-link" target="_blank" rel="noopener noreferrer">Tom Lievens</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    padding: 3rem 0 2rem;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  .footer__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .footer__columns {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .footer__block-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  /* Tablet: Menu and block group side by side; Contact already under Bedrijfsinformatie (block group column) */
+  @media (min-width: 768px) {
+    .footer__columns {
+      flex-direction: row;
+      gap: 0;
+      align-items: flex-start;
+    }
+
+    .footer__block--menu {
+      flex: 0 0 50%;
+      width: 50%;
+    }
+
+    .footer__block-group {
+      flex: 0 0 50%;
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      align-items: flex-start;
+      justify-content: flex-end;
+    }
+
+    .footer__block-group .footer__block {
+      align-items: flex-start;
+      text-align: right;
+    }
+
+    .footer__block-group .footer__block:first-child {
+      text-align: left;
+      align-items: flex-start;
+    }
+
+    .footer__block-group .footer__list {
+      align-items: flex-start;
+    }
+
+    .footer__block-group .footer__block:first-child .footer__list {
+      align-items: flex-start;
+    }
+  }
+
+  /* Desktop: Bedrijfsinformatie and Contact side by side within block group */
+  @media (min-width: 968px) {
+    .footer__block-group {
+      flex-direction: row;
+      gap: 2.5rem;
+    }
+  }
+
+  .footer__block {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .footer__heading {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-white);
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .footer__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .footer__link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-white);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 400;
+    padding: 0.5rem 0.75rem;
+    margin: -0.5rem -0.75rem;
+    border-radius: 9999px;
+    transition: color 0.2s ease;
+    z-index: 1;
+  }
+
+  .footer__link:hover,
+  .footer__link:focus-visible {
+    color: var(--color-white);
+    opacity: 0.9;
+  }
+
+  .footer__link--active {
+    color: var(--color-white);
+    font-weight: 600;
+  }
+
+  .footer__link--text {
+    cursor: default;
+    margin: 0;
+    padding: 0;
+  }
+
+  .footer__link--text:hover,
+  .footer__link--text:focus-visible {
+    background: none;
+    color: var(--color-white);
+  }
+
+  .footer__link-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .footer__link-icon :global(svg) {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .footer__dot {
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    margin: 0 0.35rem;
+    vertical-align: middle;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+  }
+
+  .footer__socials {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+  }
+
+  .footer__social-btn :global(a) {
+    background-color: var(--color-background-muted) !important;
+    color: var(--color-primary) !important;
+  }
+
+  .footer__logo {
+    width: 100%;
+  }
+
+  .footer__logo-link {
+    display: block;
+    width: 100%;
+    text-decoration: none;
+    color: var(--color-white);
+    transition: opacity 0.2s ease;
+  }
+
+  .footer__logo-link:hover {
+    opacity: 0.9;
+  }
+
+  .footer__logo-link:focus-visible {
+    outline: 2px solid var(--color-white);
+    outline-offset: 4px;
+  }
+
+  .footer__logo-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
+
+
+  .footer__legal {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.875rem;
+    color: var(--color-white);
+  }
+
+  @media (min-width: 768px) {
+    .footer__legal {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .footer__legal-links {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .footer__legal-link {
+    color: var(--color-white);
+    text-decoration: none;
+  }
+
+  .footer__legal-link:hover {
+    text-decoration: underline;
+  }
+
+  .footer__legal-copy {
+    opacity: 0.95;
+  }
+</style>

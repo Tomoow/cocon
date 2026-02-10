@@ -1,0 +1,64 @@
+---
+/**
+ * Button: pill-shaped. Variants: primary (green bg), secondary (outline).
+ * Padding: 1rem L/R, 0.75rem T/B (per Figma).
+ */
+interface Props {
+  href?: string;
+  type?: 'button' | 'submit';
+  variant?: 'primary' | 'secondary' | 'tertiary';
+  showArrow?: boolean;
+  class?: string;
+}
+
+const { href, type = 'button', variant = 'primary', showArrow = false, class: className = '' } = Astro.props;
+const base = 'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-3 font-medium no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
+const primaryClass = 'btn-primary group bg-primary text-white hover:opacity-90';
+const secondaryClass = 'btn-secondary border-2 border-primary text-primary bg-surface hover:bg-background-muted hover:opacity-100';
+const tertiaryClass = 'btn-tertiary group text-primary bg-transparent hover:bg-background-muted-alt';
+const linkClass = variant === 'primary' ? primaryClass : variant === 'secondary' ? secondaryClass : tertiaryClass;
+---
+
+{href ? (
+  <a
+    href={href}
+    class={`${base} ${linkClass} ${className}`}
+  >
+    <slot />
+    {showArrow && (
+      <span class="inline-block transition-transform duration-200 ease-out group-hover:translate-x-1" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg>
+      </span>
+    )}
+  </a>
+  ) : (
+  <button
+    type={type}
+    class={`${base} ${variant === 'primary' ? 'group ' + primaryClass : variant === 'secondary' ? secondaryClass : 'group ' + tertiaryClass} ${className}`}
+  >
+    <slot />
+    {showArrow && (
+      <span class="inline-block transition-transform duration-200 ease-out group-hover:translate-x-1" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg>
+      </span>
+    )}
+  </button>
+)}
+
+<style>
+  .btn-primary:active {
+    background: color-mix(in srgb, var(--color-primary) 70%, black);
+  }
+  .btn-secondary:active {
+    background: color-mix(in srgb, var(--color-background-muted) 95%, black);
+  }
+  .btn-tertiary:active {
+    background: color-mix(in srgb, var(--color-background-muted-alt) 95%, black);
+  }
+</style>

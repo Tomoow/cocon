@@ -1,0 +1,489 @@
+---
+/**
+ * PraktijkSection: "Bezoek onze praktijk" – image (with ellipses behind, 12px light yellow border inside),
+ * title, subtitle, contact rows (icon in #E3E6E1 circle), Google Maps + Waze secondary buttons.
+ * Figma: 20-6714 (desktop), 22-7533 (mobile).
+ */
+import { Image } from 'astro:assets';
+import Button from './Button.astro';
+import SectionHeading from './SectionHeading.astro';
+import Copy from '@lucide/astro/icons/copy';
+import defaultPraktijkImage from '../assets/images/praktijk/praktijk.png';
+
+interface Props {
+  imageSrc?: string | import('astro').ImageMetadata;
+  imageAlt?: string;
+  /** Google Maps URL (search or place) */
+  googleMapsHref?: string;
+  /** Waze URL */
+  wazeHref?: string;
+  class?: string;
+}
+
+const {
+  imageSrc = defaultPraktijkImage,
+  imageAlt = 'Gevel van praktijk Cocon, Klein-Holland 7 Londerzeel',
+  googleMapsHref = 'https://www.google.com/maps/search/?api=1&query=Klein-Holland+7+1840+Londerzeel',
+  wazeHref = 'https://waze.com/ul?q=Klein-Holland%207%201840%20Londerzeel',
+  class: className,
+} = Astro.props;
+
+const contactItems = [
+  {
+    icon: 'location',
+    text: 'Klein-Holland 7 • 1840 Londerzeel',
+  },
+  {
+    icon: 'email',
+    text: 'info@cocon.be',
+  },
+  {
+    icon: 'phone',
+    text: '0470 00 00 00',
+  },
+  {
+    icon: 'parking',
+    text: 'Parking in de straat of aan het station (op 20 meter)',
+  },
+];
+---
+
+<section class:list={['praktijk-section', className]} aria-labelledby="praktijk-heading">
+  <div class="praktijk-section__inner container-content">
+    <div class="praktijk-section__image-wrap">
+      <div class="praktijk-section__image-border">
+        <span class="praktijk-section__ellipse praktijk-section__ellipse--orange" aria-hidden="true" />
+        <span class="praktijk-section__ellipse praktijk-section__ellipse--green" aria-hidden="true" />
+        <Image
+          src={imageSrc}
+          alt={imageAlt}
+          width={336}
+          height={244}
+          format="webp"
+          widths={[336, 512, 672]}
+          sizes="(max-width: 767px) 336px, (max-width: 1199px) 512px, 672px"
+          loading="lazy"
+          class="praktijk-section__image"
+        />
+      </div>
+    </div>
+
+    <div class="praktijk-section__content">
+      <SectionHeading
+        title="Bezoek onze praktijk"
+        subtitle="We willen ervoor zorgen dat je de weg zo gemakkelijk mogelijk vindt"
+        id="praktijk-heading"
+        align="center"
+        class="praktijk-section__heading section-heading--left-on-desktop"
+      />
+
+      <ul class="praktijk-section__list">
+        {contactItems.map((item, index) => {
+          const canCopy = item.icon === 'location' || item.icon === 'email' || item.icon === 'phone';
+          const copyLabel = item.icon === 'location' ? 'Adres gekopieerd' : item.icon === 'email' ? 'E-mail gekopieerd' : item.icon === 'phone' ? 'Gsm-nummer gekopieerd' : 'gekopieerd';
+          return (
+            <li class="praktijk-section__item">
+              <span class="praktijk-section__icon" aria-hidden="true">
+                {item.icon === 'location' && (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                )}
+                {item.icon === 'email' && (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="20" height="16" x="2" y="4" rx="2" />
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                  </svg>
+                )}
+                {item.icon === 'phone' && (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                )}
+                {item.icon === 'parking' && (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9 17V7h4a3 3 0 0 1 0 6H9" />
+                  </svg>
+                )}
+              </span>
+              <span class="praktijk-section__item-text">
+                {item.text}
+                {canCopy && (
+                  <button
+                    type="button"
+                    class="praktijk-section__copy-btn"
+                    data-copy-text={item.text}
+                    data-copy-label={copyLabel}
+                    aria-label={`Kopieer ${item.text}`}
+                  >
+                    <Copy class="praktijk-section__copy-icon" />
+                    <span class="praktijk-section__copy-tooltip" aria-live="polite">{copyLabel}</span>
+                  </button>
+                )}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+
+      <div class="praktijk-section__actions">
+        <Button href={googleMapsHref} variant="secondary">
+          Via Google maps
+        </Button>
+        <Button href={wazeHref} variant="secondary">
+          Via Waze
+        </Button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .praktijk-section {
+    --praktijk-icon-bg: #E3E6E1;
+    --praktijk-border-inset: 12px;
+    position: relative;
+    background-color: var(--color-background-subtle);
+    overflow: visible;
+    padding: 2.5rem 0 8rem;
+  }
+
+  @media (min-width: 768px) {
+    .praktijk-section {
+      padding: 4rem 0 12rem;
+    }
+  }
+
+  .praktijk-section__ellipse {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Sized/positioned as % of image-border so they scale with the image; wider belly, slight angle */
+  .praktijk-section__ellipse--orange {
+    width: 100%;
+    height: 100%;
+    top: -20%;
+    left: -20%;
+    background: rgba(254, 112, 48, 0.2);
+    transform: rotate(-12deg);
+  }
+
+  .praktijk-section__ellipse--green {
+    width: 100%;
+    height: 100%;
+    bottom: -20%;
+    right: -20%;
+    background: rgba(0, 51, 32, 0.2);
+    transform: rotate(-12deg);
+  }
+
+  .praktijk-section__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .praktijk-section__inner {
+      flex-direction: row;
+      gap: 3rem;
+      align-items: stretch;
+    }
+  }
+
+  .praktijk-section__image-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 36rem;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+
+  @media (min-width: 768px) {
+    .praktijk-section__image-wrap {
+      max-width: 50%;
+      flex: 1 1 50%;
+      align-content: center;
+    }
+  }
+
+  .praktijk-section__image-border {
+    position: relative;
+    z-index: 1;
+    padding: var(--praktijk-border-inset);
+    background-color: var(--color-background-subtle);
+    border-radius: calc(1rem + var(--praktijk-border-inset));
+  }
+
+  .praktijk-section__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 0.625rem solid var(--color-background-subtle);
+    border-radius: 1rem;
+    object-fit: cover;
+    position: relative;
+    z-index: 1;
+  }
+
+  .praktijk-section__content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 36rem;
+  }
+
+  @media (min-width: 768px) {
+    .praktijk-section__content {
+      max-width: none;
+      flex: 1 1 50%;
+      justify-content: center;
+      align-self: center;
+      align-items: flex-start;
+      text-align: left;
+    }
+  }
+
+  .praktijk-section__heading {
+    margin-bottom: 1.5rem;
+  }
+
+  .praktijk-section__list {
+    list-style: none;
+    margin: 0 0 2rem 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .praktijk-section__item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem;
+    color: var(--color-text-primary);
+    line-height: 1.5;
+  }
+
+  .praktijk-section__icon {
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.75rem;
+    background-color: var(--praktijk-icon-bg);
+    color: var(--color-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transform: rotate(45deg);
+  }
+
+  .praktijk-section__icon svg {
+    transform: rotate(-45deg);
+  }
+
+  .praktijk-section__icon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  /* Inline flow so copy icon stays to the right of the last word when text wraps (like header ellipse) */
+  .praktijk-section__item-text {
+    flex: 1;
+    display: block;
+  }
+
+  .praktijk-section__copy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    background: none;
+    border: none;
+    padding: 0.25rem;
+    margin-left: 0.25rem;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .praktijk-section__copy-icon {
+    width: 1rem;
+    height: 1rem;
+    display: block;
+  }
+
+  .praktijk-section__copy-btn:hover {
+    color: var(--color-primary);
+  }
+
+  .praktijk-section__copy-btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  .praktijk-section__copy-tooltip {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: none;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 10;
+  }
+
+  .praktijk-section__copy-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: var(--color-primary);
+  }
+
+  .praktijk-section__copy-tooltip[data-placement='bottom']::after {
+    top: auto;
+    bottom: 100%;
+    border-top-color: transparent;
+    border-bottom-color: var(--color-primary);
+  }
+
+  .praktijk-section__copy-tooltip.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .praktijk-section__actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .praktijk-section__actions :global(a),
+  .praktijk-section__actions :global(button) {
+    flex: 1;
+    min-width: min-content;
+  }
+
+  @media (min-width: 768px) {
+    .praktijk-section__actions {
+      justify-content: flex-start;
+    }
+
+    .praktijk-section__actions :global(a),
+    .praktijk-section__actions :global(button) {
+      flex: 0 1 auto;
+    }
+  }
+</style>
+
+<script>
+  // Defer non-critical: Copy buttons not needed for initial render
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCopyButtons);
+  } else {
+    setTimeout(initCopyButtons, 0);
+  }
+
+  let computePosition: any;
+  let flip: any;
+  let shift: any;
+  let offset: any;
+
+  async function ensureFloatingUi() {
+    if (computePosition) return;
+    try {
+      const floatingUi = await import('@floating-ui/dom');
+      computePosition = floatingUi.computePosition;
+      flip = floatingUi.flip;
+      shift = floatingUi.shift;
+      offset = floatingUi.offset;
+    } catch (err) {
+      console.error('[PraktijkSection] Failed to load @floating-ui/dom for copy tooltip', err);
+    }
+  }
+
+  function initCopyButtons() {
+    const copyButtons = document.querySelectorAll<HTMLButtonElement>('.praktijk-section__copy-btn');
+    if (copyButtons.length === 0) return;
+
+    copyButtons.forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const textToCopy = btn.getAttribute('data-copy-text');
+        if (!textToCopy) return;
+
+        try {
+          await navigator.clipboard.writeText(textToCopy);
+          const tooltip = btn.querySelector<HTMLSpanElement>('.praktijk-section__copy-tooltip');
+          if (!tooltip) return;
+
+          // Try to position with Floating UI so tooltip stays in viewport
+          await ensureFloatingUi();
+          if (computePosition) {
+            try {
+              tooltip.style.visibility = 'hidden';
+              tooltip.classList.add('show');
+
+              const { x, y, placement } = await computePosition(btn, tooltip, {
+                placement: 'top',
+                strategy: 'fixed',
+                middleware: [
+                  offset(8),
+                  flip({ padding: 8 }),
+                  shift({ padding: 8 }),
+                ],
+              });
+
+              tooltip.style.left = `${x}px`;
+              tooltip.style.top = `${y}px`;
+              tooltip.setAttribute('data-placement', placement);
+              tooltip.style.visibility = '';
+            } catch (err) {
+              console.error('[PraktijkSection] Failed to position copy tooltip with Floating UI', err);
+            }
+          }
+
+          tooltip.classList.add('show');
+          setTimeout(() => {
+            tooltip.classList.remove('show');
+          }, 2000);
+        } catch (err) {
+          console.error('Failed to copy:', err);
+        }
+      });
+    });
+  }
+</script>

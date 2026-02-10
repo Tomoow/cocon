@@ -1,0 +1,128 @@
+---
+/**
+ * SectionHeading: title (Raleway medium) + small orange ellipse dot + subtitle.
+ * Mobile: title 24px, subtitle 16px. Desktop: title 40px, subtitle 18px.
+ * Reusable for every section. Supports custom title content via slot.
+ */
+interface Props {
+  /** Title text (or use title slot for custom content) */
+  title?: string;
+  subtitle: string;
+  /** Optional id for the heading (e.g. for aria-labelledby) */
+  id?: string;
+  /** Optional extra class (e.g. about-section__heading for scoped overrides) */
+  class?: string;
+  /** Text alignment: center (default) or left */
+  align?: 'center' | 'left';
+  /** Title color - defaults to primary, can be white for dark backgrounds */
+  titleColor?: 'primary' | 'white';
+  /** Subtitle color - defaults to text-secondary, can be white for dark backgrounds */
+  subtitleColor?: 'default' | 'white';
+}
+
+const { title, subtitle, id, class: className = '', align = 'center', titleColor = 'primary', subtitleColor = 'default' } = Astro.props;
+const hasTitleSlot = Astro.slots.has('title');
+const titleId = id ? `${id}-title` : undefined;
+const isOnDark = titleColor === 'white' || subtitleColor === 'white';
+---
+
+<header class:list={['section-heading', align === 'left' && 'section-heading--left', isOnDark && 'section-heading--on-dark', className].filter(Boolean)} id={id} aria-labelledby={titleId}>
+  <h2 class="section-heading__title" id={titleId}>
+    {hasTitleSlot ? (
+      <slot name="title" />
+    ) : (
+      <span class="section-heading__title-text">{title}</span>
+    )}
+    <span class="section-heading__dot" aria-hidden="true" />
+  </h2>
+  <p class="section-heading__subtitle">{subtitle}</p>
+</header>
+
+<style>
+  .section-heading {
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .section-heading {
+      margin-bottom: 3rem;
+    }
+  }
+
+  .section-heading--left {
+    text-align: left;
+  }
+
+  /* Left-align title and subtitle on desktop only; mobile stays centered */
+  @media (min-width: 768px) {
+    .section-heading--left-on-desktop {
+      text-align: left;
+    }
+  }
+
+  .section-heading__title {
+    display: block;
+    font-size: 2rem; /* 32px mobile */
+    font-weight: 500; /* medium */
+    color: var(--color-primary);
+    margin: 0 0 1rem 0;
+    line-height: 1.2;
+  }
+
+  @media (min-width: 768px) {
+    .section-heading__title {
+      font-size: 2.5rem; /* 40px desktop */
+      margin-bottom: 1rem;
+    }
+  }
+
+  /* When on dark background (e.g. about section): title and subtitle white */
+  .section-heading--on-dark .section-heading__title,
+  .section-heading--on-dark .section-heading__title-text,
+  .section-heading--on-dark .section-heading__subtitle {
+    color: var(--color-white);
+  }
+
+  /* Title text and dot inline so dot stays after last word when text wraps */
+  .section-heading__title-text {
+    display: inline;
+  }
+
+  /* Orange ellipse dot: inline-block so it flows with the sentence like a period */
+  .section-heading__dot {
+    display: inline-block;
+    width: 8px;
+    height: 10px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    transform: rotate(45deg);
+  }
+
+  .section-heading__subtitle {
+    font-size: 1rem; /* 16px mobile */
+    font-weight: 400;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+
+  @media (min-width: 768px) {
+    .section-heading__subtitle {
+      font-size: 1.125rem; /* 18px desktop */
+    }
+  }
+
+    @media (max-width: 768px) {
+    
+
+  .section-heading__title {
+
+    margin: 0 0 0.5rem 0;
+  }
+   }
+</style>
