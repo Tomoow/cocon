@@ -5,6 +5,7 @@ import ExpertisesCarousel from '../components/ExpertisesCarousel.astro';
 import AboutSection from '../components/AboutSection.astro';
 import ReviewSection from '../components/ReviewSection.astro';
 import PraktijkSection from '../components/PraktijkSection.astro';
+import settings from '../../content/settings.json';
 import expertise1 from '../assets/images/expertises/expertise-1.png';
 import expertise2 from '../assets/images/expertises/expertise-2.png';
 import expertise3 from '../assets/images/expertises/expertise-3.png';
@@ -83,7 +84,10 @@ const reviewData = [
 ---
 
 <BaseLayout title="Home" description="Static site built with Astro, Tailwind, and Netlify.">
-  <Hero />
+  <Hero
+    announcementEnabled={settings.heroAnnouncementEnabled}
+    announcementText={settings.heroAnnouncementText}
+  />
   <main id="content-after-hero" class="main-with-ellipses">
     <div class="expertise-ellipses" aria-hidden="true">
       <img class="expertise-ellipses__left" src="/images/ellipse-left.svg" alt="" width="752" height="1025" loading="lazy" />

@@ -5,8 +5,15 @@
  */
 import { Image } from 'astro:assets';
 import Button from './Button.astro';
+import IconButton from './IconButton.astro';
 import ChevronDown from '@lucide/astro/icons/chevron-down';
+import X from '@lucide/astro/icons/x';
 import heroPicture from '../assets/images/hero/hero-picture.png';
+
+interface Props {
+  announcementEnabled?: boolean;
+  announcementText?: string;
+}
 
 const typingPhrases = [
   'voor algemene klachten',
@@ -15,8 +22,8 @@ const typingPhrases = [
   'voor gerichte revalidatie',
   'met persoonlijke begeleiding',
 ];
+const { announcementEnabled = false, announcementText = '' } = Astro.props as Props;
 ---
-
 <section class="hero relative min-h-screen overflow-hidden flex flex-col" aria-label="Welkom">
   <!-- Background image at 15% opacity -->
   <div
@@ -73,6 +80,26 @@ const typingPhrases = [
           priority
           class="hero-picture w-full object-contain object-center"
         />
+        {announcementEnabled && announcementText && (
+          <div class="hero-announcement" data-hero-announcement>
+            <span class="hero-announcement__pointer" aria-hidden="true" />
+            <div class="hero-announcement__header">
+              <div class="hero-announcement__header-top">
+                <img src="/images/quote.svg" alt="" width="45" height="30" class="hero-announcement__quote" aria-hidden="true" loading="lazy" />
+                <IconButton
+                  label="Sluit aankondiging"
+                  variant="tertiary"
+                  class="hero-announcement__close"
+                >
+                  <X class="size-5" aria-hidden="true" />
+                </IconButton>
+              </div>
+              <p class="hero-announcement__text">
+                {announcementText}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   </div>
@@ -200,6 +227,81 @@ const typingPhrases = [
     object-fit: contain;
     object-position: center center;
   }
+
+  /* Hero announcement speech bubble: over the hero image (Lynn), pointer on top, grows downward */
+  .hero-announcement {
+    position: absolute;
+    z-index: 20;
+    left: 50%;
+    top: 38%;
+    transform: translate(-50%, 0);
+    width: min(20rem, 90vw);
+    max-width: min(20rem, 90vw);
+    padding: 1.25rem 1.5rem;
+    padding-top: 1.5rem;
+    border-radius: 1rem;
+    background-color: color-mix(in srgb, var(--color-background-subtle) 90%, transparent);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--color-primary);
+  }
+
+  .hero-announcement__pointer {
+    position: absolute;
+    top: -23px;
+    bottom: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid color-mix(in srgb, var(--color-background-subtle) 90%, transparent);
+  }
+
+  .hero-announcement__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .hero-announcement__header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .hero-announcement__quote {
+    display: block;
+    flex-shrink: 0;
+    width: 45px;
+    height: 30px;
+    object-fit: contain;
+  }
+
+  .hero-announcement__close {
+    flex-shrink: 0;
+  }
+
+  .hero-announcement__text {
+    margin: 0;
+    min-width: 0;
+  }
+
+  .hero-announcement[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    .hero-announcement {
+      top: 40%;
+      padding-inline: 1.25rem;
+    }
+  }
 </style>
 
 <script>
@@ -256,7 +358,7 @@ const typingPhrases = [
       if (timeoutId != null) window.clearTimeout(timeoutId);
     });
 
-    // Defer non-critical: Parallax and scroll button can wait
+    // Defer non-critical: Parallax, scroll button, and hero announcement can wait
     setTimeout(() => {
       /* Parallax: Lynn + ellipse move slower on scroll */
       const parallax = document.getElementById('hero-parallax');
@@ -286,6 +388,15 @@ const typingPhrases = [
         scrollBtn.addEventListener('click', (e) => {
           e.preventDefault();
           contentAfterHero.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+
+      // Hero announcement close behaviour
+      const announcement = document.querySelector<HTMLElement>('[data-hero-announcement]');
+      const closeBtn = announcement?.querySelector<HTMLElement>('.hero-announcement__close');
+      if (announcement && closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          announcement.setAttribute('hidden', 'true');
         });
       }
     }, 0);

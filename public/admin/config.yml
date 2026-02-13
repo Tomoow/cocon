@@ -25,5 +25,7 @@ collections:
         file: "content/settings.json"
         fields:
           - { label: "Site title", name: "title", widget: "string", default: "Cocon" }
+          - { label: "Plaats een aankondiging", name: "heroAnnouncementEnabled", widget: "boolean", default: false }
+          - { label: "Tekst aankondiging (spraakballon)", name: "heroAnnouncementText", widget: "text", required: false }
 
 locale: "en"
