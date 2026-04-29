@@ -1,12 +1,12 @@
 # Cocon
 
-Astro + Tailwind + Netlify (hosting, CMS, forms). Static site, no runtime backend.
+Astro + Tailwind, hosted on Cloudflare Pages. Static site, no runtime backend.
 
-## Setup
+## Stack
 
 - **Astro** – static-first
 - **Tailwind CSS** – via `@tailwindcss/vite`
-- **Netlify** – build, deploy, Forms, CMS (Git Gateway)
+- **Cloudflare Pages** – build, deploy, hosting (free plan)
 
 ## Commands
 
@@ -16,46 +16,39 @@ Astro + Tailwind + Netlify (hosting, CMS, forms). Static site, no runtime backen
 | `npm run dev`     | Dev server at `http://localhost:4321` |
 | `npm run build`   | Production build → `dist/`          |
 | `npm run preview` | Preview production build locally   |
-| `npm run cms:proxy` | Local CMS backend (run with `npm run dev` to test `/admin` without deploying) |
 
-### Test the CMS locally (no deploy, no credits)
+## Deploy on Cloudflare Pages
 
-1. **Terminal 1:** `npm run dev`
-2. **Terminal 2:** `npm run cms:proxy`
-3. Open **http://localhost:4321/admin** — the CMS uses the local proxy and writes to your repo (local commits only). No Netlify deploy or credits used.
+1. Push this repo to GitHub.
+2. Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
+3. Pick the repo and configure:
+   - **Framework preset:** Astro
+   - **Build command:** `npm run build`
+   - **Build output directory:** `dist`
+   - **Node version:** add an env var `NODE_VERSION = 20` (or newer)
+4. **Environment variables:** set `SITE_URL` to your deploy URL (e.g. `https://<project>.pages.dev`). This is used by the sitemap and `robots.txt`. Update it later when you point a custom domain.
+5. Deploy. Each push to `main` triggers a new build.
 
-## Netlify
-
-- **Build:** `npm run build`, publish `dist/` (see `netlify.toml`).
-- **Forms:** Example contact form on the homepage; submissions go to Netlify Forms (honeypot for spam).
-- **CMS:** Admin UI at `/admin`; config in `public/admin/config.yml`. Add collections only when components exist; fields map exactly to components (no flexible layout).
+Free plan limits (more than enough for this site): 500 builds/month, unlimited bandwidth and requests.
 
 ## Project structure
 
 ```
 src/
-├── components/     # Astro components (1:1 with Figma when ready)
+├── components/     # Astro components
 ├── layouts/        # BaseLayout.astro (Tailwind, meta)
-├── pages/         # Routes (index, thank-you, …)
-└── styles/        # global.css, design tokens (when you provide Figma tokens)
+├── pages/          # Routes (index, over-ons, tarieven, thank-you)
+└── styles/         # global.css, design tokens
 public/
-├── admin/         # Netlify CMS (index.html, config.yml)
-└── uploads/       # CMS media (optional)
+├── _headers        # Cloudflare Pages security headers
+├── images/         # Static images
+└── logo/           # Logo assets
+content/
+└── settings.json   # Site settings (title, hero announcement) — edit via PR for now
 ```
 
-## Next steps (your workflow)
+## Pending — to set up later
 
-1. **Design tokens** – Share Figma tokens (colors, spacing, typography, radius). We’ll add them to `src/styles/` / Tailwind so components stay on-design.
-2. **Components** – Build each Figma component as an Astro component in `src/components/`; map CMS fields to component props only when components exist.
-3. **Pages** – Compose pages from components; then wire CMS content where needed (without adding flexible layout in the CMS).
-
-## Subagents
-
-Use these when working on the project:
-
-- **astro-frontend** – Astro builds, components, responsive layout, performance; implements Figma 1:1; stops and asks if Figma is missing states/variants.
-- **netlify-cms-engineer** – Netlify Forms, CMS config, build/deploy; keeps CMS idiot-proof and design-drift-free; escalates if content could break layout.
-- **physio-seo-a11y** – SEO and accessibility (if applicable).
-- **ux-ui-designer-healthcare** – Design decisions (if applicable).
-
-After each prompt, consider: “Should the **netlify-cms-engineer** or **astro-frontend** subagent review or own part of this?” and invoke them when relevant.
+- **Custom domain.** When `cocon.be` (or another) is registered, add it under **Custom domains** in the Pages project. Update `SITE_URL` env var to the new URL and redeploy so sitemap/robots use the right host.
+- **CMS.** The Netlify CMS at `/admin` was removed during migration. Sanity (free plan) is the planned replacement — to be wired up in a separate change. Until then, `content/settings.json` is edited directly via git/PR.
+- **Contact form.** [`src/components/ContactForm.astro`](src/components/ContactForm.astro) is a placeholder: the fields render but the **Verstuur** button is disabled. Submission will be wired up later (likely Resend + a Cloudflare Pages Function once a custom domain is in place).
