@@ -25,3 +25,9 @@ pnpm-debug.log*
 
 # Lighthouse report (run: npx lighthouse http://localhost:4321 --output=html --output-path=./lighthouse-report.html --view)
 lighthouse-report.html
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example

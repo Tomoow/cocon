@@ -5,16 +5,22 @@
   "scripts": {
     "dev": "astro dev",
     "build": "node scripts/generate-robots.js && astro build",
-    "preview": "astro preview",
+    "preview": "npm run build && wrangler dev",
     "astro": "astro",
-    "lighthouse": "npx lighthouse http://localhost:4321 --output=html --output-path=./lighthouse-report.html"
+    "lighthouse": "npx lighthouse http://localhost:4321 --output=html --output-path=./lighthouse-report.html",
+    "deploy": "npm run build && wrangler deploy",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "12",
     "@astrojs/sitemap": "^3.7.0",
     "@floating-ui/dom": "^1.7.5",
     "@lucide/astro": "^0.563.0",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.17.1",
     "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "wrangler": "^4.86.0"
   }
 }
