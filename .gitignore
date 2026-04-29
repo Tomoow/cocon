@@ -25,3 +25,8 @@ pnpm-debug.log*
 
 # Lighthouse report (run: npx lighthouse http://localhost:4321 --output=html --output-path=./lighthouse-report.html --view)
 lighthouse-report.html
+
+# Cloudflare Workers / Wrangler
+.wrangler/
+.dev.vars
+worker-configuration.d.ts
