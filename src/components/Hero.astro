@@ -46,7 +46,7 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
     <!-- Left: text + CTAs; min-width so right wraps when row can't fit both -->
     <div class="hero-text-block flex min-w-[320px] flex-1 flex-col gap-6 text-left">
       <h1 class="hero-heading">
-        <span class="hero-heading-static">Kinesitherapie op maat</span>
+        <span class="hero-heading-static">Kinesitherapie aan huis</span>
         <br />
         <span class="hero-typing-line" data-typing-phrases={JSON.stringify(typingPhrases)}>
           <span class="hero-typing" id="hero-typing-text" aria-live="polite" />
@@ -61,7 +61,7 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
           Maak een afspraak
         </Button>
         <Button href="/tarieven" variant="secondary">
-          Bekijk onze tarieven
+          Tarief voor huisbezoeken
         </Button>
       </div>
     </div>
@@ -136,24 +136,24 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
   /* Heading: 32px (2rem) on mobile, 60px (3.75rem) on desktop. Typing line: 24px (1.5rem) on mobile, 40px (2.5rem) on desktop. Subtext: 16px (1rem) on mobile, 20px (1.25rem) on tablet/desktop. */
   .hero-heading-static {
     font-family: 'Raleway', sans-serif;
-    font-size: 2rem; /* 32px */
+    font-size: 1.75rem; /* 28px */
     font-weight: 600;
     color: var(--color-primary);
   }
   .hero-typing-line {
     display: inline-block;
     font-family: 'Spectral', serif;
-    font-size: 1.5rem; /* 24px */
+    font-size: 1.35rem; /* ~22px */
     font-style: italic;
     color: var(--color-primary);
   }
 
   @media (min-width: 768px) {
     .hero-heading-static {
-      font-size: 3.75rem; /* 60px */
+      font-size: 3.25rem; /* 52px */
     }
     .hero-typing-line {
-      font-size: 2.5rem; /* 40px */
+      font-size: 2.25rem; /* 36px */
     }
   }
   .hero-cursor {

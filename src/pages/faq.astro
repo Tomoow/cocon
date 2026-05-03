@@ -1,0 +1,292 @@
+---
+/**
+ * FAQ page: SectionHeading + accordion list + Contacteer ons link.
+ * Accordion uses <details>/<summary> for accessibility and no JS.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+
+const faqItems: { question: string; answer: string }[] = [
+  {
+    question: 'Wat is het doel van prenatale kinesitherapie?',
+    answer: 'Prenatale kinesitherapie ondersteunt je tijdens de zwangerschap. We werken aan ademhaling, bekkenbodemreëducatie en voorbereiding op de bevalling. Ook klachten zoals urineverlies of bekkenpijn kunnen we aanpakken, en we besteden aandacht aan preventie van postnatale klachten.',
+  },
+  {
+    question: 'Hoe herken ik een goede prenatale kinesist?',
+    answer: 'Een goede prenatale kinesist heeft een erkende bijscholing in perinatale kinesitherapie (bv. postgraduaat of BICAP-erkenning), werkt evidence-based en neemt de tijd voor intake en uitleg. Je mag ook altijd vragen naar ervaring en specialisatie.',
+  },
+  {
+    question: 'Voordelen van gespecialiseerde postnatale revalidatie.',
+    answer: 'Gespecialiseerde postnatale revalidatie helpt je lichaam veilig herstellen na de bevalling. We werken aan bekkenbodem, core stability en rug- en bekkenklachten. Dat vermindert klachten op lange termijn en ondersteunt je bij het hervatten van dagelijkse activiteiten en sport.',
+  },
+  {
+    question: 'Welke oefeningen zijn veilig na de bevalling?',
+    answer: 'Dat hangt af van hoe lang de bevalling achter de rug is en of je een vaginale bevalling of keizersnede had. In het begin zijn vooral ademhaling, lichte bekkenbodemspieroefeningen en geleidelijke opbouw van wandelen veilig. Zwaardere buik- of krachtspieroefeningen pas na goedkeuring van je kinesist of arts.',
+  },
+  {
+    question: 'Wanneer start je best met bekkenbodemoefeningen?',
+    answer: 'Je kunt al tijdens de zwangerschap starten met bekkenbodemoefeningen, onder begeleiding van een prenataal geschoolde kinesist. Na de bevalling is het belangrijk om eerst te laten controleren of je bekkenbodem er klaar voor is; vaak starten we na de controle bij de gynaecoloog of huisarts, meestal vanaf 6 weken postpartüm.',
+  },
+  {
+    question: 'Welke verzekeringen dekken pre- en postnatale kinesitherapie in België?',
+    answer: 'In België wordt pre- en postnatale kinesitherapie vaak (deels) terugbetaald door het RIZIV en je mutualiteit, mits je een voorschrift hebt van je arts. Het aantal sessies en de voorwaarden kunnen per mutualiteit verschillen. Vraag bij je mutualiteit na wat er voor jouw situatie wordt gedekt.',
+  },
+  {
+    question: 'Wat is prenatale kinesitherapie?',
+    answer: 'Prenatale kinesitherapie is kinesitherapie tijdens de zwangerschap. Het omvat onder meer ademhalingsoefeningen, bekkenbodemtraining, voorbereiding op de bevalling (perstechniek, houding) en begeleiding bij klachten zoals bekkenpijn of urineverlies. Het doel is je lichaam voorbereiden op de bevalling en klachten voorkomen of verminderen.',
+  },
+  {
+    question: 'Is postnatale kinesitherapie terugbetaald?',
+    answer: 'Ja, in België komt postnatale kinesitherapie vaak in aanmerking voor (gedeeltelijke) terugbetaling door het RIZIV en je mutualiteit. Je hebt hiervoor een voorschrift van je huisarts of gynaecoloog nodig. Het aantal sessies dat wordt terugbetaald kan per mutualiteit en per situatie verschillen.',
+  },
+  {
+    question: 'Geef je ook kinesitherapie aan huis voor zwangere vrouwen?',
+    answer: 'Ja, wij bieden perinatale kinesitherapie aan huis aan. Een huisbezoek is vooral handig vlak na de bevalling of wanneer verplaatsen moeilijk is. Je boekt een huisbezoek via telefoon, e-mail of het contactformulier. Op de tarievenpagina vind je meer informatie over de voorwaarden en het tarief.',
+  },
+];
+---
+
+<BaseLayout title="FAQ" description="Veelgestelde vragen over pre- en postnatale kinesitherapie bij Cocon.">
+  <main class="container-content faq-page">
+    <SectionHeading
+      title="Veelgestelde vragen"
+      subtitle="Hier vind je een antwoord op de meest gestelde vragen"
+      id="faq-heading"
+      class="faq-page__heading"
+    />
+
+    <section class="faq" aria-labelledby="faq-heading-title">
+      <div class="faq__list" role="list">
+        {faqItems.map((item, index) => (
+          <div class="faq__item" role="listitem">
+            <details class="faq__details" open={index === 0}>
+              <summary class="faq__summary">
+                <span class="faq__dot" aria-hidden="true"></span>
+                <span class="faq__question">{item.question}</span>
+                <span class="faq__chevron" aria-hidden="true">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </span>
+              </summary>
+              <div class="faq__answer-wrapper">
+                <div class="faq__answer">
+                  <p>{item.answer}</p>
+                </div>
+              </div>
+            </details>
+          </div>
+        ))}
+      </div>
+
+      <p class="faq__cta-wrap">
+        <a href="/contact" class="faq__cta">
+          Contacteer ons
+          <span class="faq__cta-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </span>
+        </a>
+      </p>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .faq-page {
+    padding-top: 8rem;
+    padding-bottom: 4rem;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  @media (min-width: 768px) {
+    .faq-page {
+      padding-top: 10rem;
+      padding-bottom: 5rem;
+    }
+  }
+
+  .faq-page__heading {
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .faq-page__heading {
+      margin-bottom: 2.5rem;
+    }
+  }
+
+  .faq {
+    max-width: 48rem;
+    margin-inline: auto;
+  }
+
+  .faq__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .faq__item {
+    margin: 0;
+    border-bottom: 1px solid #e3e6e1;
+  }
+
+  .faq__details {
+    margin: 0;
+  }
+
+  .faq__summary {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 1rem 0;
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--color-primary);
+    text-align: left;
+    width: 100%;
+    transition: color 0.2s ease;
+  }
+
+  .faq__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq__summary:hover {
+    color: var(--color-primary);
+    opacity: 0.9;
+  }
+
+  .faq__summary:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+  }
+
+  .faq__dot {
+    flex-shrink: 0;
+    width: 8px;
+    height: 10px;
+    margin-top: 0.5em;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    transform: rotate(45deg);
+  }
+
+  .faq__question {
+    flex: 1;
+    min-width: 0;
+    text-decoration: none;
+    text-underline-offset: 3px;
+  }
+
+  .faq__summary:hover .faq__question,
+  .faq__summary:active .faq__question,
+  .faq__summary:focus-visible .faq__question {
+    text-decoration: underline;
+  }
+
+  .faq__chevron {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    transition: transform 0.25s ease;
+  }
+
+  .faq__details[open] .faq__chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Slide-open: height + content slide down with soft easing */
+  .faq__answer-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .faq__details[open] .faq__answer-wrapper {
+    grid-template-rows: 1fr;
+  }
+
+  .faq__answer {
+    min-height: 0;
+    overflow: hidden;
+    margin: 0 0 0 1.25rem;
+    padding: 0 0 1rem;
+    transform: translateY(-12px);
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .faq__details[open] .faq__answer {
+    transform: translateY(0);
+  }
+
+  .faq__answer p {
+    margin: 0;
+    padding-top: 0.125rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.625;
+    color: var(--color-text-primary);
+    opacity: 0;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1) 0.06s;
+  }
+
+  .faq__details[open] .faq__answer p {
+    opacity: 1;
+  }
+
+  .faq__cta-wrap {
+    margin: 1.5rem 0 0;
+    text-align: right;
+  }
+
+  .faq__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: opacity 0.2s ease;
+  }
+
+  .faq__cta:hover {
+    opacity: 0.85;
+  }
+
+  .faq__cta:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+  }
+
+  .faq__cta-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.faq__list').forEach((list) => {
+    const details = list.querySelectorAll('.faq__details');
+    details.forEach((el) => {
+      el.addEventListener('toggle', () => {
+        if ((el as HTMLDetailsElement).open) {
+          details.forEach((other) => {
+            if (other !== el) (other as HTMLDetailsElement).removeAttribute('open');
+          });
+        }
+      });
+    });
+  });
+</script>

@@ -1,12 +1,488 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { Check, CircleAlert, FileText, CircleCheck, Phone, Mail } from '@lucide/astro';
 ---
 
-<BaseLayout title="Tarieven" description="Tarieven bij Cocon.">
-  <main class="container-content py-16">
-    <h1 class="text-2xl font-bold mb-8">Tarieven</h1>
-    <p class="text-text-secondary">
-      Overzicht van onze tarieven. (Dummy pagina.)
-    </p>
-  </main>
+<BaseLayout title="Tarieven" description="Onze tarieven voor kinesitherapie aan huis bij Cocon.">
+  <div class="container-content tarieven-page">
+    <header class="tarieven-heading">
+      <h1 class="tarieven-heading__title">
+        Onze tarieven
+        <span class="tarieven-heading__dot" aria-hidden="true"></span>
+      </h1>
+      <p class="tarieven-heading__subtitle">
+        Wij zijn een gedeconventioneerde praktijk, bij verhoogde tegemoetkoming houden wij ons aan de <a href="https://www.riziv.fgov.be" target="_blank" rel="noopener noreferrer" class="tarieven-heading__link">prijzen van het RIZIV</a>
+      </p>
+    </header>
+
+    <div class="tarieven-card">
+      <!-- Pricing -->
+      <section class="pricing" aria-label="Prijsinformatie">
+        <span class="pricing__badge">Huisbezoeken</span>
+        <div class="pricing__amount">
+          <span class="pricing__value">€42</span>
+          <span class="pricing__label">per sessie</span>
+        </div>
+        <ul class="pricing__features" role="list">
+          <li class="pricing__feature">
+            <Check class="pricing__icon pricing__icon--ok" size={20} aria-hidden="true" />
+            <span>Perinatale kinesitherapie aan huis</span>
+          </li>
+          <li class="pricing__feature">
+            <Check class="pricing__icon pricing__icon--ok" size={20} aria-hidden="true" />
+            <span>Bezoek van <strong>30 minuten</strong></span>
+          </li>
+          <li class="pricing__feature">
+            <CircleAlert class="pricing__icon pricing__icon--warn" size={20} aria-hidden="true" />
+            <span>Dit kan je enkel boeken via <strong>telefoon, email</strong> of het <a href="/contact" class="pricing__link">contactformulier</a></span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Belangrijke informatie -->
+      <section class="info" aria-labelledby="info-title">
+        <h2 class="info__title" id="info-title">Belangrijke informatie</h2>
+
+        <div class="info__cards">
+          <article class="info-card">
+            <div class="info-card__header">
+              <CircleAlert class="info-card__icon" size={24} aria-hidden="true" />
+              <h3 class="info-card-heading">Annulatievoorwaarden</h3>
+            </div>
+            <p class="info-card__body">
+              Gelieve <strong class="info-card__accent">24u voor aanvang</strong> van je afspraak te annuleren. Zo kunnen wij tijdig iemand nieuws inplannen. <strong>Anders zal de sessie aangerekend worden.</strong>
+            </p>
+          </article>
+
+          <article class="info-card">
+            <div class="info-card__header">
+              <FileText class="info-card__icon" size={24} aria-hidden="true" />
+              <h3 class="info-card-heading">Terugbetaling</h3>
+            </div>
+            <p class="info-card__body">
+              Je krijgt een <strong>getuigschrift</strong> of een <strong>terugbetaling</strong> is mogelijk bij je <strong>mutualiteit.</strong>
+            </p>
+          </article>
+
+          <article class="info-card">
+            <div class="info-card__header">
+              <FileText class="info-card__icon" size={24} aria-hidden="true" />
+              <h3 class="info-card-heading">Documenten om klaar te leggen</h3>
+            </div>
+            <p class="info-card__body">
+              Leg steeds je <strong>ID, doktersvoorschrift</strong> en eventuele <strong>medische verslagen</strong> klaar.
+            </p>
+          </article>
+
+          <article class="info-card">
+            <div class="info-card__header">
+              <CircleCheck class="info-card__icon" size={24} aria-hidden="true" />
+              <h3 class="info-card-heading">En vergeet ook niet</h3>
+            </div>
+            <p class="info-card__body">
+              <strong>Comfortabele kledij</strong> aan te doen.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="cta" aria-label="Contact opnemen">
+        <h2 class="cta__title">Klaar om een afspraak te maken?</h2>
+        <p class="cta__subtitle">Neem vandaag nog contact op voor een persoonlijk huisbezoek</p>
+        <div class="cta__buttons">
+          <a href="tel:+32470000000" class="cta__btn cta__btn--light">
+            <Phone size={20} aria-hidden="true" />
+            Bel ons nu
+          </a>
+          <a href="mailto:info@cocon.be" class="cta__btn cta__btn--dark">
+            <Mail size={20} aria-hidden="true" />
+            Stuur een email
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
 </BaseLayout>
+
+<style>
+  /* ------------------------------------------------------------------ page */
+  .tarieven-page {
+    padding-top: 8rem;
+    padding-bottom: 4rem;
+  }
+
+  @media (min-width: 768px) {
+    .tarieven-page {
+      padding-top: 10rem;
+      padding-bottom: 5rem;
+    }
+  }
+
+  /* ----------------------------------------------------------- page heading */
+  .tarieven-heading {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  @media (min-width: 768px) {
+    .tarieven-heading {
+      margin-bottom: 3rem;
+    }
+  }
+
+  .tarieven-heading__title {
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--color-primary);
+    margin: 0 0 0.75rem;
+    line-height: 1.2;
+  }
+
+  @media (min-width: 768px) {
+    .tarieven-heading__title {
+      font-size: 2.5rem;
+    }
+  }
+
+  .tarieven-heading__dot {
+    display: inline-block;
+    width: 8px;
+    height: 10px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    transform: rotate(45deg);
+  }
+
+  .tarieven-heading__subtitle {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  @media (min-width: 768px) {
+    .tarieven-heading__subtitle {
+      font-size: 1.125rem;
+    }
+  }
+
+  .tarieven-heading__link {
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .tarieven-heading__link:hover {
+    color: var(--color-primary);
+  }
+
+  /* ---------------------------------------------------------- main card */
+  .tarieven-card {
+    max-width: 800px;
+    margin-inline: auto;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 232, 219, 0.5) 0%,
+      rgba(252, 250, 246, 0) 60%
+    );
+  }
+
+  @media (min-width: 768px) {
+    .tarieven-card {
+      border-radius: 2rem;
+    }
+  }
+
+  /* ---------------------------------------------------------- pricing */
+  .pricing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 2rem 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .pricing {
+      padding: 2.5rem 3rem;
+    }
+  }
+
+  .pricing__badge {
+    display: inline-block;
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    background: rgba(255, 255, 255, 0.5);
+    padding: 0.625rem 1.5rem;
+    border-radius: 9999px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .pricing__amount {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .pricing__value {
+    font-family: 'Raleway', sans-serif;
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-primary);
+  }
+
+  .pricing__label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: rgba(0, 51, 32, 0.6);
+  }
+
+  .pricing__features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .pricing__feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem;
+    line-height: 1.625;
+    color: var(--color-text-primary);
+  }
+
+  .pricing__feature :global(svg) {
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+  }
+
+  .pricing__icon--ok {
+    color: var(--color-primary);
+  }
+
+  .pricing__icon--warn {
+    color: var(--color-accent);
+  }
+
+  .pricing__link {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .pricing__link:hover {
+    opacity: 0.8;
+  }
+
+  /* ------------------------------------------------- important info */
+  .info {
+    padding: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .info {
+      padding: 2rem 3rem 3rem;
+    }
+  }
+
+  .info__title {
+    font-family: 'Raleway', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin: 0 0 1.5rem;
+    line-height: 1.3;
+  }
+
+  @media (min-width: 768px) {
+    .info__title {
+      font-size: 1.75rem;
+    }
+  }
+
+  .info__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .info__cards {
+      gap: 2rem;
+    }
+  }
+
+  .info-card {
+    background: var(--color-surface);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .info-card__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .info-card__header :global(svg) {
+    flex-shrink: 0;
+    color: var(--color-primary);
+  }
+
+  .info-card-heading {
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .info-card__body {
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: 1.75;
+  }
+
+  .info-card__body strong {
+    font-weight: 600;
+  }
+
+  .info-card__accent {
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  /* ------------------------------------------------------------- CTA */
+  .cta {
+    margin: 1.25rem;
+    padding: 2rem 1.25rem;
+    border-radius: 1.5rem;
+    background: linear-gradient(to bottom, #003320, #004d33);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .cta {
+      margin: 2rem 3rem 3rem;
+      padding: 2.5rem;
+      border-radius: 2rem;
+    }
+  }
+
+  .cta__title {
+    font-family: 'Raleway', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--color-white);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  @media (min-width: 768px) {
+    .cta__title {
+      font-size: 2.25rem;
+      line-height: 1.3;
+    }
+  }
+
+  .cta__subtitle {
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    line-height: 1.5;
+    max-width: 400px;
+  }
+
+  @media (min-width: 768px) {
+    .cta__subtitle {
+      font-size: 1.125rem;
+    }
+  }
+
+  .cta__buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .cta__buttons {
+      flex-direction: row;
+      justify-content: center;
+      width: auto;
+    }
+  }
+
+  .cta__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.875rem 2rem;
+    border-radius: 9999px;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .cta__btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  @media (min-width: 768px) {
+    .cta__btn {
+      font-size: 1.125rem;
+      padding: 1rem 2rem;
+    }
+  }
+
+  .cta__btn--light {
+    background: var(--color-white);
+    color: var(--color-primary);
+  }
+
+  .cta__btn--dark {
+    background: var(--color-primary);
+    color: var(--color-white);
+  }
+</style>

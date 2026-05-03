@@ -2,9 +2,46 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="Message sent" description="Thank you for your message.">
-  <main class="max-w-2xl mx-auto px-4 py-16">
-    <h1 class="text-2xl font-bold mb-4">Thanks for your message</h1>
-    <p class="text-gray-600">We’ll get back to you soon.</p>
+<BaseLayout title="Bericht verzonden" description="Bedankt voor je bericht. We nemen zo snel mogelijk contact op.">
+  <main class="container-content thank-you-page">
+    <h1 class="thank-you-page__title">Bedankt voor je bericht</h1>
+    <p class="thank-you-page__text">We nemen zo snel mogelijk contact met je op.</p>
+    <a href="/" class="thank-you-page__link">Terug naar home</a>
   </main>
 </BaseLayout>
+
+<style>
+  .thank-you-page {
+    padding-top: 8rem;
+    padding-bottom: 4rem;
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    max-width: 36rem;
+    margin-inline: auto;
+  }
+
+  .thank-you-page__title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin: 0 0 1rem;
+  }
+
+  .thank-you-page__text {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    margin: 0 0 1.5rem;
+    line-height: 1.6;
+  }
+
+  .thank-you-page__link {
+    font-weight: 500;
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .thank-you-page__link:hover {
+    opacity: 0.85;
+  }
+</style>

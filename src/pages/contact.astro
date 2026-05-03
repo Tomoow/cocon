@@ -1,0 +1,263 @@
+---
+/**
+ * Contact page: SectionHeading + illustration + form.
+ * Form uses Netlify Forms (data-netlify="true"); submissions appear in Netlify dashboard
+ * and can trigger email notifications.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import Button from '../components/Button.astro';
+---
+
+<BaseLayout title="Contact" description="Neem contact op met Cocon via het contactformulier. We antwoorden zo snel mogelijk.">
+  <main class="container-content contact-page">
+    <SectionHeading
+      title="Contactformulier"
+      subtitle="Heb je een vraag die je liever via mail stelt? Laat ze hieronder achter en we antwoorden zo snel mogelijk."
+      id="contact-heading"
+      class="contact-page__heading"
+    />
+
+    <div class="contact-layout">
+      <div class="contact-layout__illus" aria-hidden="true">
+        <img
+          src="/images/contact-illustration.svg"
+          alt=""
+          width="384"
+          height="315"
+          loading="eager"
+          class="contact-layout__img"
+        />
+      </div>
+
+      <section class="contact-form-wrap" aria-labelledby="contact-heading-title">
+        <form
+          name="contact"
+          method="POST"
+          data-netlify="true"
+          data-netlify-honeypot="bot-field"
+          action="/thank-you"
+          class="contact-form"
+        >
+          <!-- Honeypot: hidden from users; bots fill it and Netlify rejects those submissions -->
+          <p class="contact-form__hp" aria-hidden="true">
+            <label for="contact-bot">
+              Vul dit niet in als je een mens bent: <input id="contact-bot" name="bot-field" type="text" tabindex="-1" autocomplete="off" />
+            </label>
+          </p>
+
+          <div class="contact-form__row">
+            <div class="contact-form__field">
+              <label for="contact-name" class="contact-form__label">Je naam <span aria-hidden="true">*</span></label>
+              <input
+                id="contact-name"
+                type="text"
+                name="name"
+                required
+                autocomplete="name"
+                class="contact-form__input"
+                aria-required="true"
+              />
+            </div>
+            <div class="contact-form__field">
+              <label for="contact-email" class="contact-form__label">E-mail <span aria-hidden="true">*</span></label>
+              <input
+                id="contact-email"
+                type="email"
+                name="email"
+                required
+                autocomplete="email"
+                class="contact-form__input"
+                aria-required="true"
+              />
+            </div>
+          </div>
+
+          <div class="contact-form__field">
+            <label for="contact-message" class="contact-form__label">Bericht <span aria-hidden="true">*</span></label>
+            <textarea
+              id="contact-message"
+              name="message"
+              rows="5"
+              required
+              class="contact-form__textarea"
+              aria-required="true"
+            ></textarea>
+          </div>
+
+          <Button type="submit" showArrow class="contact-form__submit">
+            Bericht versturen
+          </Button>
+        </form>
+      </section>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .contact-page {
+    padding-top: 8rem;
+    padding-bottom: 4rem;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  @media (min-width: 768px) {
+    .contact-page {
+      padding-top: 10rem;
+      padding-bottom: 5rem;
+    }
+  }
+
+  .contact-page__heading {
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .contact-page__heading {
+      margin-bottom: 2.5rem;
+    }
+  }
+
+  .contact-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  @media (min-width: 1024px) {
+    .contact-layout {
+      flex-direction: row;
+      gap: 3rem;
+      align-items: flex-start;
+      justify-content: center;
+    }
+  }
+
+  .contact-layout__illus {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 320px;
+    order: 2; /* Mobile: below form */
+  }
+
+  @media (min-width: 768px) {
+    .contact-layout__illus {
+      max-width: 384px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .contact-layout__illus {
+      order: 1; /* Desktop: left */
+    }
+  }
+
+  .contact-layout__img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .contact-form-wrap {
+    width: 100%;
+    max-width: 28rem;
+    order: 1; /* Mobile: above illustration */
+  }
+
+  @media (min-width: 1024px) {
+    .contact-form-wrap {
+      order: 2; /* Desktop: right */
+      flex: 1;
+      max-width: 24rem;
+    }
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .contact-form__hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    margin: 0;
+  }
+
+  .contact-form__row {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 600px) {
+    .contact-form__row {
+      flex-direction: row;
+      gap: 1.25rem;
+    }
+
+    .contact-form__row .contact-form__field {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  .contact-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .contact-form__label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    line-height: 1.25;
+  }
+
+  .contact-form__input,
+  .contact-form__textarea {
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem;
+    color: var(--color-text-primary);
+    background: var(--color-surface);
+    border: 1px solid #c6c6cc;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    min-height: 2.75rem;
+    width: 100%;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .contact-form__textarea {
+    min-height: 6rem;
+    resize: vertical;
+  }
+
+  .contact-form__input::placeholder,
+  .contact-form__textarea::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.8;
+  }
+
+  .contact-form__input:hover,
+  .contact-form__textarea:hover {
+    border-color: var(--color-text-secondary);
+  }
+
+  .contact-form__input:focus,
+  .contact-form__textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(0, 51, 32, 0.15);
+  }
+
+  .contact-form__submit {
+    align-self: flex-start;
+    margin-top: 0.25rem;
+  }
+</style>

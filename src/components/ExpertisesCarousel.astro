@@ -51,7 +51,7 @@ const { cards, class: className } = Astro.props;
     <div class="expertises-carousel__bar">
       <span class="expertises-carousel__indicator" aria-live="polite" data-carousel-indicator>Pagina 1 van 6</span>
       <div class="expertises-carousel__arrows">
-        <button type="button" class="expertises-carousel__arrow" data-carousel-prev aria-label="Vorige kaart">
+        <button type="button" class="expertises-carousel__arrow" data-carousel-prev aria-label="Vorige kaart" disabled>
           <span class="expertises-carousel__arrow-inner" aria-hidden="true">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
           </span>
@@ -174,7 +174,12 @@ const { cards, class: className } = Astro.props;
     transition: opacity 0.2s;
   }
 
-  .expertises-carousel__arrow:hover {
+  .expertises-carousel__arrow:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .expertises-carousel__arrow:hover:not(:disabled) {
     opacity: 0.85;
   }
 
@@ -189,35 +194,62 @@ const { cards, class: className } = Astro.props;
   }
 
   .expertises-carousel__track {
+    --_cp: var(--spacing-container-mobile);
+    --carousel-peek: 3rem;
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    gap: 1.5rem; /* 24px */
-    padding-bottom: 1rem;
-    padding-top: 2rem;
+    gap: 1.5rem;
+    padding-block: 2rem 1rem;
+    margin-inline: calc(-1 * var(--_cp));
+    padding-inline: var(--_cp);
+    scroll-padding-inline-start: max(var(--_cp), 2.5rem);
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.55) 0,
+      black var(--_cp),
+      black calc(100% - var(--_cp)),
+      rgba(0, 0, 0, 0.55) 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.55) 0,
+      black var(--_cp),
+      black calc(100% - var(--_cp)),
+      rgba(0, 0, 0, 0.55) 100%
+    );
   }
 
-  /* Slide width so visible cards + gaps fill 100% (no gap on outer edges) */
+  @media (min-width: 768px) {
+    .expertises-carousel__track {
+      --_cp: var(--spacing-container-tablet);
+    }
+  }
+
+  .expertises-carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Slides narrowed by --carousel-peek; track negative-margin extends to viewport edge so peek cards bleed out */
   .expertises-carousel__slide {
-    flex: 0 0 100%;
+    flex: 0 0 calc(100% - var(--carousel-peek));
     scroll-snap-align: start;
     min-width: 0;
   }
 
   @media (min-width: 768px) {
-    /* 2 cards + 1 gap = 100% */
     .expertises-carousel__slide {
-      flex: 0 0 calc((100% - 1.5rem) / 2);
+      flex: 0 0 calc((100% - 1.5rem - var(--carousel-peek)) / 2);
     }
   }
 
   @media (min-width: 1000px) {
-    /* 3 cards + 2 gaps = 100% */
     .expertises-carousel__slide {
-      flex: 0 0 calc((100% - 2 * 1.5rem) / 3);
+      flex: 0 0 calc((100% - 2 * 1.5rem - var(--carousel-peek)) / 3);
     }
   }
 </style>
@@ -253,22 +285,29 @@ const { cards, class: className } = Astro.props;
       return Math.ceil(totalCards / n);
     }
 
+    function getScrollPad(): number {
+      return parseFloat(getComputedStyle(track).scrollPaddingInlineStart) || 0;
+    }
+
     function getCurrentPage(): number {
       const slides = getSlides();
       if (slides.length === 0) return 1;
-      const scrollLeft = track.scrollLeft;
-      const totalPages = getTotalPages();
+      const scrollPad = getScrollPad();
+      const snapTarget = track.scrollLeft + scrollPad;
       const cardsPerView = getCardsPerView();
       const step = slides[0].offsetWidth + gapPx;
-      const pageWidth = cardsPerView * step;
-      const page = Math.round(scrollLeft / pageWidth) + 1;
-      return Math.max(1, Math.min(totalPages, page));
+      const cardIndex = Math.round((snapTarget - slides[0].offsetLeft) / step);
+      const page = Math.floor(cardIndex / cardsPerView) + 1;
+      return Math.max(1, Math.min(getTotalPages(), page));
     }
 
     function updateIndicator() {
       const total = getTotalPages();
       const page = getCurrentPage();
       indicator.textContent = `Pagina ${page} van ${total}`;
+
+      if (prevBtn) (prevBtn as HTMLButtonElement).disabled = page <= 1;
+      if (nextBtn) (nextBtn as HTMLButtonElement).disabled = page >= total;
     }
 
     function go(direction: 1 | -1) {
@@ -278,9 +317,9 @@ const { cards, class: className } = Astro.props;
       const totalPages = getTotalPages();
       const currentPage = getCurrentPage();
       const targetPage = Math.max(1, Math.min(totalPages, currentPage + direction));
-      const step = slides[0].offsetWidth + gapPx;
-      const targetScroll = (targetPage - 1) * cardsPerView * step;
-      track.scrollTo({ left: targetScroll, behavior: 'smooth' });
+      const targetIndex = (targetPage - 1) * cardsPerView;
+      const targetSlide = slides[Math.min(targetIndex, slides.length - 1)];
+      track.scrollTo({ left: targetSlide.offsetLeft - getScrollPad(), behavior: 'smooth' });
     }
 
     let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -294,15 +333,6 @@ const { cards, class: className } = Astro.props;
     });
     prevBtn?.addEventListener('click', () => go(-1));
     nextBtn?.addEventListener('click', () => go(1));
-
-    let touchStartX = 0;
-    let touchEndX = 0;
-    track.addEventListener('touchstart', (e: TouchEvent) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
-    track.addEventListener('touchend', (e: TouchEvent) => {
-      touchEndX = e.changedTouches[0].screenX;
-      const diff = touchStartX - touchEndX;
-      if (Math.abs(diff) > 50) go(diff > 0 ? 1 : -1);
-    }, { passive: true });
 
     updateIndicator();
     }

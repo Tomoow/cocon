@@ -8,6 +8,7 @@ import House from '@lucide/astro/icons/house';
 import BadgeEuro from '@lucide/astro/icons/badge-euro';
 import Users from '@lucide/astro/icons/users';
 import MessageCircleQuestionMark from '@lucide/astro/icons/message-circle-question-mark';
+import Send from '@lucide/astro/icons/send';
 import Phone from '@lucide/astro/icons/phone';
 import MapPin from '@lucide/astro/icons/map-pin';
 import Building2 from '@lucide/astro/icons/building-2';
@@ -26,7 +27,7 @@ const navItems = [
   { href: '/tarieven', label: 'Tarieven', icon: BadgeEuro },
   { href: '/over-ons', label: 'Over ons', icon: Users },
   { href: '/faq', label: 'FAQ', icon: MessageCircleQuestionMark },
-  { href: '/contact', label: 'Contact', icon: Phone },
+  { href: '/contact', label: 'Contact', icon: Send },
 ];
 
 function isActive(href: string, path: string): boolean {
@@ -145,7 +146,7 @@ function isActive(href: string, path: string): boolean {
 
 <style>
   .footer {
-    background-color: var(--color-primary);
+    background: linear-gradient(to bottom, var(--color-primary), #004d33);
     color: var(--color-white);
     padding: 3rem 0 2rem;
     font-family: 'Raleway', sans-serif;
