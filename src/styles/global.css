@@ -77,6 +77,46 @@ html::-webkit-scrollbar-thumb:hover {
   --color-text-secondary: var(--color-grey);
   --color-surface: var(--color-white);
 
+  /* Typography tokens — keep page-level titles consistent across pages.
+     page-title: Spectral Medium 40px / -2px tracking (used by SectionHeading on every page).
+     section-subtitle: Raleway 24px (used as the subtext under page titles, e.g. "Ontdek onze expertises"). */
+  --font-page-title-family: 'Spectral', serif;
+  --font-page-title-size: 2.5rem; /* 40px */
+  --font-page-title-weight: 500; /* medium */
+  --font-page-title-tracking: -2px;
+  --font-page-title-line-height: 1.1;
+
+  --font-page-title-size-mobile: 2rem; /* 32px on mobile so it doesn't break layout */
+  --font-page-title-tracking-mobile: -1px;
+
+  --font-section-subtitle-family: 'Raleway', sans-serif;
+  --font-section-subtitle-size: 1.5rem; /* 24px */
+  --font-section-subtitle-weight: 400;
+  --font-section-subtitle-line-height: 1.4;
+
+  --font-section-subtitle-size-mobile: 1.125rem; /* 18px mobile */
+
+  /* card-title: Spectral Medium 32px / -1.5px tracking — used inside cards (e.g. expertises grid). */
+  --font-card-title-family: 'Spectral', serif;
+  --font-card-title-size: 2rem; /* 32px */
+  --font-card-title-weight: 500; /* medium */
+  --font-card-title-tracking: -1.5px;
+  --font-card-title-line-height: 1.125; /* 36px on a 32 base */
+
+  --font-card-title-size-mobile: 1.25rem; /* 20px */
+  --font-card-title-tracking-mobile: -0.5px;
+
+  /* display-title: Spectral Medium 60px / -3px tracking — used for hero-scale titles
+     in CTA bands (e.g. "Een afspraak maken is eenvoudiger dan je denkt"). */
+  --font-display-title-family: 'Spectral', serif;
+  --font-display-title-size: 3.75rem; /* 60px */
+  --font-display-title-weight: 500;
+  --font-display-title-tracking: -3px;
+  --font-display-title-line-height: 1.1;
+
+  --font-display-title-size-mobile: 2.25rem; /* 36px */
+  --font-display-title-tracking-mobile: -1.5px;
+
   /* Layout: content area 1200px min; total max 1440px (1200 + 120×2 padding); tablet 40px, mobile 16px */
   --width-content-max: 1440px;
   --spacing-container-mobile: 16px;

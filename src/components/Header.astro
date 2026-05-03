@@ -8,8 +8,8 @@ import IconButton from './IconButton.astro';
 import House from '@lucide/astro/icons/house';
 import BadgeEuro from '@lucide/astro/icons/badge-euro';
 import Users from '@lucide/astro/icons/users';
-import MessageCircleQuestionMark from '@lucide/astro/icons/message-circle-question-mark';
-import Phone from '@lucide/astro/icons/phone';
+import CircleHelp from '@lucide/astro/icons/circle-question-mark';
+import MessageCircle from '@lucide/astro/icons/message-circle';
 import Instagram from '@lucide/astro/icons/instagram';
 import Facebook from '@lucide/astro/icons/facebook';
 import Menu from '@lucide/astro/icons/menu';
@@ -23,10 +23,10 @@ const { currentPath = '/' } = Astro.props;
 
 const navItems = [
   { href: '/', label: 'Home', icon: House },
-  { href: '/tarieven', label: 'Tarieven', icon: BadgeEuro },
+  { href: '/tarieven', label: 'Tarieven & info', icon: BadgeEuro },
   { href: '/over-ons', label: 'Over ons', icon: Users },
-  { href: '/faq', label: 'FAQ', icon: MessageCircleQuestionMark },
-  { href: '/contact', label: 'Contact', icon: Phone },
+  { href: '/faq', label: 'FAQ', icon: CircleHelp },
+  { href: '/contact', label: 'Contact', icon: MessageCircle },
 ];
 
 function isActive(href: string, path: string): boolean {
@@ -74,7 +74,7 @@ function isActive(href: string, path: string): boolean {
 
       <!-- Desktop (lg): icon buttons + CTA -->
       <div class="hidden items-center gap-3 lg:flex">
-        <IconButton href="https://instagram.com" label="Instagram">
+        <IconButton href="https://www.instagram.com/kine_cocon/" label="Instagram">
           <Instagram class="size-5" />
         </IconButton>
         <IconButton href="https://facebook.com" label="Facebook">
@@ -87,7 +87,7 @@ function isActive(href: string, path: string): boolean {
 
       <!-- iPad (md to lg): icon buttons + CTA + hamburger -->
       <div class="hidden items-center gap-3 md:flex lg:hidden">
-        <IconButton href="https://instagram.com" label="Instagram">
+        <IconButton href="https://www.instagram.com/kine_cocon/" label="Instagram">
           <Instagram class="size-5" />
         </IconButton>
         <IconButton href="https://facebook.com" label="Facebook">
@@ -154,7 +154,7 @@ function isActive(href: string, path: string): boolean {
         })}
       </nav>
       <div class="mt-6 flex gap-3">
-        <IconButton href="https://instagram.com" label="Instagram">
+        <IconButton href="https://www.instagram.com/kine_cocon/" label="Instagram">
           <Instagram class="size-5" />
         </IconButton>
         <IconButton href="https://facebook.com" label="Facebook">

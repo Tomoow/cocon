@@ -1,12 +1,480 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import Button from '../components/Button.astro';
+import BanknoteArrowDown from '@lucide/astro/icons/banknote-arrow-down';
+import OctagonX from '@lucide/astro/icons/octagon-x';
+import IdCard from '@lucide/astro/icons/id-card';
+import CreditCard from '@lucide/astro/icons/credit-card';
+
+// 3 tarieven cards. The middle one (Specialisatie) is highlighted.
+const tarievenCards = [
+  {
+    number: '01',
+    badge: 'Op voorschrift',
+    title: 'Algemene kinesitherapie',
+    description: 'Voor rug-, nek-, schouder-, sport- en revalidatieklachten ook manuele therapie.',
+    rows: [
+      { label: 'Eerste behandeling', duration: '45 min', price: '€55' },
+      { label: 'Vervolg behandelingen', duration: '30 min', price: '€37' },
+    ],
+    cta: { label: 'Online afspraak maken', href: '/afspraak', showArrow: true },
+    highlighted: false,
+  },
+  {
+    number: '02',
+    badge: 'Op voorschrift',
+    title: 'Bekkenbodemtherapie',
+    description: 'Pelvische reëducatie en perinatale kinesitherapie.',
+    rows: [
+      { label: 'Eerste behandeling', duration: '45 min', price: '€60' },
+      { label: 'Vervolg behandelingen', duration: '30 min', price: '€40' },
+    ],
+    cta: { label: 'Online afspraak maken', href: '/afspraak', showArrow: true },
+    highlighted: true,
+    highlightLabel: 'Specialisatie',
+  },
+  {
+    number: '03',
+    badge: 'Op voorschrift',
+    title: 'Huisbezoek',
+    description: 'Wanneer verplaatsen niet evident is. Online boeken niet mogelijk, bel om in te plannen.',
+    rows: [
+      { label: 'Alle huisbezoeken', duration: '30 min', price: '€45' },
+    ],
+    cta: { label: 'Bel +32 470 00 00 00', href: 'tel:+32470000000', showArrow: false },
+    highlighted: false,
+  },
+];
+
+// 4 praktische informatie cards (2×2 grid)
+const praktischeInfoCards = [
+  {
+    icon: BanknoteArrowDown,
+    title: 'Terugbetalingen',
+    body: 'Na je laatste sessie krijg je een getuigschrift om in te dienen bij je mutualiteit voor terugbetaling',
+    bullets: undefined,
+  },
+  {
+    icon: OctagonX,
+    title: 'Afspraak annuleren',
+    titleAccent: 'annuleren',
+    body: 'Annuleer minstens 24 uur op voorhand zodat we tijdig iemand anders kunnen inplannen. Anders wordt de sessie aangerekend.',
+    bullets: undefined,
+  },
+  {
+    icon: IdCard,
+    title: 'Wat breng je mee',
+    bullets: ['Identiteitskaart', 'Doktersvoorschrift', 'Eventuele medische verslagen', 'Comfortabele kledij'],
+  },
+  {
+    icon: CreditCard,
+    title: 'Betaalmogelijkheden',
+    bullets: ['Payconiq', 'Bancontact'],
+  },
+];
 ---
 
-<BaseLayout title="Tarieven" description="Tarieven bij Cocon.">
-  <main class="container-content py-16">
-    <h1 class="text-2xl font-bold mb-8">Tarieven</h1>
-    <p class="text-text-secondary">
-      Overzicht van onze tarieven. (Dummy pagina.)
+<BaseLayout title="Tarieven & info" description="Tarieven voor algemene kinesitherapie, bekkenbodemtherapie en huisbezoeken bij Cocon. Praktische info over terugbetalingen, afspraken en betalingen.">
+  <div class="page-header container-content">
+    <SectionHeading
+      title="Tarieven"
+      subtitle=""
+      align="center"
+    />
+    <p class="page-header__lead">
+      Cocon is een <strong>gedeconventioneerde</strong> praktijk, bij verhoogde tegemoetkoming hanteren wij de
+      <a href="https://www.riziv.fgov.be/" target="_blank" rel="noopener noreferrer">prijzen van het RIZIV</a>.
     </p>
-  </main>
+  </div>
+
+  <section class="tarieven-section container-content fade-in" aria-labelledby="tarieven-heading">
+    <h2 id="tarieven-heading" class="sr-only">Onze tarieven</h2>
+    <ul class="tarieven-grid" role="list">
+      {tarievenCards.map((card) => (
+        <li class:list={['tarieven-card', card.highlighted && 'tarieven-card--highlighted']}>
+          {card.highlighted && card.highlightLabel && (
+            <span class="tarieven-card__pill">{card.highlightLabel}</span>
+          )}
+          <div class="tarieven-card__top">
+            <div class="tarieven-card__meta">
+              <span class="tarieven-card__number" aria-hidden="true">
+                <span class="tarieven-card__number-dot" />
+                <span>{card.number}</span>
+              </span>
+              <span class="tarieven-card__badge">{card.badge}</span>
+            </div>
+            <h3 class="tarieven-card__title">{card.title}</h3>
+            <p class="tarieven-card__description">{card.description}</p>
+          </div>
+          <div class="tarieven-card__bottom">
+            <ul class="tarieven-card__rows" role="list">
+              {card.rows.map((row) => (
+                <li class="tarieven-card__row">
+                  <div class="tarieven-card__row-text">
+                    <span class="tarieven-card__row-label">{row.label}</span>
+                    <span class="tarieven-card__row-duration">{row.duration}</span>
+                  </div>
+                  <span class="tarieven-card__row-price">{row.price}</span>
+                </li>
+              ))}
+            </ul>
+            <Button href={card.cta.href} showArrow={card.cta.showArrow} class="tarieven-card__cta">
+              {card.cta.label}
+            </Button>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="info-section container-content fade-in" aria-labelledby="info-heading">
+    <SectionHeading
+      title="Praktische informatie"
+      subtitle="Handig om te weten hoe wij te werk gaan"
+      id="info-heading"
+      align="center"
+    />
+    <ul class="info-grid" role="list">
+      {praktischeInfoCards.map(({ icon: Icon, title, titleAccent, body, bullets }) => (
+        <li class="info-card">
+          <div class="info-card__head">
+            <Icon class="info-card__icon size-6" aria-hidden="true" />
+            <h3 class="info-card__title">
+              {titleAccent ? (
+                <>
+                  {title.replace(titleAccent, '').trim()}{' '}
+                  <span class="info-card__title-accent">{titleAccent}</span>
+                </>
+              ) : (
+                title
+              )}
+            </h3>
+          </div>
+          {bullets ? (
+            <ul class="info-card__list">
+              {bullets.map((b) => <li>{b}</li>)}
+            </ul>
+          ) : (
+            <p class="info-card__body">{body}</p>
+          )}
+        </li>
+      ))}
+    </ul>
+  </section>
 </BaseLayout>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Page header — Tarieven title with bold lead paragraph and RIZIV link below */
+  .page-header {
+    padding-top: 8.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  /* Tighten gap between SectionHeading and lead paragraph */
+  .page-header :global(.section-heading) {
+    margin-bottom: 0.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .page-header {
+      padding-top: 10.5rem;
+    }
+  }
+
+  .page-header__lead {
+    max-width: 56rem;
+    margin: 0 auto;
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-family: 'Raleway', sans-serif;
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+
+  @media (min-width: 768px) {
+    .page-header__lead {
+      font-size: 1.25rem;
+      line-height: 1.62;
+    }
+  }
+
+  .page-header__lead strong {
+    font-weight: 700;
+    color: var(--color-text-secondary);
+  }
+
+  .page-header__lead a {
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .page-header__lead a:hover {
+    color: var(--color-primary);
+  }
+
+  /* ---------- Tarieven cards ---------- */
+  .tarieven-section {
+    padding-block: 2.5rem 4rem;
+  }
+
+  @media (min-width: 768px) {
+    .tarieven-section {
+      padding-block: 3rem 6rem;
+    }
+  }
+
+  .tarieven-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+
+  @media (min-width: 1024px) {
+    .tarieven-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .tarieven-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-white);
+    border: 1px solid #dcdcdc;
+    border-radius: 1.25rem;
+    overflow: visible;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  .tarieven-card--highlighted {
+    background: #f2f5f1;
+    border-color: var(--color-primary);
+  }
+
+  /* "Specialisatie" pill — sits on top edge of the highlighted card */
+  .tarieven-card__pill {
+    position: absolute;
+    top: -0.6875rem; /* -11px */
+    left: 1.4375rem; /* 23px */
+    background: linear-gradient(180deg, var(--color-primary) 0%, #004d33 100%);
+    color: var(--color-white);
+    font-size: 0.875rem;
+    line-height: 1;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    font-weight: 400;
+  }
+
+  /* Top section: meta row + title + description */
+  .tarieven-card__top {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2.5rem 1.5rem 1.5rem;
+  }
+
+  .tarieven-card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .tarieven-card__number {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    line-height: 1;
+    letter-spacing: 0.025em;
+  }
+
+  /* Brand-skewed orange dot before the number */
+  .tarieven-card__number-dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.625rem;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    transform: rotate(43.62deg);
+  }
+
+  .tarieven-card__badge {
+    color: #4a564e;
+    font-size: 1rem;
+    line-height: 1;
+    letter-spacing: 0.025em;
+  }
+
+  .tarieven-card__title {
+    margin: 0;
+    font-family: 'Spectral', serif;
+    font-weight: 400; /* regular per design */
+    font-size: 2rem; /* 32px */
+    letter-spacing: -2px;
+    line-height: 1.125; /* ~36px */
+    color: var(--color-primary);
+  }
+
+  .tarieven-card__description {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6875;
+    color: var(--color-primary);
+  }
+
+  /* Bottom section: pricing rows + CTA. flex:1 so pricing pushes the CTA down to align across cards */
+  .tarieven-card__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    margin-top: auto;
+  }
+
+  .tarieven-card__rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .tarieven-card__row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-top: 1px solid #dcdcdc;
+    padding-top: 0.75rem;
+  }
+
+  .tarieven-card__row-text {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .tarieven-card__row-label {
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.6875;
+    color: var(--color-primary);
+  }
+
+  .tarieven-card__row-duration {
+    font-size: 1rem;
+    line-height: 1;
+    color: #676767;
+  }
+
+  .tarieven-card__row-price {
+    flex-shrink: 0;
+    font-family: 'Spectral', serif;
+    font-weight: 500;
+    font-size: 2rem; /* 32px */
+    line-height: 1;
+    color: var(--color-primary);
+  }
+
+  .tarieven-card__cta {
+    width: 100%;
+  }
+
+  /* ---------- Praktische informatie ---------- */
+  .info-section {
+    padding-block: 2.5rem 5rem;
+  }
+
+  @media (min-width: 768px) {
+    .info-section {
+      padding-block: 3rem 8rem;
+    }
+  }
+
+  .info-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.375rem;
+    align-items: stretch;
+  }
+
+  @media (min-width: 768px) {
+    .info-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .info-card {
+    background: var(--color-white);
+    border: 1px solid #dcdcdc;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  .info-card__head {
+    display: flex;
+    align-items: center;
+    gap: 0.6875rem; /* 11px */
+  }
+
+  .info-card__icon {
+    flex-shrink: 0;
+    color: var(--color-primary);
+  }
+
+  .info-card__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.6875;
+    color: var(--color-primary);
+  }
+
+  .info-card__title-accent {
+    color: #c8531d;
+  }
+
+  .info-card__body {
+    margin: 0;
+    color: #4a564e;
+    font-size: 1rem;
+    line-height: 1.6875;
+  }
+
+  .info-card__list {
+    margin: 0;
+    padding: 0 0 0 1.5rem;
+    list-style: disc;
+    color: #4a564e;
+    font-size: 1rem;
+    line-height: 1.6875;
+  }
+</style>

@@ -1,12 +1,373 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import AfspraakCta from '../components/AfspraakCta.astro';
+import Baby from '@lucide/astro/icons/baby';
+import Heart from '@lucide/astro/icons/heart';
+import Users from '@lucide/astro/icons/users';
+import GraduationCap from '@lucide/astro/icons/graduation-cap';
+import Award from '@lucide/astro/icons/award';
+import lynnPortrait from '../assets/images/over-ons/lynn-portrait.png';
+
+const credentials = [
+  {
+    icon: GraduationCap,
+    title: 'Master in de Revalidatiewetenschappen en de Kinesitherapie',
+    detail: '— KU Leuven',
+  },
+  {
+    icon: GraduationCap,
+    title: 'Postgraduaat Pelvische Reëducatie & Perinatale Kinesitherapie',
+    detail: '— SOMT University (Amersfoort)',
+  },
+  {
+    icon: Award,
+    title: 'Bijzondere bekwaamheid in pelvische reëducatie en perinatale kinesitherapie',
+    detail: '— Gouden medaille op BICAP',
+  },
+];
+
+const specialisaties = [
+  {
+    icon: Baby,
+    title: 'Prenatale kiné',
+    description:
+      'Ademhaling, bekkenbodem reëducatie (oefeningen), voorbereiding op de bevalling, klachten tijdens de zwangerschap (urineverlies, bekkenklachten), preventie postnatale klachten.',
+  },
+  {
+    icon: Heart,
+    title: 'Postnatale kiné',
+    description:
+      'Herstel na zwangerschap, bekkenbodemtherapie, oefentherapie, opbouw core stability, rug- en bekkenklachten.',
+  },
+  {
+    icon: Users,
+    title: 'Voorbereiding op bevalling',
+    description:
+      'Voorbereiding op bevalling met partner, hoe vang je weeën op, rol van partner tijdens arbeid (weeën), ademhalingsoefeningen, perstechniek.',
+  },
+];
 ---
 
-<BaseLayout title="Over ons" description="Over Cocon.">
-  <main class="container-content py-16">
-    <h1 class="text-2xl font-bold mb-8">Over ons</h1>
-    <p class="text-text-secondary">
-      Dummy pagina om de header-transitie te testen. Navigeer tussen Home en Over ons om de oval-animatie te zien.
-    </p>
-  </main>
+<BaseLayout title="Over ons" description="Maak kennis met Lynn, kinesist & oprichter van Cocon, gespecialiseerd in pelvische reëducatie en perinatale kinesitherapie.">
+  <section class="gezicht-section container-content fade-in" aria-labelledby="gezicht-heading">
+    <div class="gezicht-section__content">
+      <header class="gezicht-section__heading">
+        <h1 class="gezicht-section__title" id="gezicht-heading">
+          <span class="gezicht-section__title-text">Het gezicht achter cocon</span>
+          <span class="gezicht-section__title-dot" aria-hidden="true" />
+        </h1>
+      </header>
+      <div class="gezicht-section__quote">
+        <p class="gezicht-section__quote-text">
+          “Bekkenbodemklachten zijn vaker normaal dan ze besproken worden. Dat besef bracht me, vijf
+          jaar geleden tijdens mijn stage op de perinatale dienst in Gasthuisberg (UZ Leuven), naar
+          een specialisatie die intussen de kern is van mijn praktijk: pelvische reëducatie en
+          perinatale kinesitherapie”
+        </p>
+        <p class="gezicht-section__attribution">— Lynn, kinesist &amp; oprichter Cocon</p>
+      </div>
+      <ul class="gezicht-section__credentials" role="list">
+        {credentials.map(({ icon: Icon, title, detail }) => (
+          <li class="gezicht-section__credential">
+            <Icon class="gezicht-section__credential-icon size-6" aria-hidden="true" />
+            <div class="gezicht-section__credential-text">
+              <p class="gezicht-section__credential-title">{title}</p>
+              <p class="gezicht-section__credential-detail">{detail}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div class="gezicht-section__image-frame">
+      <span class="gezicht-section__ellipse" aria-hidden="true" />
+      <Image
+        src={lynnPortrait}
+        alt="Lynn Beunnens, kinesist en oprichter van Cocon"
+        width={400}
+        height={400}
+        format="webp"
+        widths={[320, 400, 600, 800]}
+        sizes="(max-width: 767px) 320px, 400px"
+        loading="lazy"
+        class="gezicht-section__image"
+      />
+    </div>
+  </section>
+
+  <section class="specialisatie-section fade-in" aria-labelledby="specialisatie-heading">
+    <div class="container-content">
+      <SectionHeading
+        title="Specialisatie"
+        subtitle="Waarvoor kan je bij Cocon terecht."
+        align="center"
+        id="specialisatie-heading"
+      />
+      <ul class="specialisatie-grid" role="list">
+        {specialisaties.map(({ icon: Icon, title, description }) => (
+          <li class="specialisatie-card">
+            <span class="specialisatie-card__icon" aria-hidden="true">
+              <span class="specialisatie-card__icon-inner">
+                <Icon class="size-8" />
+              </span>
+            </span>
+            <h3 class="specialisatie-card__title">{title}</h3>
+            <p class="specialisatie-card__description">{description}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <AfspraakCta transparent class="fade-in" />
 </BaseLayout>
+
+<style>
+  /* ---------- Het gezicht achter cocon ---------- */
+  .gezicht-section {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+    /* Account for fixed header on top of page */
+    padding-top: 8.5rem;
+    padding-bottom: 4rem;
+    overflow: visible;
+  }
+
+  @media (min-width: 1024px) {
+    .gezicht-section {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 6rem;
+      padding-top: 10.5rem;
+      padding-bottom: 6rem;
+    }
+  }
+
+  .gezicht-section__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    font-family: 'Raleway', sans-serif;
+    text-align: left;
+  }
+
+  .gezicht-section__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .gezicht-section__title {
+    /* Use the shared page-title token (Spectral Medium 40 / -2px) */
+    font-family: var(--font-page-title-family);
+    font-size: var(--font-page-title-size-mobile);
+    font-weight: var(--font-page-title-weight);
+    letter-spacing: var(--font-page-title-tracking-mobile);
+    line-height: var(--font-page-title-line-height);
+    color: var(--color-primary);
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .gezicht-section__title {
+      font-size: var(--font-page-title-size);
+      letter-spacing: var(--font-page-title-tracking);
+    }
+  }
+
+  .gezicht-section__title-text {
+    display: inline;
+  }
+
+  /* Brand-skewed orange dot at end of title */
+  .gezicht-section__title-dot {
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.9375rem;
+    margin-left: 0.5rem;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    transform: rotate(43.62deg);
+    vertical-align: middle;
+  }
+
+  .gezicht-section__quote {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .gezicht-section__quote-text {
+    margin: 0;
+    color: var(--color-primary);
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .gezicht-section__attribution {
+    margin: 0;
+    color: var(--color-primary);
+    font-size: 1rem;
+    font-style: italic;
+    line-height: 1.75;
+  }
+
+  .gezicht-section__credentials {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .gezicht-section__credential {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .gezicht-section__credential-icon {
+    flex-shrink: 0;
+    color: var(--color-primary);
+    margin-top: 0.125rem;
+  }
+
+  .gezicht-section__credential-text {
+    flex: 1;
+    min-width: 0;
+    color: var(--color-primary);
+    font-size: 0.875rem; /* 14px per design */
+    line-height: 1.5; /* 24px */
+  }
+
+  .gezicht-section__credential-title {
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .gezicht-section__credential-detail {
+    margin: 0;
+    font-weight: 400;
+  }
+
+  /* Image with brand-skewed peach ellipse behind */
+  .gezicht-section__image-frame {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 400px;
+    flex-shrink: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .gezicht-section__image-frame {
+      width: 400px;
+    }
+  }
+
+  .gezicht-section__ellipse {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    display: block;
+    /* Same shape as IconButton: 36:44 box, border-radius:50%, rotated 45° */
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    aspect-ratio: 36 / 44;
+    transform: translate(-50%, -50%) rotate(45deg);
+    background-color: #fcf0e7;
+    border-radius: 50%;
+  }
+
+  .gezicht-section__image {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* ---------- Specialisatie ---------- */
+  .specialisatie-section {
+    background-color: rgba(239, 240, 235, 0.5);
+    padding: 4rem 0;
+  }
+
+  @media (min-width: 768px) {
+    .specialisatie-section {
+      padding: 5rem 0 7.5rem;
+    }
+  }
+
+  .specialisatie-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (min-width: 768px) {
+    .specialisatie-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .specialisatie-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .specialisatie-card {
+    background-color: var(--color-white);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  .specialisatie-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.5rem;
+    height: 5.5rem;
+    background-color: var(--color-background-muted);
+    border-radius: 50%;
+    transform: rotate(45deg);
+    color: var(--color-primary);
+  }
+
+  .specialisatie-card__icon-inner {
+    display: inline-flex;
+    transform: rotate(-45deg);
+  }
+
+  .specialisatie-card__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    line-height: 1.5;
+    letter-spacing: 0.0165em;
+    margin: 0;
+  }
+
+  .specialisatie-card__description {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--color-primary);
+    line-height: 1.6875;
+    margin: 0;
+  }
+</style>

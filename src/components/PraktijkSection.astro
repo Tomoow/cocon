@@ -22,16 +22,16 @@ interface Props {
 
 const {
   imageSrc = defaultPraktijkImage,
-  imageAlt = 'Gevel van praktijk Cocon, Klein-Holland 7 Londerzeel',
-  googleMapsHref = 'https://www.google.com/maps/search/?api=1&query=Klein-Holland+7+1840+Londerzeel',
-  wazeHref = 'https://waze.com/ul?q=Klein-Holland%207%201840%20Londerzeel',
+  imageAlt = 'Gevel van praktijk Cocon, Mechelseweg 62 Kapelle-op-den-Bos',
+  googleMapsHref = 'https://www.google.com/maps/search/?api=1&query=Mechelseweg+62+1880+Kapelle-op-den-Bos',
+  wazeHref = 'https://waze.com/ul?q=Mechelseweg%2062%201880%20Kapelle-op-den-Bos',
   class: className,
 } = Astro.props;
 
 const contactItems = [
   {
     icon: 'location',
-    text: 'Klein-Holland 7 • 1840 Londerzeel',
+    text: 'Mechelseweg 62, 1880 Kapelle-op-den-Bos • In Poutrel',
   },
   {
     icon: 'email',
@@ -43,7 +43,7 @@ const contactItems = [
   },
   {
     icon: 'parking',
-    text: 'Parking in de straat of aan het station (op 20 meter)',
+    text: 'Parking voor de deur',
   },
 ];
 ---
@@ -147,12 +147,15 @@ const contactItems = [
     position: relative;
     background-color: var(--color-background-subtle);
     overflow: visible;
-    padding: 2.5rem 0 8rem;
+    /* Mobile: extra breathing room above the section (double the bottom padding). */
+    padding: 8rem 0 4rem;
   }
 
   @media (min-width: 768px) {
     .praktijk-section {
-      padding: 4rem 0 12rem;
+      /* 160px top, 80px bottom — extra breathing room above the section, then a tighter
+         transition into the review section that follows. */
+      padding: 10rem 0 5rem;
     }
   }
 

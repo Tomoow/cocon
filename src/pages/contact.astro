@@ -1,0 +1,147 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import ContactForm from '../components/ContactForm.astro';
+import sendMessageLottie from '../assets/images/send-message.lottie?url';
+---
+
+<BaseLayout title="Contact" description="Contacteer Cocon. Heb je een vraag? Laat een bericht achter en we antwoorden zo snel mogelijk.">
+  <div class="page-header container-content">
+    <SectionHeading
+      title="Contactformulier"
+      subtitle="Heb je een vraag die je liever via mail stelt? Laat ze hieronder achter en we antwoorden zo snel mogelijk."
+      align="center"
+    />
+  </div>
+
+  <section class="contact-section container-content fade-in" aria-labelledby="contact-heading">
+    <h2 id="contact-heading" class="sr-only">Contactformulier</h2>
+    <div class="contact-section__illustration" aria-hidden="true">
+      <dotlottie-wc
+        id="contact-lottie"
+        src={sendMessageLottie}
+        class="contact-section__lottie"
+      ></dotlottie-wc>
+    </div>
+    <div class="contact-section__form">
+      <ContactForm />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-header {
+    padding-top: 8.5rem;
+    padding-bottom: 2.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .page-header {
+      padding-top: 10.5rem;
+    }
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .contact-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding-bottom: 5rem;
+  }
+
+  .contact-section__illustration {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .contact-section__illustration :global(.contact-section__lottie) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    display: block;
+  }
+
+  .contact-section__form {
+    width: 100%;
+    max-width: 36rem;
+  }
+
+  @media (min-width: 1024px) {
+    .contact-section {
+      flex-direction: row;
+      align-items: center;
+      gap: 0;
+      padding-bottom: 8rem;
+    }
+
+    .contact-section__illustration {
+      flex-shrink: 0;
+      max-width: 480px;
+    }
+
+    .contact-section__form {
+      flex: 1;
+      max-width: none;
+    }
+  }
+</style>
+
+<script>
+  // Register the dotlottie web component (defines <dotlottie-wc>)
+  import '@lottiefiles/dotlottie-wc';
+  import type { DotLottie } from '@lottiefiles/dotlottie-web';
+
+  type LottieElement = HTMLElement & { dotLottie?: DotLottie | null };
+
+  const lottie = document.getElementById('contact-lottie') as LottieElement | null;
+  const form = document.querySelector<HTMLFormElement>('form.contact-form');
+
+  if (lottie && form) {
+    let pendingSubmit = false;
+
+    // Render at the device pixel ratio so the canvas isn't pixelated on retina screens
+    (lottie as LottieElement & { renderConfig?: { devicePixelRatio?: number } }).renderConfig = {
+      devicePixelRatio: window.devicePixelRatio || 2,
+    };
+
+    // Wire up the inner DotLottie instance once it's ready (created async by the WC)
+    function attach(instance: DotLottie) {
+      instance.addEventListener('complete', () => {
+        if (!pendingSubmit) return;
+        pendingSubmit = false;
+        form!.submit();
+      });
+    }
+
+    function waitForInstance() {
+      if (lottie!.dotLottie) {
+        attach(lottie!.dotLottie);
+      } else {
+        requestAnimationFrame(waitForInstance);
+      }
+    }
+    waitForInstance();
+
+    form.addEventListener('submit', (e) => {
+      if (pendingSubmit) return;
+      if (!form.checkValidity()) return; // browser shows native validation
+      e.preventDefault();
+      pendingSubmit = true;
+      lottie.dotLottie?.play();
+    });
+  }
+</script>

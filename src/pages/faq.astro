@@ -1,0 +1,355 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import ChevronDown from '@lucide/astro/icons/chevron-down';
+import ArrowUpRight from '@lucide/astro/icons/arrow-up-right';
+
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+interface FaqCategory {
+  /** Spectral title shown in the left column */
+  title: string;
+  /** Description below the title */
+  description: string;
+  /** Inline link label ("Ik heb nog een ... vraag") */
+  cta: { label: string; href: string };
+  /** Accordion items */
+  items: FaqItem[];
+  /** Highlight band — uses #f5f5f1 background to break up the page */
+  highlighted?: boolean;
+}
+
+const categories: FaqCategory[] = [
+  {
+    title: 'Algemene vragen',
+    description: 'Vragen specifiek over onze praktische werking',
+    cta: { label: 'Ik heb nog een praktische vraag', href: '/contact' },
+    items: [
+      {
+        question: 'Heb ik een voorschrift nodig?',
+        answer:
+          'Voor de meeste behandelingen heb je een voorschrift van je huisarts of specialist nodig om recht te hebben op terugbetaling via je mutualiteit. Voor een eerste intake mag je ook zonder voorschrift langskomen — we zoeken samen uit wat je nodig hebt.',
+      },
+      {
+        question: 'Hoe wordt de terugbetaling geregeld?',
+        answer:
+          'Na elke sessie krijg je een getuigschrift dat je bij je mutualiteit indient voor terugbetaling. Het RIZIV-tarief geldt bij verhoogde tegemoetkoming; voor andere situaties hanteren we onze eigen tarieven (zie de Tarieven & info pagina).',
+      },
+      {
+        question: 'Hoe maak ik een afspraak?',
+        answer:
+          'Een afspraak maken kan online via de afspraakknop bovenaan de website — je hebt geen account nodig en ontvangt meteen een bevestiging. Lukt dat niet, bel of mail dan even, we plannen je graag in.',
+      },
+    ],
+  },
+  {
+    title: 'Vragen rond bekkenbodemklachten',
+    description: 'Vragen specifiek over bekkenbodemtherapie',
+    cta: { label: 'Ik heb nog een vraag over bekkenbodem', href: '/contact' },
+    highlighted: true,
+    items: [
+      {
+        question: 'Wat is bekkenbodemtherapie?',
+        answer:
+          'Bekkenbodemtherapie is gespecialiseerde kinesitherapie die zich richt op de spieren, organen en zenuwen van het kleine bekken. We werken aan bewustwording, ontspanning en versterking — afhankelijk van wat jouw bekkenbodem nodig heeft.',
+      },
+      {
+        question: 'Bij welke klachten kan bekkenbodemtherapie toegepast worden?',
+        answer:
+          'Onder andere bij urineverlies, stoelgangproblemen, pijn bij het vrijen, een zwaar gevoel in de onderbuik, klachten na de bevalling of bij de overgang. Ook ter preventie tijdens of na een zwangerschap is bekkenbodemtherapie zinvol.',
+      },
+      {
+        question: 'Hoe verloopt een eerste consult bekkenbodem?',
+        answer:
+          'We starten met een uitgebreid gesprek over je klachten, levensstijl en doelen. Daarna volgt een onderzoek (extern, en — alleen mits jouw toestemming — eventueel intern) en stellen we samen een behandelplan op maat op.',
+      },
+    ],
+  },
+  {
+    title: 'Vragen rond zwangerschap',
+    description: 'Vragen specifiek over zwangerschap en perinatale zorg',
+    cta: { label: 'Ik heb nog een vraag over zwangerschap', href: '/contact' },
+    items: [
+      {
+        question: 'Wat is prenatale kinesitherapie?',
+        answer:
+          'Prenatale kinesitherapie begeleidt je tijdens de zwangerschap met ademhalings- en bekkenbodemoefeningen, houdingsadvies en de voorbereiding op de bevalling. Het doel: je lichaam optimaal voorbereiden en klachten zoals rugpijn of bekkeninstabiliteit beperken.',
+      },
+      {
+        question: 'Wat zijn de voordelen van gespecialiseerde postnatale revalidatie?',
+        answer:
+          'Postnatale revalidatie helpt je bekkenbodem, je core en je houding te herstellen na de bevalling. Dat voorkomt klachten als urineverlies, rugpijn of een gevoel van zwaarte, en geeft je het vertrouwen om weer veilig te bewegen en sporten.',
+      },
+      {
+        question: 'Welke oefeningen zijn veilig na de bevalling?',
+        answer:
+          'In de eerste weken werken we vooral met ademhaling, lichte bekkenbodemactivatie en zachte mobilisaties. Pas wanneer het herstel het toelaat, bouwen we stap voor stap intensiever op — altijd op maat van jouw bevalling en herstel.',
+      },
+      {
+        question: 'Hoe verloopt een eerste consult bekkenbodem?',
+        answer:
+          'We bekijken eerst je voorgeschiedenis en bevalling. Daarna volgt een onderzoek van houding, buikwand en bekkenbodem (extern of — mits toestemming — intern), en stellen we samen een herstelplan op.',
+      },
+      {
+        question: 'Is postnatale kinesitherapie terugbetaald?',
+        answer:
+          'Ja. Via het RIZIV heb je recht op 9 perinatale sessies aan een verlaagd tarief, op voorschrift van je arts of vroedvrouw. Aanvullende terugbetalingen via je mutualiteit kunnen daarbovenop van toepassing zijn.',
+      },
+      {
+        question: 'Geef je ook kinésitherapie aan huis voor zwangere vrouwen?',
+        answer:
+          'Bij medische noodzaak — bijvoorbeeld voorgeschreven bedrust — is een huisbezoek mogelijk. Neem hiervoor contact op zodat we samen kunnen bekijken wat haalbaar is.',
+      },
+      {
+        question: 'Vanaf wanneer in de zwangerschap kan ik beginnen met perinatale kinesitherapie?',
+        answer:
+          'In principe kan je vanaf het tweede trimester starten met perinatale begeleiding. Heb je specifieke klachten zoals rug- of bekkenpijn, dan plannen we eerder in. We stemmen het tempo af op jouw zwangerschap en welbevinden.',
+      },
+    ],
+  },
+];
+---
+
+<BaseLayout title="FAQ" description="Antwoorden op de meest gestelde vragen over kinesitherapie, bekkenbodemzorg en pre- en postnatale begeleiding bij Cocon.">
+  <div class="page-header container-content">
+    <SectionHeading
+      title="Veelgestelde vragen"
+      subtitle="Een afspraak maken roept vaak vragen op. Hier vind je op de meestgestelde vragen een antwoord"
+      align="center"
+    />
+  </div>
+
+  {categories.map((cat, i) => (
+    <section class:list={['faq-category fade-in', cat.highlighted && 'faq-category--highlighted']} aria-labelledby={`faq-cat-${i}-heading`}>
+      <div class="faq-category__inner container-content">
+        <div class="faq-category__intro">
+          <div class="faq-category__intro-text">
+            <h2 class="faq-category__title" id={`faq-cat-${i}-heading`}>{cat.title}</h2>
+            <p class="faq-category__description">{cat.description}</p>
+          </div>
+          <a class="faq-category__cta" href={cat.cta.href}>
+            <span>{cat.cta.label}</span>
+            <ArrowUpRight class="size-4" aria-hidden="true" />
+          </a>
+        </div>
+        <ul class="faq-list" role="list">
+          {cat.items.map((item) => (
+            <li class="faq-item">
+              <details class="faq-details">
+                <summary class="faq-summary">
+                  <span class="faq-summary__dot" aria-hidden="true" />
+                  <span class="faq-summary__question">{item.question}</span>
+                  <span class="faq-summary__icon" aria-hidden="true">
+                    <ChevronDown class="size-6" />
+                  </span>
+                </summary>
+                <p class="faq-answer">{item.answer}</p>
+              </details>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  ))}
+</BaseLayout>
+
+<style>
+  .page-header {
+    padding-top: 8.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .page-header {
+      padding-top: 10.5rem;
+      padding-bottom: 2.5rem;
+    }
+  }
+
+  /* Each category band */
+  .faq-category {
+    padding-block: 2rem;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  @media (min-width: 768px) {
+    .faq-category {
+      padding-block: 2.5rem;
+    }
+  }
+
+  /* Highlighted category gets a subtle background to break up the page */
+  .faq-category--highlighted {
+    background-color: #f5f5f1;
+  }
+
+  /* Responsive 2-column layout: text intro on the left, accordion list on the right */
+  .faq-category__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .faq-category__inner {
+      flex-direction: row;
+      gap: 3.75rem; /* 60px per design */
+      align-items: flex-start;
+    }
+  }
+
+  .faq-category__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .faq-category__intro {
+      width: 30.375rem; /* 486px per design */
+      padding-block: 1rem;
+      justify-content: center;
+    }
+  }
+
+  .faq-category__intro-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .faq-category__title {
+    margin: 0;
+    /* Spectral 32 / -2px tracking — same as the tarieven card title */
+    font-family: 'Spectral', serif;
+    font-weight: 400;
+    font-size: 1.75rem; /* 28px mobile */
+    letter-spacing: -1.25px;
+    line-height: 1.15;
+    color: var(--color-primary);
+  }
+
+  @media (min-width: 768px) {
+    .faq-category__title {
+      font-size: 2rem; /* 32px desktop */
+      letter-spacing: -2px;
+      line-height: 1.125;
+    }
+  }
+
+  .faq-category__description {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    line-height: 1.6875;
+  }
+
+  .faq-category__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    align-self: flex-start;
+    color: var(--color-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: -0.0195em;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: opacity 0.2s ease;
+  }
+
+  .faq-category__cta:hover {
+    opacity: 0.8;
+  }
+
+  .faq-category__cta:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Accordion list */
+  .faq-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .faq-item {
+    border-bottom: 1px solid #e3e6e1;
+  }
+
+  .faq-details {
+    padding-block: 0;
+  }
+
+  .faq-summary {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: start;
+    gap: 0.5rem;
+    cursor: pointer;
+    list-style: none;
+    padding-block: 1rem;
+    color: var(--color-primary);
+    font-size: 1.125rem; /* 18px */
+    font-weight: 600;
+    line-height: 1.8;
+  }
+
+  .faq-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-summary:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .faq-summary__dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.625rem;
+    margin-top: 0.65rem;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    transform: rotate(45deg);
+    flex-shrink: 0;
+  }
+
+  .faq-summary__question {
+    color: var(--color-primary);
+  }
+
+  .faq-summary__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    transition: transform 0.2s ease-out;
+    margin-top: 0.25rem;
+  }
+
+  .faq-details[open] .faq-summary__icon {
+    transform: rotate(180deg);
+  }
+
+  .faq-answer {
+    margin: 0;
+    padding-bottom: 1rem;
+    /* Indent answer to align with the question text (after the dot + gap) */
+    padding-left: 1rem;
+    color: var(--color-text-primary);
+    font-size: 1.125rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+</style>
