@@ -8,12 +8,15 @@ import Heart from '@lucide/astro/icons/heart';
 import Users from '@lucide/astro/icons/users';
 import GraduationCap from '@lucide/astro/icons/graduation-cap';
 import Award from '@lucide/astro/icons/award';
+import Info from '@lucide/astro/icons/info';
 import lynnPortrait from '../assets/images/over-ons/lynn-portrait.png';
 
 interface Credential {
   icon: any;
   title: string;
-  detail: string;
+  detail?: string;
+  detailPrefix?: string;
+  detailLink?: { label: string; href: string };
   tooltip?: string;
   goldIcon?: boolean;
 }
@@ -32,8 +35,10 @@ const credentials: Credential[] = [
   {
     icon: Award,
     title: 'Bijzondere bekwaamheid in pelvische reëducatie en perinatale kinesitherapie',
-    detail: '— Gouden medaille op BICAP',
-    tooltip: 'Belgisch interdisciplinair congres voor gespecialiseerde pelvische kinesitherapie',
+    detailPrefix: '— Gouden medaille op ',
+    detailLink: { label: 'BICAP', href: 'https://www.bicap.be/kinesist-in-de-buurt/' },
+    detail: '',
+    tooltip: 'Dit officiële keurmerk wordt uitgereikt door het Vlaams Departement Zorg aan kinesitherapeuten die een erkende specialisatieopleiding hebben afgerond én aantoonbare praktijkervaring hebben in dit domein.',
     goldIcon: true,
   },
 ];
@@ -79,7 +84,7 @@ const specialisaties = [
         <p class="gezicht-section__attribution">— Lynn, kinesist &amp; oprichter Cocon</p>
       </div>
       <ul class="gezicht-section__credentials" role="list">
-        {credentials.map(({ icon: Icon, title, detail, tooltip, goldIcon }) => (
+        {credentials.map(({ icon: Icon, title, detail, detailPrefix, detailLink, tooltip, goldIcon }) => (
           <li class="gezicht-section__credential">
             {goldIcon ? (
               <span class="gezicht-section__credential-icon gezicht-section__credential-icon--gold size-6" aria-hidden="true">
@@ -101,11 +106,15 @@ const specialisaties = [
             <div class="gezicht-section__credential-text">
               <p class="gezicht-section__credential-title">{title}</p>
               <p class="gezicht-section__credential-detail">
-                {detail}
+                {detailPrefix && detailLink ? (
+                  <>
+                    {detailPrefix}<a href={detailLink.href} class="cred-detail-link" target="_blank" rel="noopener noreferrer">{detailLink.label}</a>
+                  </>
+                ) : detail}
                 {tooltip && (
                   <span class="cred-tooltip">
-                    <button type="button" class="cred-tooltip__btn" aria-label={`Meer info over BICAP: ${tooltip}`}>
-                      <span aria-hidden="true">ⓘ</span>
+                    <button type="button" class="cred-tooltip__btn" aria-label={`Meer info: ${tooltip}`}>
+                      <Info class="cred-tooltip__icon" aria-hidden="true" />
                     </button>
                     <span class="cred-tooltip__content" role="tooltip">{tooltip}</span>
                   </span>
@@ -307,22 +316,35 @@ const specialisaties = [
     margin-left: 0.25rem;
   }
 
+  .cred-detail-link {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: inherit;
+  }
+
+  .cred-detail-link:hover {
+    opacity: 0.75;
+  }
+
   .cred-tooltip__btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.125rem;
-    height: 1.125rem;
-    border-radius: 50%;
-    border: 1.5px solid var(--color-primary);
     background: none;
-    color: var(--color-primary);
-    font-size: 0.625rem;
-    line-height: 1;
+    border: none;
+    padding: 0 0 0 0.2rem;
     cursor: default;
-    padding: 0;
-    opacity: 0.6;
+    color: var(--color-primary);
+    opacity: 0.5;
     transition: opacity 0.15s ease;
+    vertical-align: middle;
+  }
+
+  .cred-tooltip__icon {
+    width: 0.875rem;
+    height: 0.875rem;
+    display: block;
   }
 
   .cred-tooltip__btn:hover,
