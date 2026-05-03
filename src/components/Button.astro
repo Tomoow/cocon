@@ -1,33 +1,36 @@
 ---
 /**
- * Button: pill-shaped. Variants: primary (green bg), secondary (outline).
- * Padding: 1rem L/R, 0.75rem T/B (per Figma).
+ * Button: pill-shaped. Variants: primary (green bg), secondary (outline), tertiary (ghost).
+ * Sizes: 'md' (default — px-4 py-3, 16px text) and 'lg' (extra big — h-72px, px-10, 24px text).
  */
 interface Props {
   href?: string;
   type?: 'button' | 'submit';
   variant?: 'primary' | 'secondary' | 'tertiary';
+  size?: 'md' | 'lg';
   showArrow?: boolean;
   class?: string;
 }
 
-const { href, type = 'button', variant = 'primary', showArrow = false, class: className = '' } = Astro.props;
-const base = 'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-3 font-medium no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
+const { href, type = 'button', variant = 'primary', size = 'md', showArrow = false, class: className = '' } = Astro.props;
+const base = 'inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
+const sizeClass = size === 'lg' ? 'btn-lg gap-2 px-10 text-2xl' : 'gap-2 px-4 py-3';
 const primaryClass = 'btn-primary group bg-primary text-white hover:opacity-90';
 const secondaryClass = 'btn-secondary border-2 border-primary text-primary bg-surface hover:bg-background-muted hover:opacity-100';
 const tertiaryClass = 'btn-tertiary group text-primary bg-transparent hover:bg-background-muted-alt';
 const linkClass = variant === 'primary' ? primaryClass : variant === 'secondary' ? secondaryClass : tertiaryClass;
+const arrowSize = size === 'lg' ? 24 : 20;
 ---
 
 {href ? (
   <a
     href={href}
-    class={`${base} ${linkClass} ${className}`}
+    class={`${base} ${sizeClass} ${linkClass} ${className}`}
   >
     <slot />
     {showArrow && (
       <span class="inline-block transition-transform duration-200 ease-out group-hover:translate-x-1" aria-hidden="true">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width={arrowSize} height={arrowSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 12h14" />
           <path d="m12 5 7 7-7 7" />
         </svg>
@@ -37,12 +40,12 @@ const linkClass = variant === 'primary' ? primaryClass : variant === 'secondary'
   ) : (
   <button
     type={type}
-    class={`${base} ${variant === 'primary' ? 'group ' + primaryClass : variant === 'secondary' ? secondaryClass : 'group ' + tertiaryClass} ${className}`}
+    class={`${base} ${sizeClass} ${variant === 'primary' ? 'group ' + primaryClass : variant === 'secondary' ? secondaryClass : 'group ' + tertiaryClass} ${className}`}
   >
     <slot />
     {showArrow && (
       <span class="inline-block transition-transform duration-200 ease-out group-hover:translate-x-1" aria-hidden="true">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width={arrowSize} height={arrowSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 12h14" />
           <path d="m12 5 7 7-7 7" />
         </svg>
@@ -52,6 +55,11 @@ const linkClass = variant === 'primary' ? primaryClass : variant === 'secondary'
 )}
 
 <style>
+  /* Large CTA button — 72px height, used in the appointment CTA section */
+  .btn-lg {
+    min-height: 4.5rem; /* 72px */
+  }
+
   .btn-primary:active {
     background: color-mix(in srgb, var(--color-primary) 70%, black);
   }

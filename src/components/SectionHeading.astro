@@ -64,16 +64,20 @@ const isOnDark = titleColor === 'white' || subtitleColor === 'white';
 
   .section-heading__title {
     display: block;
-    font-size: 2rem; /* 32px mobile */
-    font-weight: 500; /* medium */
+    /* Use the shared page-title token (Spectral Medium 40 / -2px) — defined in global.css */
+    font-family: var(--font-page-title-family);
+    font-size: var(--font-page-title-size-mobile); /* 32px mobile */
+    font-weight: var(--font-page-title-weight);
+    letter-spacing: var(--font-page-title-tracking-mobile);
+    line-height: var(--font-page-title-line-height);
     color: var(--color-primary);
     margin: 0 0 1rem 0;
-    line-height: 1.2;
   }
 
   @media (min-width: 768px) {
     .section-heading__title {
-      font-size: 2.5rem; /* 40px desktop */
+      font-size: var(--font-page-title-size); /* 40px desktop */
+      letter-spacing: var(--font-page-title-tracking);
       margin-bottom: 1rem;
     }
   }
@@ -103,17 +107,18 @@ const isOnDark = titleColor === 'white' || subtitleColor === 'white';
   }
 
   .section-heading__subtitle {
-    font-size: 1rem; /* 16px mobile */
-    font-weight: 400;
+    font-family: var(--font-section-subtitle-family);
+    font-size: var(--font-section-subtitle-size-mobile); /* 18px mobile */
+    font-weight: var(--font-section-subtitle-weight);
     color: var(--color-text-secondary);
+    line-height: var(--font-section-subtitle-line-height);
     margin: 0;
-    line-height: 1.5;
   }
 
 
   @media (min-width: 768px) {
     .section-heading__subtitle {
-      font-size: 1.125rem; /* 18px desktop */
+      font-size: var(--font-section-subtitle-size); /* 24px desktop */
     }
   }
 

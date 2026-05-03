@@ -45,16 +45,22 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
   <div class="hero-content container-content relative z-10 flex flex-1 flex-wrap items-center gap-8 pt-[7.5rem] pb-16 md:pt-[7.5rem] md:gap-12 lg:pt-[5.5rem] lg:gap-16">
     <!-- Left: text + CTAs; min-width so right wraps when row can't fit both -->
     <div class="hero-text-block flex min-w-[320px] flex-1 flex-col gap-6 text-left">
-      <h1 class="hero-heading">
-        <span class="hero-heading-static">Kinesitherapie aan huis</span>
-        <br />
-        <span class="hero-typing-line" data-typing-phrases={JSON.stringify(typingPhrases)}>
-          <span class="hero-typing" id="hero-typing-text" aria-live="polite" />
-          <span class="hero-cursor" id="hero-typing-cursor" aria-hidden="true" />
+      <div class="hero-title-block">
+        <span class="hero-badge">
+          <span class="hero-badge__dot" aria-hidden="true" />
+          <span class="hero-badge__text">Wij nemen nieuwe patiënten aan!</span>
         </span>
-      </h1>
+        <h1 class="hero-heading">
+          <span class="hero-heading-static">Kinesitherapie op maat</span>
+          <br />
+          <span class="hero-typing-line" data-typing-phrases={JSON.stringify(typingPhrases)}>
+            <span class="hero-typing" id="hero-typing-text" aria-live="polite" />
+            <span class="hero-cursor" id="hero-typing-cursor" aria-hidden="true" />
+          </span>
+        </h1>
+      </div>
       <p class="hero-subtext">
-        Als kinesist begeleid ik je bij algemene klachten, zwangerschapsgerelateerde veranderingen, bekkenbodemproblemen en revalidatie na blessure of operatie.
+        Gespecialiseerde zorg voor <strong>bekkenbodemgezondheid</strong>, <strong>zwangerschap</strong> en holistisch herstel in een ruimte die is ontworpen voor genezing.
       </p>
       <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
         <Button href="/afspraak" showArrow>
@@ -133,27 +139,64 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
     }
   }
 
-  /* Heading: 32px (2rem) on mobile, 60px (3.75rem) on desktop. Typing line: 24px (1.5rem) on mobile, 40px (2.5rem) on desktop. Subtext: 16px (1rem) on mobile, 20px (1.25rem) on tablet/desktop. */
-  .hero-heading-static {
-    font-family: 'Raleway', sans-serif;
-    font-size: 1.75rem; /* 28px */
-    font-weight: 600;
-    color: var(--color-primary);
+  /* Title block: badge + heading stacked; tight gap so badge sits just above title */
+  .hero-title-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
   }
+
+  /* Badge: peach pill above the title with the brand-skewed orange ellipse dot */
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--color-background-subtle);
+    color: var(--color-primary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.875rem; /* 14px */
+    font-weight: 400;
+    line-height: 1.2;
+  }
+  .hero-badge__dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.625rem;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    transform: rotate(43.62deg);
+    flex-shrink: 0;
+  }
+
+  /* Heading: Spectral Medium 60px (-3px tracking) on desktop, scaled on mobile */
+  .hero-heading-static {
+    font-family: 'Spectral', serif;
+    font-size: 2.25rem; /* 36px on mobile */
+    font-weight: 500; /* medium */
+    color: var(--color-primary);
+    letter-spacing: -1.5px;
+    line-height: 1.05;
+  }
+  /* Typing line: Raleway Light 44px on desktop, scaled on mobile */
   .hero-typing-line {
     display: inline-block;
-    font-family: 'Spectral', serif;
-    font-size: 1.35rem; /* ~22px */
-    font-style: italic;
+    font-family: 'Raleway', sans-serif;
+    font-size: 1.625rem; /* 26px mobile */
+    font-weight: 300; /* light */
     color: var(--color-primary);
+    line-height: 1.1;
   }
 
   @media (min-width: 768px) {
     .hero-heading-static {
-      font-size: 3.25rem; /* 52px */
+      font-size: 3.75rem; /* 60px */
+      letter-spacing: -3px;
     }
     .hero-typing-line {
-      font-size: 2.25rem; /* 36px */
+      font-size: 2.75rem; /* 44px */
     }
   }
   .hero-cursor {
@@ -172,12 +215,17 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
     font-family: 'Raleway', sans-serif;
     font-size: 1rem; /* 16px on mobile */
     font-weight: 400;
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
+    line-height: 1.5;
+  }
+  .hero-subtext strong {
+    font-weight: 700;
   }
 
   @media (min-width: 768px) {
     .hero-subtext {
       font-size: 1.25rem; /* 20px on tablet/desktop */
+      line-height: 1.44; /* 28.8px */
     }
   }
 

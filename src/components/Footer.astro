@@ -1,16 +1,18 @@
 ---
 /**
- * Footer: dark green background, Menu / Bedrijfsinformatie / Contact columns,
- * Cocon logo with orange dot, legal bar. Figma: 22-7271 (mobile), 20-6703 (desktop).
+ * Footer: light cream background, Menu / Bedrijfsinformatie / Contact columns,
+ * dark-green Cocon logo with orange dot, legal bar.
+ * Figma: 98:5581 (current redesign — light theme, Spectral section headings).
  */
 import IconButton from './IconButton.astro';
 import House from '@lucide/astro/icons/house';
 import BadgeEuro from '@lucide/astro/icons/badge-euro';
 import Users from '@lucide/astro/icons/users';
-import MessageCircleQuestionMark from '@lucide/astro/icons/message-circle-question-mark';
-import Send from '@lucide/astro/icons/send';
+import CircleHelp from '@lucide/astro/icons/circle-question-mark';
+import MessageCircle from '@lucide/astro/icons/message-circle';
 import Phone from '@lucide/astro/icons/phone';
 import MapPin from '@lucide/astro/icons/map-pin';
+import MapPinned from '@lucide/astro/icons/map-pinned';
 import Building2 from '@lucide/astro/icons/building-2';
 import Mail from '@lucide/astro/icons/mail';
 import Instagram from '@lucide/astro/icons/instagram';
@@ -24,10 +26,10 @@ const { currentPath = '/' } = Astro.props;
 
 const navItems = [
   { href: '/', label: 'Home', icon: House },
-  { href: '/tarieven', label: 'Tarieven', icon: BadgeEuro },
+  { href: '/tarieven', label: 'Tarieven & info', icon: BadgeEuro },
   { href: '/over-ons', label: 'Over ons', icon: Users },
-  { href: '/faq', label: 'FAQ', icon: MessageCircleQuestionMark },
-  { href: '/contact', label: 'Contact', icon: Send },
+  { href: '/faq', label: 'FAQ', icon: CircleHelp },
+  { href: '/contact', label: 'Contact', icon: MessageCircle },
 ];
 
 function isActive(href: string, path: string): boolean {
@@ -79,7 +81,17 @@ function isActive(href: string, path: string): boolean {
               <span class="footer__link-icon" aria-hidden="true">
                 <MapPin />
               </span>
-              Klein-Holland 7 <span class="footer__dot" aria-hidden="true" /> 1840 Londerzeel
+              <span class="footer__link-text">
+                Mechelseweg 62 <span class="footer__dot" aria-hidden="true" /> 1880 Kapelle-op-den-Bos
+              </span>
+            </span>
+          </li>
+          <li>
+            <span class="footer__link footer__link--text">
+              <span class="footer__link-icon" aria-hidden="true">
+                <MapPinned />
+              </span>
+              <span class="footer__link-text">In het gebouw van Poutrel</span>
             </span>
           </li>
           <li>
@@ -87,7 +99,7 @@ function isActive(href: string, path: string): boolean {
               <span class="footer__link-icon" aria-hidden="true">
                 <Building2 />
               </span>
-              BE123.000.000
+              <span class="footer__link-text">BE123.000.000</span>
             </span>
           </li>
         </ul>
@@ -114,7 +126,7 @@ function isActive(href: string, path: string): boolean {
           </li>
         </ul>
         <div class="footer__socials">
-          <IconButton href="https://instagram.com" label="Instagram" class="footer__social-btn">
+          <IconButton href="https://www.instagram.com/kine_cocon/" label="Instagram" class="footer__social-btn">
             <Instagram class="size-5" />
           </IconButton>
           <IconButton href="https://facebook.com" label="Facebook" class="footer__social-btn">
@@ -127,7 +139,8 @@ function isActive(href: string, path: string): boolean {
 
     <div class="footer__logo">
       <a href="/" class="footer__logo-link" aria-label="Cocon home">
-        <img src="/logo/logo-on-dark.svg" alt="" width="500" height="103" class="footer__logo-img" loading="lazy" />
+        <!-- Light theme: dark-green wordmark on cream background -->
+        <img src="/logo/cocon.svg" alt="" width="500" height="103" class="footer__logo-img" loading="lazy" />
       </a>
     </div>
 
@@ -146,9 +159,9 @@ function isActive(href: string, path: string): boolean {
 
 <style>
   .footer {
-    background: linear-gradient(to bottom, var(--color-primary), #004d33);
-    color: var(--color-white);
-    padding: 3rem 0 2rem;
+    background-color: #f5f5f1;
+    color: var(--color-primary);
+    padding: 5rem 0 2rem;
     font-family: 'Raleway', sans-serif;
   }
 
@@ -227,11 +240,22 @@ function isActive(href: string, path: string): boolean {
   }
 
   .footer__heading {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--color-white);
+    /* Spectral Medium 28px / -1.5px tracking on desktop, slightly smaller on mobile so
+       long words like "Bedrijfsinformatie" don't overflow narrow viewports. */
+    font-family: 'Spectral', serif;
+    font-size: 1.375rem; /* 22px mobile */
+    font-weight: 500;
+    letter-spacing: -1px;
+    color: var(--color-primary);
     margin: 0;
     line-height: 1.2;
+  }
+
+  @media (min-width: 768px) {
+    .footer__heading {
+      font-size: 1.75rem; /* 28px desktop */
+      letter-spacing: -1.5px;
+    }
   }
 
   .footer__list {
@@ -247,8 +271,8 @@ function isActive(href: string, path: string): boolean {
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
-    color: var(--color-white);
+    gap: 0.5rem;
+    color: var(--color-primary);
     text-decoration: none;
     font-size: 1rem;
     font-weight: 400;
@@ -261,12 +285,12 @@ function isActive(href: string, path: string): boolean {
 
   .footer__link:hover,
   .footer__link:focus-visible {
-    color: var(--color-white);
-    opacity: 0.9;
+    color: var(--color-primary);
+    opacity: 0.85;
   }
 
   .footer__link--active {
-    color: var(--color-white);
+    color: var(--color-primary);
     font-weight: 600;
   }
 
@@ -296,6 +320,15 @@ function isActive(href: string, path: string): boolean {
     height: 1.25rem;
   }
 
+  /* Wraps the text content (and inline dots) so it flows as one block —
+     prevents the parent inline-flex from breaking the text into separate
+     flex items at every space. */
+  .footer__link-text {
+    display: inline-block;
+    flex: 1;
+    min-width: 0;
+  }
+
   .footer__dot {
     display: inline-block;
     width: 4px;
@@ -313,10 +346,7 @@ function isActive(href: string, path: string): boolean {
     margin-top: 0.25rem;
   }
 
-  .footer__social-btn :global(a) {
-    background-color: var(--color-background-muted) !important;
-    color: var(--color-primary) !important;
-  }
+  /* Light theme: keep IconButton's default skewed light-green ellipse with primary icon */
 
   .footer__logo {
     width: 100%;
@@ -326,7 +356,7 @@ function isActive(href: string, path: string): boolean {
     display: block;
     width: 100%;
     text-decoration: none;
-    color: var(--color-white);
+    color: var(--color-primary);
     transition: opacity 0.2s ease;
   }
 
@@ -335,7 +365,7 @@ function isActive(href: string, path: string): boolean {
   }
 
   .footer__logo-link:focus-visible {
-    outline: 2px solid var(--color-white);
+    outline: 2px solid var(--color-primary);
     outline-offset: 4px;
   }
 
@@ -352,9 +382,9 @@ function isActive(href: string, path: string): boolean {
     flex-direction: column;
     gap: 0.75rem;
     padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 1px solid rgba(0, 51, 32, 0.15);
     font-size: 0.875rem;
-    color: var(--color-white);
+    color: var(--color-primary);
   }
 
   @media (min-width: 768px) {
@@ -372,7 +402,7 @@ function isActive(href: string, path: string): boolean {
   }
 
   .footer__legal-link {
-    color: var(--color-white);
+    color: var(--color-primary);
     text-decoration: none;
   }
 

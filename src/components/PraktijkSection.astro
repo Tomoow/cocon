@@ -16,14 +16,30 @@ interface Props {
 }
 
 const {
-  phone = '0470 00 00 00',
-  email = 'info@cocon.be',
+  imageSrc = defaultPraktijkImage,
+  imageAlt = 'Gevel van praktijk Cocon, Mechelseweg 62 Kapelle-op-den-Bos',
+  googleMapsHref = 'https://www.google.com/maps/search/?api=1&query=Mechelseweg+62+1880+Kapelle-op-den-Bos',
+  wazeHref = 'https://waze.com/ul?q=Mechelseweg%2062%201880%20Kapelle-op-den-Bos',
   class: className,
 } = Astro.props;
 
 const contactItems = [
-  { type: 'phone', text: phone, copyLabel: 'Gsm-nummer gekopieerd' },
-  { type: 'email', text: email, copyLabel: 'E-mail gekopieerd' },
+  {
+    icon: 'location',
+    text: 'Mechelseweg 62, 1880 Kapelle-op-den-Bos • In Poutrel',
+  },
+  {
+    icon: 'email',
+    text: 'info@cocon.be',
+  },
+  {
+    icon: 'phone',
+    text: '0470 00 00 00',
+  },
+  {
+    icon: 'parking',
+    text: 'Parking voor de deur',
+  },
 ];
 ---
 
@@ -109,12 +125,15 @@ const contactItems = [
     position: relative;
     background-color: var(--color-background-subtle);
     overflow: visible;
-    padding: 2.5rem 0 8rem;
+    /* Mobile: extra breathing room above the section (double the bottom padding). */
+    padding: 8rem 0 4rem;
   }
 
   @media (min-width: 768px) {
     .praktijk-section {
-      padding: 4rem 0 12rem;
+      /* 160px top, 80px bottom — extra breathing room above the section, then a tighter
+         transition into the review section that follows. */
+      padding: 10rem 0 5rem;
     }
   }
 

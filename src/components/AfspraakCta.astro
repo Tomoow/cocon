@@ -1,0 +1,179 @@
+---
+/**
+ * AfspraakCta: full-width band CTA — display-scale title + subtitle on the left,
+ * primary "Maak een afspraak" + secondary phone button stacked on the right.
+ * Background #f5f5f1 with hairline borders top/bottom. Stacks vertically on mobile.
+ *
+ * Figma: 88:418.
+ */
+import Button from './Button.astro';
+import Phone from '@lucide/astro/icons/phone';
+
+interface Props {
+  class?: string;
+  /** Remove background color and hairline borders (e.g. on over-ons where bg is already white) */
+  transparent?: boolean;
+  /** Tel link target (E.164 in href, formatted in label) */
+  phoneHref?: string;
+  phoneLabel?: string;
+  appointmentHref?: string;
+}
+
+const {
+  class: className,
+  transparent = false,
+  phoneHref = 'tel:+32470000000',
+  phoneLabel = '+32 470 00 00 00',
+  appointmentHref = '/afspraak',
+} = Astro.props;
+---
+
+<section class:list={['afspraak-cta', transparent && 'afspraak-cta--transparent', className]} aria-labelledby="afspraak-cta-heading">
+  <div class="afspraak-cta__inner container-content">
+    <div class="afspraak-cta__text">
+      <h2 class="afspraak-cta__title" id="afspraak-cta-heading">
+        <span class="afspraak-cta__title-text">Een afspraak maken is eenvoudiger dan je denkt</span>
+        <span class="afspraak-cta__title-dot" aria-hidden="true" />
+      </h2>
+      <p class="afspraak-cta__subtitle">
+        Boek online een afspraak in minder dan een minuut. Je hebt <strong>geen account</strong> nodig en ontvang meteen een bevestiging in je mailbox.
+      </p>
+    </div>
+    <div class="afspraak-cta__actions">
+      <Button href={appointmentHref} size="lg" showArrow>
+        Maak een afspraak
+      </Button>
+      <Button href={phoneHref} size="lg" variant="secondary" class="afspraak-cta__phone-btn">
+        <Phone class="size-6" aria-hidden="true" />
+        {phoneLabel}
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .afspraak-cta {
+    background-color: #f5f5f1;
+    border-top: 1px solid #dcdcdc;
+    border-bottom: 1px solid #dcdcdc;
+    padding-block: 4rem;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  .afspraak-cta--transparent {
+    background-color: transparent;
+    border-top: none;
+    border-bottom: none;
+  }
+
+  @media (min-width: 768px) {
+    .afspraak-cta {
+      /* Match the cards section's pb-32 (128px) so vertical rhythm stays even between sections */
+      padding-block: 8rem;
+    }
+  }
+
+  .afspraak-cta__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2rem;
+  }
+
+  /* Desktop: text + actions side-by-side, actions hugging the right edge */
+  @media (min-width: 1024px) {
+    .afspraak-cta__inner {
+      flex-direction: row;
+      align-items: center;
+      gap: 2.5rem; /* 40px per design */
+    }
+  }
+
+  .afspraak-cta__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .afspraak-cta__title {
+    /* Use the shared display-title token (Spectral Medium 60 / -3px) */
+    font-family: var(--font-display-title-family);
+    font-size: var(--font-display-title-size-mobile);
+    font-weight: var(--font-display-title-weight);
+    letter-spacing: var(--font-display-title-tracking-mobile);
+    line-height: var(--font-display-title-line-height);
+    color: var(--color-primary);
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .afspraak-cta__title {
+      font-size: var(--font-display-title-size);
+      letter-spacing: var(--font-display-title-tracking);
+    }
+  }
+
+  .afspraak-cta__title-text {
+    display: inline;
+  }
+
+  /* Brand-skewed orange dot at end of title */
+  .afspraak-cta__title-dot {
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.9375rem;
+    margin-left: 0.5rem;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    transform: rotate(43.62deg);
+    vertical-align: middle;
+  }
+
+  .afspraak-cta__subtitle {
+    /* Reuse the shared section-subtitle token (Raleway 24 desktop / 18 mobile) */
+    font-family: var(--font-section-subtitle-family);
+    font-size: var(--font-section-subtitle-size-mobile);
+    font-weight: var(--font-section-subtitle-weight);
+    color: var(--color-text-secondary);
+    line-height: 1.35;
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .afspraak-cta__subtitle {
+      font-size: var(--font-section-subtitle-size);
+    }
+  }
+
+  .afspraak-cta__subtitle strong {
+    font-weight: 700;
+  }
+
+  /* Actions: stacked vertically on every breakpoint per design (lg→ stays right column) */
+  .afspraak-cta__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex-shrink: 0;
+  }
+
+  /* Mobile: render the "lg" CTA buttons at the regular md size + full width.
+     The Button component is rendered with size="lg" for desktop; on mobile we
+     unwind that styling (min-height, padding, font-size, icon size) so the
+     buttons match the rest of the site. */
+  @media (max-width: 767px) {
+    .afspraak-cta__actions :global(.btn-lg) {
+      width: 100%;
+      min-height: 0;
+      padding: 0.75rem 1rem; /* md size: px-4 py-3 */
+      font-size: 1rem;
+      gap: 0.5rem;
+    }
+    .afspraak-cta__actions :global(.btn-lg svg) {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+</style>
