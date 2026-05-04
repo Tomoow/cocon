@@ -124,7 +124,7 @@ const insurances: Insurance[] = [
     />
     <p class="page-header__lead">
       Cocon is een <strong>gedeconventioneerde</strong> praktijk, bij verhoogde tegemoetkoming hanteren wij de
-      <a href="https://www.riziv.fgov.be/" target="_blank" rel="noopener noreferrer">prijzen van het RIZIV</a>.
+      <a href="https://www.riziv.fgov.be/nl/professionals/individuele-zorgverleners/kinesitherapeuten/kinesitherapieverstrekkingen-vaste-remgelden" target="_blank" rel="noopener noreferrer">prijzen van het RIZIV</a>.
     </p>
   </div>
 
@@ -219,24 +219,8 @@ const insurances: Insurance[] = [
           </h3>
         </div>
         <p class="info-card__body">
-          Voor- en nazorgkine kan dikwijls extra terugbetaald worden via je <strong>hospitalisatieverzekering</strong>.
+          Voor- en nazorgkine kan dikwijls extra terugbetaald worden via je <strong>hospitalisatieverzekering</strong> (= voor en na een ziekenhuisopname zoals bij een operatie of bevalling).
         </p>
-        <div class="info-card__group">
-          <p class="info-card__group-label">Kine in de voorzorgperiode (voor een ziekenhuisopname)</p>
-          <div class="info-card__tags">
-            <span class="info-card__tag">Prenatale kine vóór de bevalling</span>
-            <span class="info-card__tag">Prehabilitatie vóór operatie</span>
-            <span class="info-card__tag">…</span>
-          </div>
-        </div>
-        <div class="info-card__group">
-          <p class="info-card__group-label">Kine in de nazorgperiode (na een ziekenhuisopname)</p>
-          <div class="info-card__tags">
-            <span class="info-card__tag">Postnatale kine na de bevalling</span>
-            <span class="info-card__tag">Revalidatie na operatie</span>
-            <span class="info-card__tag">…</span>
-          </div>
-        </div>
         <button
           type="button"
           class="info-card__cta"
@@ -572,11 +556,15 @@ const insurances: Insurance[] = [
     color: var(--color-primary);
   }
 
-  /* Orange asterisk after each price — links to the disclaimer below the rows */
+  /* Orange asterisk after each price — small relative to the 32px price */
   .tarieven-card__row-star {
     color: #f87626;
-    font-weight: 500;
-    margin-left: 0.0625rem;
+    font-family: 'Raleway', sans-serif;
+    font-size: 1.125rem; /* 18px against 32px price */
+    font-weight: 700;
+    line-height: 1;
+    vertical-align: top;
+    margin-left: 0.125rem;
   }
 
   /* Disclaimer above the CTA: small grey text, matches Figma 121:6848 */
@@ -588,10 +576,14 @@ const insurances: Insurance[] = [
     line-height: 1.4;
   }
 
+  /* Lead asterisk on the disclaimer is larger than the 14px copy for visual weight */
   .tarieven-card__disclaimer-star {
     color: #f87626;
-    font-weight: 500;
-    margin-right: 0.0625rem;
+    font-size: 1.125rem; /* 18px against 14px body */
+    font-weight: 700;
+    line-height: 1;
+    margin-right: 0.25rem;
+    vertical-align: middle;
   }
 
   .tarieven-card__cta {
