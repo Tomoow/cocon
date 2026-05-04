@@ -52,65 +52,52 @@ const tarievenCards = [
 ];
 
 // Insurance comparison data shown in the verzekeringen dialog.
-type InsuranceTone = 'basis' | 'ruim' | 'neutral';
-
 interface Insurance {
   name: string;
-  type: string;
   period: string;
   periodLabel: string;
-  tag: string;
-  tone: InsuranceTone;
 }
 
 const insurances: Insurance[] = [
   {
     name: 'DKV Hospi Essential / Comfort',
-    type: 'Privéverzekeraar — basis & comfort',
     period: '30 / 90 dagen',
     periodLabel: 'voor / na opname',
-    tag: 'basis',
-    tone: 'basis',
   },
   {
     name: 'DKV Hospi Premium+',
-    type: 'Privéverzekeraar — premium, volledig',
     period: '60 / 180 dagen',
     periodLabel: 'voor / na opname',
-    tag: 'ruim',
-    tone: 'ruim',
+  },
+  {
+    name: 'AG Care Hospitalisatie',
+    period: '30 / 90 dagen',
+    periodLabel: 'voor / na opname',
+  },
+  {
+    name: 'AG Care Hospitalisatie + Delta',
+    period: '60 / 180 dagen',
+    periodLabel: 'voor / na opname',
   },
   {
     name: 'Helan Hospitalia Smart',
-    type: 'Ziekenfonds — basisformule',
     period: '30 / 90 dagen',
     periodLabel: 'voor / na opname',
-    tag: 'basis · max 20 kinesessies',
-    tone: 'basis',
   },
   {
     name: 'Helan Hospitalia Care / Plus',
-    type: 'Ziekenfonds — comfort & premium',
     period: '60 / 180 dagen',
     periodLabel: 'voor / na opname',
-    tag: 'ruim · max 45 kinesessies',
-    tone: 'ruim',
+  },
+  {
+    name: 'DVV HospiMax Plus',
+    period: '60 / 180 dagen',
+    periodLabel: 'voor / na opname',
   },
   {
     name: 'NZVL HospiPlus',
-    type: 'Ziekenfonds — comfortformule',
     period: '60 / 180 dagen',
     periodLabel: 'voor / na opname',
-    tag: 'ruim · max €500/jaar kine',
-    tone: 'ruim',
-  },
-  {
-    name: 'Via werkgever (groepspolis)',
-    type: 'Collectieve polis — sterk variabel',
-    period: '30–180 dagen',
-    periodLabel: 'voor / na opname',
-    tag: 'check je HR of polis',
-    tone: 'neutral',
   },
 ];
 ---
