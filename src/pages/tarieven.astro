@@ -19,8 +19,8 @@ const tarievenCards = [
     title: 'Algemene kinesitherapie',
     description: 'Voor rug-, nek-, schouder-, sport- en revalidatieklachten ook manuele therapie.',
     rows: [
-      { label: 'Eerste behandeling', duration: '45 min', price: '€55', reimbursement: '± €23,75' },
-      { label: 'Vervolg behandelingen', duration: '30 min', price: '€37', reimbursement: '± €23,75' },
+      { label: 'Eerste behandeling', duration: '45 min', price: '€55' },
+      { label: 'Vervolg behandelingen', duration: '30 min', price: '€37' },
     ],
     cta: { label: 'Online afspraak maken', href: '/afspraak', showArrow: true },
     highlighted: false,
@@ -31,8 +31,8 @@ const tarievenCards = [
     title: 'Bekkenbodemtherapie',
     description: 'Pelvische reëducatie en perinatale kinesitherapie.',
     rows: [
-      { label: 'Eerste behandeling', duration: '45 min', price: '€60', reimbursement: '± €23,75' },
-      { label: 'Vervolg behandelingen', duration: '30 min', price: '€40', reimbursement: '± €23,75' },
+      { label: 'Eerste behandeling', duration: '45 min', price: '€60' },
+      { label: 'Vervolg behandelingen', duration: '30 min', price: '€40' },
     ],
     cta: { label: 'Online afspraak maken', href: '/afspraak', showArrow: true },
     highlighted: true,
@@ -44,7 +44,7 @@ const tarievenCards = [
     title: 'Huisbezoek',
     description: 'Wanneer verplaatsen niet evident is. Online boeken niet mogelijk, bel om in te plannen.',
     rows: [
-      { label: 'Alle huisbezoeken', duration: '30 min', price: '€45', reimbursement: '± €23,75' },
+      { label: 'Alle huisbezoeken', duration: '30 min', price: '€45' },
     ],
     cta: { label: 'Bel +32 470 00 00 00', href: 'tel:+32470000000', showArrow: false },
     highlighted: false,
@@ -151,20 +151,19 @@ const insurances: Insurance[] = [
             <ul class="tarieven-card__rows" role="list">
               {card.rows.map((row) => (
                 <li class="tarieven-card__row">
-                  <div class="tarieven-card__row-head">
-                    <div class="tarieven-card__row-text">
-                      <span class="tarieven-card__row-label">{row.label}</span>
-                      <span class="tarieven-card__row-duration">{row.duration}</span>
-                    </div>
-                    <span class="tarieven-card__row-price">{row.price}</span>
+                  <div class="tarieven-card__row-text">
+                    <span class="tarieven-card__row-label">{row.label}</span>
+                    <span class="tarieven-card__row-duration">{row.duration}</span>
                   </div>
-                  <div class="tarieven-card__refund">
-                    <span class="tarieven-card__refund-label">Terugbetaling door mutualiteit</span>
-                    <span class="tarieven-card__refund-pill">{row.reimbursement}</span>
-                  </div>
+                  <span class="tarieven-card__row-price">
+                    {row.price}<span class="tarieven-card__row-star" aria-hidden="true">*</span>
+                  </span>
                 </li>
               ))}
             </ul>
+            <p class="tarieven-card__disclaimer">
+              <span class="tarieven-card__disclaimer-star" aria-hidden="true">*</span> Je mutualiteit betaalt hier nog een deel van terug
+            </p>
             <Button href={card.cta.href} showArrow={card.cta.showArrow} class="tarieven-card__cta">
               {card.cta.label}
             </Button>
@@ -178,7 +177,7 @@ const insurances: Insurance[] = [
         <OctagonX class="size-5" />
       </span>
       <p class="cancel-banner__text">
-        <strong>Afspraak <span class="cancel-banner__accent">annuleren</span>?</strong> Annuleer minstens 24 uur op voorhand zodat we tijdig iemand anders kunnen inplannen. Anders wordt de sessie aangerekend.
+        Annuleer minstens 24 uur op voorhand zodat we tijdig iemand anders kunnen inplannen. Anders wordt de sessie aangerekend.
       </p>
     </aside>
   </section>
@@ -204,11 +203,8 @@ const insurances: Insurance[] = [
           <p>
             Na <strong>je laatste sessie</strong> (vroeger kan ook indien gewenst) krijg je van ons een <strong>getuigschrift</strong> dat je opstuurt naar je mutualiteit of post in hun brievenbus.
           </p>
-          <p>
-            De meeste mensen krijgen ongeveer <strong>€23,75 per sessie terug</strong>, voor kine rond je zwangerschap of bevalling kan je mutualiteit daar soms nog iets extra bovenop doen.
-          </p>
           <p class="info-card__note">
-            → Heb je recht op een verhoogde tegemoetkoming? Dan passen wij het lagere <a href="https://www.riziv.fgov.be/" target="_blank" rel="noopener noreferrer">RIZIV-tarief</a> toe.
+            → Heb je recht op een <a href="https://www.riziv.fgov.be/nl/thema-s/verzorging-kosten-en-terugbetaling/financiele-toegankelijkheid/de-verhoogde-tegemoetkoming" target="_blank" rel="noopener noreferrer">verhoogde tegemoetkoming</a>? Dan passen wij het lagere <a href="https://www.riziv.fgov.be/nl/professionals/individuele-zorgverleners/kinesitherapeuten/kinesitherapieverstrekkingen-vaste-remgelden" target="_blank" rel="noopener noreferrer">RIZIV-tarief</a> toe.
           </p>
         </div>
       </li>
@@ -280,10 +276,6 @@ const insurances: Insurance[] = [
       </li>
     </ul>
 
-    <p class="info-section__footnote">
-      <span class="info-card__star" aria-hidden="true">*</span>
-      Bedragen en voorwaarden zijn indicatief — voor je persoonlijke situatie raadpleeg je mutualiteit of verzekeraar.
-    </p>
   </section>
 
   <dialog id="verzekeringen-dialog" class="verz-dialog" aria-labelledby="verz-dialog-title">
@@ -545,16 +537,10 @@ const insurances: Insurance[] = [
 
   .tarieven-card__row {
     display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-    border-top: 1px solid #dcdcdc;
-    padding-top: 0.875rem;
-  }
-
-  .tarieven-card__row-head {
-    display: flex;
     align-items: center;
     gap: 0.75rem;
+    border-top: 1px solid #dcdcdc;
+    padding-top: 0.875rem;
   }
 
   .tarieven-card__row-text {
@@ -586,35 +572,26 @@ const insurances: Insurance[] = [
     color: var(--color-primary);
   }
 
-  /* Reimbursement row: muted label on the left + green pill on the right */
-  .tarieven-card__refund {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    justify-content: space-between;
+  /* Orange asterisk after each price — links to the disclaimer below the rows */
+  .tarieven-card__row-star {
+    color: #f87626;
+    font-weight: 500;
+    margin-left: 0.0625rem;
   }
 
-  .tarieven-card__refund-label {
-    flex: 1;
-    min-width: 0;
-    font-size: 0.8125rem; /* 13px */
-    line-height: 1.4;
+  /* Disclaimer above the CTA: small grey text, matches Figma 121:6848 */
+  .tarieven-card__disclaimer {
+    margin: 0;
     color: #676767;
+    font-size: 0.875rem; /* 14px per Figma */
+    font-weight: 400;
+    line-height: 1.4;
   }
 
-  .tarieven-card__refund-pill {
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 51, 32, 0.08);
-    color: var(--color-primary);
-    font-weight: 600;
-    font-size: 0.875rem;
-    line-height: 1;
-    padding: 0.4375rem 0.75rem;
-    border-radius: 9999px;
-    white-space: nowrap;
+  .tarieven-card__disclaimer-star {
+    color: #f87626;
+    font-weight: 500;
+    margin-right: 0.0625rem;
   }
 
   .tarieven-card__cta {
@@ -826,19 +803,6 @@ const insurances: Insurance[] = [
     color: #4a564e;
     font-size: 1rem;
     line-height: 1.6875;
-  }
-
-  /* Asterisk footnote below the grid */
-  .info-section__footnote {
-    margin: 1.5rem 0 0 0;
-    color: #4a564e;
-    font-size: 0.875rem;
-    line-height: 1.5;
-    font-style: italic;
-  }
-
-  .info-section__footnote .info-card__star {
-    margin-right: 0.375rem;
   }
 
   .info-card__cta {
