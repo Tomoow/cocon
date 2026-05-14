@@ -27,10 +27,8 @@ import X from '@lucide/astro/icons/x';
     aria-modal="true"
     aria-labelledby="afspraak-modal-title"
     aria-describedby="afspraak-modal-body"
+    tabindex="-1"
   >
-    <!-- Mobile-only drag handle bar (purely visual, signals "this slides") -->
-    <span class="afspraak-modal__handle" aria-hidden="true"></span>
-
     <button
       type="button"
       class="afspraak-modal__close"
@@ -107,6 +105,11 @@ import X from '@lucide/astro/icons/x';
   /* Panel: bottom sheet on mobile, centered card on desktop --------- */
   .afspraak-modal__panel {
     position: relative;
+    /* The script focuses the panel on open (for a11y) — suppress the
+       default focus ring on the panel itself since it isn't an
+       interactive control. Tab moves on to real interactive elements
+       (X, Sluit) which keep their own focus styles. */
+    outline: none;
     /* Mobile: full bleed — stretch across the entire viewport, no gaps */
     width: 100%;
     max-width: none;
@@ -116,7 +119,7 @@ import X from '@lucide/astro/icons/x';
     color: var(--color-primary);
     /* Top corners rounded on mobile sheet */
     border-radius: 1.5rem 1.5rem 0 0;
-    padding: 2.5rem 1.5rem 2rem;
+    padding: 2rem 1.5rem;
     box-shadow: 0 -16px 48px rgba(0, 0, 0, 0.18);
     transform: translateY(100%); /* mobile: starts off-screen below */
     transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.32, 1);
@@ -144,24 +147,6 @@ import X from '@lucide/astro/icons/x';
     .afspraak-modal[data-state='open'] .afspraak-modal__panel {
       transform: translateY(0) scale(1);
       opacity: 1;
-    }
-  }
-
-  /* Drag handle (mobile only) --------------------------------------- */
-  .afspraak-modal__handle {
-    position: absolute;
-    top: 0.75rem;
-    left: 50%;
-    width: 2.5rem;
-    height: 0.25rem;
-    margin-left: -1.25rem;
-    border-radius: 9999px;
-    background-color: rgba(0, 51, 32, 0.18);
-  }
-
-  @media (min-width: 768px) {
-    .afspraak-modal__handle {
-      display: none;
     }
   }
 
@@ -323,10 +308,15 @@ import X from '@lucide/astro/icons/x';
       void modal!.offsetHeight; // commit the 'opening' layout
       requestAnimationFrame(() => {
         modal!.setAttribute('data-state', 'open');
-        // Land focus on the Sluit button (clear primary action for keyboards)
-        const focusables = getFocusable();
-        const dismiss = modal!.querySelector<HTMLElement>('.afspraak-modal__dismiss-btn');
-        (dismiss ?? focusables[0])?.focus();
+        // Move focus into the dialog so screen readers announce it and so
+        // keyboard users can Escape/Tab to close. We focus the panel
+        // itself (tabindex="-1") rather than a button — focusing the
+        // Sluit button stacks its always-on border with the focus ring,
+        // which reads as a doubled outline. The panel has no visible
+        // border so no doubled look, and Tab still walks through the
+        // interactive elements in order.
+        const panel = modal!.querySelector<HTMLElement>('.afspraak-modal__panel');
+        panel?.focus({ preventScroll: true });
       });
     }
 
