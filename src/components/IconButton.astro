@@ -9,8 +9,9 @@ interface Props {
   href?: string;
   label: string;
   class?: string;
-  /** default = ellipse always visible; tertiary = plain icon, ellipse on hover */
-  variant?: 'default' | 'tertiary';
+  /** default = light-green ellipse, primary icon; primary = dark-green ellipse, white icon;
+   *  tertiary = plain icon, ellipse on hover */
+  variant?: 'default' | 'primary' | 'tertiary';
   /** When true, adds data-tooltip-close for tooltip close button usage */
   dataTooltipClose?: boolean;
 }
@@ -18,12 +19,15 @@ interface Props {
 const { href, label, class: className = '', variant = 'default', dataTooltipClose = false } = Astro.props;
 const isLink = href != null && href !== '';
 const isTertiary = variant === 'tertiary';
+const isPrimary = variant === 'primary';
 
 const sizeClass = 'inline-flex items-center justify-center w-9 h-11';
 const defaultBgClass = 'icon-btn-default bg-background-muted text-primary transition-colors hover:opacity-80';
+const primaryBgClass = 'icon-btn-primary bg-primary text-white transition-colors hover:opacity-80';
 const tertiaryBgClass = 'icon-btn-tertiary bg-transparent text-primary hover:bg-background-muted transition-colors';
+const variantBgClass = isTertiary ? tertiaryBgClass : isPrimary ? primaryBgClass : defaultBgClass;
 const focusClass = 'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
-const baseClass = `${sizeClass} ${isTertiary ? tertiaryBgClass : defaultBgClass} ${focusClass}`;
+const baseClass = `${sizeClass} ${variantBgClass} ${focusClass}`;
 const buttonClass = `${baseClass} border-0 cursor-pointer ${className}`;
 const dataAttrs = dataTooltipClose ? { 'data-tooltip-close': '' } : {};
 ---
@@ -59,6 +63,9 @@ const dataAttrs = dataTooltipClose ? { 'data-tooltip-close': '' } : {};
 <style>
   .icon-btn-default:active {
     background: color-mix(in srgb, var(--color-background-muted) 92%, black);
+  }
+  .icon-btn-primary:active {
+    background: color-mix(in srgb, var(--color-primary) 92%, black);
   }
   .icon-btn-tertiary:active {
     background: color-mix(in srgb, var(--color-background-muted-alt) 92%, black);

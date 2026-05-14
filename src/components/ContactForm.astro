@@ -11,6 +11,7 @@ import MessageSquare from '@lucide/astro/icons/message-square';
   method="POST"
   action="/thank-you"
   aria-label="Contactformulier"
+  data-contact-form
 >
   <div class="contact-form__row">
     <div class="contact-form__field">
@@ -65,8 +66,8 @@ import MessageSquare from '@lucide/astro/icons/message-square';
   </div>
 
   <div class="contact-form__actions">
-    <Button type="submit" showArrow>
-      Bericht versturen
+    <Button type="submit" showArrow class="contact-form__submit">
+      <span class="contact-form__submit-label" data-default-label="Bericht versturen" data-sent-label="Verstuurd">Bericht versturen</span>
     </Button>
   </div>
 </form>

@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import ContactForm from '../components/ContactForm.astro';
 import sendMessageLottie from '../assets/images/send-message.lottie?url';
+import mailSentLottie from '../assets/images/mail-sent.json?url';
 ---
 
 <BaseLayout title="Contact" description="Contacteer Cocon. Heb je een vraag? Laat een bericht achter en we antwoorden zo snel mogelijk.">
@@ -21,6 +22,8 @@ import sendMessageLottie from '../assets/images/send-message.lottie?url';
         id="contact-lottie"
         src={sendMessageLottie}
         class="contact-section__lottie"
+        data-default-src={sendMessageLottie}
+        data-success-src={mailSentLottie}
       ></dotlottie-wc>
     </div>
     <div class="contact-section__form">
@@ -55,9 +58,11 @@ import sendMessageLottie from '../assets/images/send-message.lottie?url';
 
   .contact-section {
     display: flex;
-    flex-direction: column;
+    /* Mobile/tablet: form on top, lottie illustration below.
+       Switches to a regular row at >=1024px (see media query). */
+    flex-direction: column-reverse;
     align-items: center;
-    gap: 0;
+    gap: 1.5rem;
     padding-bottom: 5rem;
   }
 
@@ -103,45 +108,68 @@ import sendMessageLottie from '../assets/images/send-message.lottie?url';
 <script>
   // Register the dotlottie web component (defines <dotlottie-wc>)
   import '@lottiefiles/dotlottie-wc';
-  import type { DotLottie } from '@lottiefiles/dotlottie-web';
 
-  type LottieElement = HTMLElement & { dotLottie?: DotLottie | null };
+  type LottieElement = HTMLElement & {
+    dotLottie?: { play(): void; setSrc?(src: string): void } | null;
+    renderConfig?: { devicePixelRatio?: number };
+  };
 
   const lottie = document.getElementById('contact-lottie') as LottieElement | null;
   const form = document.querySelector<HTMLFormElement>('form.contact-form');
+  const submitBtn = form?.querySelector<HTMLButtonElement>('.contact-form__submit');
+  const submitLabel = form?.querySelector<HTMLElement>('.contact-form__submit-label');
 
-  if (lottie && form) {
-    let pendingSubmit = false;
+  if (lottie && form && submitBtn && submitLabel) {
+    // After-submit reset delay (give the user time to see "Verstuurd" + the success lottie)
+    const RESET_DELAY_MS = 3500;
+
+    const defaultLabel = submitLabel.dataset.defaultLabel ?? submitLabel.textContent ?? 'Bericht versturen';
+    const sentLabel = submitLabel.dataset.sentLabel ?? 'Verstuurd';
+    const defaultSrc = lottie.dataset.defaultSrc ?? lottie.getAttribute('src') ?? '';
+    const successSrc = lottie.dataset.successSrc ?? '';
+
+    let isSubmitting = false;
 
     // Render at the device pixel ratio so the canvas isn't pixelated on retina screens
-    (lottie as LottieElement & { renderConfig?: { devicePixelRatio?: number } }).renderConfig = {
+    lottie.renderConfig = {
       devicePixelRatio: window.devicePixelRatio || 2,
     };
 
-    // Wire up the inner DotLottie instance once it's ready (created async by the WC)
-    function attach(instance: DotLottie) {
-      instance.addEventListener('complete', () => {
-        if (!pendingSubmit) return;
-        pendingSubmit = false;
-        form!.submit();
-      });
-    }
-
-    function waitForInstance() {
-      if (lottie!.dotLottie) {
-        attach(lottie!.dotLottie);
+    function setLottieSrc(src: string) {
+      if (!src) return;
+      // Some versions of dotlottie-wc expose setSrc on the instance; otherwise reset the attribute.
+      if (lottie!.dotLottie?.setSrc) {
+        lottie!.dotLottie.setSrc(src);
       } else {
-        requestAnimationFrame(waitForInstance);
+        lottie!.setAttribute('src', src);
       }
     }
-    waitForInstance();
+
+    function resetToDefault() {
+      isSubmitting = false;
+      submitLabel!.textContent = defaultLabel;
+      submitBtn!.disabled = false;
+      submitBtn!.removeAttribute('aria-busy');
+      setLottieSrc(defaultSrc);
+      form!.reset();
+    }
 
     form.addEventListener('submit', (e) => {
-      if (pendingSubmit) return;
-      if (!form.checkValidity()) return; // browser shows native validation
+      // Native validation handles missing fields
+      if (!form.checkValidity()) return;
+      // Always intercept — we don't actually post anywhere (email setup pending)
       e.preventDefault();
-      pendingSubmit = true;
-      lottie.dotLottie?.play();
+      if (isSubmitting) return;
+      isSubmitting = true;
+
+      // Swap to success state: success lottie + "Verstuurd" label, disable button
+      setLottieSrc(successSrc);
+      submitLabel!.textContent = sentLabel;
+      submitBtn!.disabled = true;
+      submitBtn!.setAttribute('aria-busy', 'true');
+
+      // Give the success lottie a moment to play, then reset everything to default
+      window.setTimeout(resetToDefault, RESET_DELAY_MS);
     });
   }
 </script>

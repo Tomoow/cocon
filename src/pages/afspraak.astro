@@ -1,0 +1,128 @@
+---
+/**
+ * Placeholder for the booking flow. Will be replaced once the online booking
+ * integration is wired up (target opening: 1 August 2026).
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/Button.astro';
+---
+
+<BaseLayout title="Afspraak maken" description="Online afspraken voor Cocon Kinesitherapie zijn binnenkort beschikbaar.">
+  <main class="afspraak-placeholder container-content">
+    <div class="afspraak-placeholder__inner">
+      <span class="afspraak-placeholder__badge">
+        <span class="afspraak-placeholder__badge-dot" aria-hidden="true" />
+        <span>Opening coming soon</span>
+      </span>
+      <h1 class="afspraak-placeholder__title">Online afspraken<br />zijn binnenkort beschikbaar</h1>
+      <p class="afspraak-placeholder__text">
+        Onze praktijk opent op <strong>1 augustus 2026</strong>. Vanaf dan kan je hier in minder dan een minuut online een afspraak inplannen. Heb je nu al een vraag? Stuur ons gerust een bericht — we antwoorden zo snel mogelijk.
+      </p>
+      <div class="afspraak-placeholder__actions">
+        <Button href="/contact" showArrow>Stuur ons een bericht</Button>
+        <Button href="/" variant="secondary">Terug naar home</Button>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .afspraak-placeholder {
+    padding-top: 9rem;
+    padding-bottom: 6rem;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  @media (min-width: 768px) {
+    .afspraak-placeholder {
+      padding-top: 11rem;
+      padding-bottom: 8rem;
+    }
+  }
+
+  .afspraak-placeholder__inner {
+    max-width: 40rem;
+    margin-inline: auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .afspraak-placeholder__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--color-background-subtle);
+    color: var(--color-primary);
+    padding: 0.25rem 0.625rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  .afspraak-placeholder__badge-dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.625rem;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    transform: rotate(43.62deg);
+    flex-shrink: 0;
+  }
+
+  .afspraak-placeholder__title {
+    font-family: 'Spectral', serif;
+    font-size: var(--font-display-title-size-mobile);
+    font-weight: var(--font-display-title-weight);
+    letter-spacing: var(--font-display-title-tracking-mobile);
+    line-height: var(--font-display-title-line-height);
+    color: var(--color-primary);
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .afspraak-placeholder__title {
+      font-size: var(--font-display-title-size);
+      letter-spacing: var(--font-display-title-tracking);
+    }
+  }
+
+  .afspraak-placeholder__text {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin: 0;
+    max-width: 32rem;
+  }
+
+  @media (min-width: 768px) {
+    .afspraak-placeholder__text {
+      font-size: 1.125rem;
+    }
+  }
+
+  .afspraak-placeholder__text strong {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .afspraak-placeholder__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 22rem;
+    margin-top: 0.5rem;
+  }
+
+  @media (min-width: 480px) {
+    .afspraak-placeholder__actions {
+      flex-direction: row;
+      justify-content: center;
+      max-width: none;
+    }
+  }
+</style>
