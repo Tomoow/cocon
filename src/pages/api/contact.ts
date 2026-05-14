@@ -17,7 +17,7 @@ import { EmailMessage } from 'cloudflare:email';
 // Use the browser entrypoint — the default `mimetext` import pulls in
 // `node:os` / `path`, which Cloudflare Workers don't ship. The browser
 // build is API-equivalent and bundles cleanly into the worker.
-import { createMimeMessage } from 'mimetext/browser';
+import { createMimeMessage, Mailbox } from 'mimetext/browser';
 
 export const prerender = false;
 
@@ -56,10 +56,10 @@ function buildMime(fields: SubmissionFields): string {
   msg.setSender({ name: SENDER_NAME, addr: SENDER_ADDRESS });
   msg.setRecipient(RECIPIENT_ADDRESS);
   // Hotmail's "Reply" goes back to the visitor, not to noreply@.
-  // mimetext validates header values and rejects the `Name <addr>` form
-  // here — pass just the bare email address (the visitor's name is
-  // already in the subject and body).
-  msg.setHeader('Reply-To', email);
+  // mimetext's Reply-To header validator requires a Mailbox instance,
+  // not a plain string — so we construct one explicitly. Passing the
+  // visitor name + addr means Hotmail shows "Reply to <Name>" naturally.
+  msg.setHeader('Reply-To', new Mailbox({ name, addr: email }));
   msg.setSubject(`Nieuw bericht van ${name}`);
   msg.addMessage({
     contentType: 'text/plain',
