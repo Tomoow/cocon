@@ -55,8 +55,11 @@ function buildMime(fields: SubmissionFields): string {
   const msg = createMimeMessage();
   msg.setSender({ name: SENDER_NAME, addr: SENDER_ADDRESS });
   msg.setRecipient(RECIPIENT_ADDRESS);
-  // Hotmail's "Reply" goes back to the visitor, not to noreply@
-  msg.setHeader('Reply-To', `${name} <${email}>`);
+  // Hotmail's "Reply" goes back to the visitor, not to noreply@.
+  // mimetext validates header values and rejects the `Name <addr>` form
+  // here — pass just the bare email address (the visitor's name is
+  // already in the subject and body).
+  msg.setHeader('Reply-To', email);
   msg.setSubject(`Nieuw bericht van ${name}`);
   msg.addMessage({
     contentType: 'text/plain',
