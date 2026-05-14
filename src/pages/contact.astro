@@ -106,11 +106,42 @@ import mailSentLottie from '../assets/images/mail-sent.json?url';
 </style>
 
 <script>
-  // Register the dotlottie web component (defines <dotlottie-wc>)
+  // Register the <dotlottie-wc> custom element. Side-effect import.
   import '@lottiefiles/dotlottie-wc';
 
+  /**
+   * Submission animation flow:
+   *
+   *   idle ── submit ──▶ sending  ─ "send-message" lottie plays ─▶ sent
+   *                       (btn disabled, label "Versturen ...")
+   *
+   *                            ─ "mail-sent" lottie plays ─▶ idle
+   *                              (label "Verstuurd")            (label reset, form cleared)
+   *
+   * The lottie WC initialises async, so every play call goes through
+   * `withInstance` which waits for `.dotLottie` to exist on the element.
+   */
+
+  // We treat the WC as untyped — the upstream `@lottiefiles/dotlottie-web`
+  // types aren't exported from `@lottiefiles/dotlottie-wc`, and using `any`
+  // here keeps the script readable. The runtime contract is just:
+  //   instance.play(), instance.stop(),
+  //   instance.addEventListener('load' | 'complete', handler)
+  //
+  // Note: the inner DotLottie instance has NO `setSrc()` method — to load
+  // a different file you must change the WC element's `src` attribute,
+  // which triggers the WC's attributeChangedCallback → calls
+  // `dotLottie.load({src: newSrc, ...})` internally. The instance itself
+  // persists across attribute changes, so event listeners on it survive.
+  type AnyInstance = {
+    play(): void;
+    stop(): void;
+    addEventListener(type: string, handler: () => void): void;
+    removeEventListener(type: string, handler: () => void): void;
+  };
+
   type LottieElement = HTMLElement & {
-    dotLottie?: { play(): void; setSrc?(src: string): void } | null;
+    dotLottie?: AnyInstance | null;
     renderConfig?: { devicePixelRatio?: number };
   };
 
@@ -118,58 +149,193 @@ import mailSentLottie from '../assets/images/mail-sent.json?url';
   const form = document.querySelector<HTMLFormElement>('form.contact-form');
   const submitBtn = form?.querySelector<HTMLButtonElement>('.contact-form__submit');
   const submitLabel = form?.querySelector<HTMLElement>('.contact-form__submit-label');
+  const errorBanner = form?.querySelector<HTMLElement>('[data-contact-error]');
+
+  /**
+   * POST the form data to /api/contact. The endpoint sends a MIME email
+   * via the worker's `CONTACT_EMAIL` send_email binding (see
+   * src/pages/api/contact.ts and the binding in wrangler.jsonc).
+   *
+   * In `astro dev` the binding isn't available and the endpoint returns
+   * 503; we treat that as a soft-success so the animation flow can be
+   * previewed locally without deploying. In production this branch is
+   * never taken — the binding is wired by Cloudflare.
+   */
+  async function sendContactForm(formEl: HTMLFormElement): Promise<{ ok: boolean; error?: string }> {
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        body: new FormData(formEl),
+      });
+      const body = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (res.ok && body.ok) return { ok: true };
+      if (res.status === 503 && import.meta.env.DEV) {
+        // Local dev — binding isn't wired. Pretend success so we can
+        // exercise the visual flow.
+        return { ok: true };
+      }
+      return {
+        ok: false,
+        error:
+          body.error ??
+          `Verzenden mislukt (HTTP ${res.status}). Probeer het later opnieuw of mail rechtstreeks naar info@kine-cocon.be.`,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Netwerkfout. Controleer je verbinding of mail rechtstreeks naar info@kine-cocon.be.',
+      };
+    }
+  }
+
+  function showError(message: string) {
+    if (!errorBanner) return;
+    errorBanner.textContent = message;
+    errorBanner.removeAttribute('hidden');
+  }
+
+  function hideError() {
+    if (!errorBanner) return;
+    errorBanner.setAttribute('hidden', '');
+    errorBanner.textContent = '';
+  }
 
   if (lottie && form && submitBtn && submitLabel) {
-    // After-submit reset delay (give the user time to see "Verstuurd" + the success lottie)
-    const RESET_DELAY_MS = 3500;
-
-    const defaultLabel = submitLabel.dataset.defaultLabel ?? submitLabel.textContent ?? 'Bericht versturen';
+    const defaultLabel = submitLabel.dataset.defaultLabel ?? 'Bericht versturen';
+    const sendingLabel = submitLabel.dataset.sendingLabel ?? 'Versturen ...';
     const sentLabel = submitLabel.dataset.sentLabel ?? 'Verstuurd';
     const defaultSrc = lottie.dataset.defaultSrc ?? lottie.getAttribute('src') ?? '';
     const successSrc = lottie.dataset.successSrc ?? '';
 
-    let isSubmitting = false;
+    // Crisp rendering on retina screens
+    lottie.renderConfig = { devicePixelRatio: window.devicePixelRatio || 2 };
 
-    // Render at the device pixel ratio so the canvas isn't pixelated on retina screens
-    lottie.renderConfig = {
-      devicePixelRatio: window.devicePixelRatio || 2,
-    };
+    let state: 'idle' | 'sending' | 'sent' = 'idle';
 
-    function setLottieSrc(src: string) {
-      if (!src) return;
-      // Some versions of dotlottie-wc expose setSrc on the instance; otherwise reset the attribute.
-      if (lottie!.dotLottie?.setSrc) {
-        lottie!.dotLottie.setSrc(src);
-      } else {
-        lottie!.setAttribute('src', src);
-      }
+    /** Run `callback` once the WC has finished initialising its inner instance. */
+    function withInstance(callback: (instance: AnyInstance) => void): void {
+      let attempts = 0;
+      const check = () => {
+        const inst = lottie!.dotLottie;
+        if (inst) {
+          callback(inst);
+          return;
+        }
+        // Bail after ~5s (300 frames at 60fps) so we never busy-loop forever
+        if (attempts++ < 300) requestAnimationFrame(check);
+      };
+      check();
     }
 
-    function resetToDefault() {
-      isSubmitting = false;
-      submitLabel!.textContent = defaultLabel;
-      submitBtn!.disabled = false;
-      submitBtn!.removeAttribute('aria-busy');
-      setLottieSrc(defaultSrc);
-      form!.reset();
+    /**
+     * Load `src` fresh and play it once. Resolves when the 'complete' event
+     * fires (with a minimum dwell time so the state is readable, and a max
+     * timeout so the flow can never hang).
+     *
+     * Implementation: we drive the WC by changing its `src` *attribute*
+     * (not `instance.setSrc` — that method does not exist). The WC's
+     * attributeChangedCallback calls `dotLottie.load({src: newSrc, ...})`
+     * internally, which fires the inner instance's 'load' event when ready.
+     *
+     * The cache-bust query (`?_=<timestamp>`) ensures the new attribute
+     * value is always different from the previous one — otherwise the WC's
+     * `attributeChangedCallback` skips the change (old === new check) and
+     * the animation never reloads/replays.
+     */
+    function playOnce(src: string, minMs = 1200, maxMs = 6000): Promise<void> {
+      return new Promise((resolve) => {
+        withInstance((instance) => {
+          const startedAt = performance.now();
+          let resolved = false;
+          let dwellTimer: number | null = null;
+
+          const tryFinish = () => {
+            if (resolved) return;
+            const elapsed = performance.now() - startedAt;
+            if (elapsed < minMs) {
+              // Wait out the remainder of the min-dwell so the user actually
+              // sees the label/animation pair before we transition
+              if (dwellTimer == null) {
+                dwellTimer = window.setTimeout(tryFinish, minMs - elapsed);
+              }
+              return;
+            }
+            resolved = true;
+            instance.removeEventListener('complete', tryFinish);
+            if (dwellTimer != null) window.clearTimeout(dwellTimer);
+            window.clearTimeout(maxTimer);
+            resolve();
+          };
+
+          const maxTimer = window.setTimeout(tryFinish, maxMs);
+
+          const onLoad = () => {
+            instance.removeEventListener('load', onLoad);
+            instance.addEventListener('complete', tryFinish);
+            try { instance.play(); } catch { /* will be caught by maxTimer */ }
+          };
+
+          instance.addEventListener('load', onLoad);
+
+          // Mutate the WC's src attribute. Different value every call (cache
+          // bust) so attributeChangedCallback fires and the inner instance
+          // re-runs `dotLottie.load(...)`.
+          const bust = src.includes('?') ? '&' : '?';
+          lottie!.setAttribute('src', `${src}${bust}_=${Date.now()}`);
+        });
+      });
     }
 
-    form.addEventListener('submit', (e) => {
-      // Native validation handles missing fields
+    /** Swap the lottie back to the resting send-message illustration. */
+    function restoreDefaultLottie() {
+      const bust = defaultSrc.includes('?') ? '&' : '?';
+      lottie!.setAttribute('src', `${defaultSrc}${bust}_=${Date.now()}`);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      // Let the browser surface its native validation for missing fields
       if (!form.checkValidity()) return;
-      // Always intercept — we don't actually post anywhere (email setup pending)
       e.preventDefault();
-      if (isSubmitting) return;
-      isSubmitting = true;
+      if (state !== 'idle') return;
 
-      // Swap to success state: success lottie + "Verstuurd" label, disable button
-      setLottieSrc(successSrc);
-      submitLabel!.textContent = sentLabel;
-      submitBtn!.disabled = true;
-      submitBtn!.setAttribute('aria-busy', 'true');
+      hideError();
 
-      // Give the success lottie a moment to play, then reset everything to default
-      window.setTimeout(resetToDefault, RESET_DELAY_MS);
+      // Stage 1 — sending: disable, "Versturen ...", play send-message lottie.
+      // We fire the fetch in parallel with the animation so the user perceives
+      // a single smooth flow rather than fetch-then-animation latency.
+      state = 'sending';
+      submitBtn.disabled = true;
+      submitBtn.setAttribute('aria-busy', 'true');
+      submitLabel.textContent = sendingLabel;
+
+      const fetchPromise = sendContactForm(form);
+      await Promise.all([playOnce(defaultSrc), fetchPromise.then(() => {}, () => {})]);
+      const result = await fetchPromise;
+
+      // Failure: roll back to idle, show the error inline, leave the form
+      // contents intact so the user doesn't have to retype.
+      if (!result.ok) {
+        state = 'idle';
+        submitBtn.disabled = false;
+        submitBtn.removeAttribute('aria-busy');
+        submitLabel.textContent = defaultLabel;
+        showError(result.error ?? 'Er ging iets mis. Probeer het later opnieuw.');
+        restoreDefaultLottie();
+        return;
+      }
+
+      // Success: continue into the "Verstuurd" stage, play the mail-sent
+      // lottie, then reset everything to idle and clear the form.
+      state = 'sent';
+      submitLabel.textContent = sentLabel;
+      await playOnce(successSrc);
+
+      state = 'idle';
+      submitBtn.disabled = false;
+      submitBtn.removeAttribute('aria-busy');
+      submitLabel.textContent = defaultLabel;
+      form.reset();
+      restoreDefaultLottie();
     });
   }
 </script>

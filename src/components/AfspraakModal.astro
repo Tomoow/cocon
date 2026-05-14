@@ -46,7 +46,7 @@ import X from '@lucide/astro/icons/x';
       </h2>
 
       <p id="afspraak-modal-body" class="afspraak-modal__text">
-        Cocon maakt zich klaar om de deuren te openen. Online een afspraak inplannen kan nog niet, maar je kan nu al ontdekken wat we te bieden hebben — van <strong>bekkenbodemtherapie</strong> tot <strong>zwangerschapsbegeleiding</strong> en gerichte <strong>revalidatie</strong>. Heb je nu al een vraag of wil je iets bespreken? Aarzel zeker niet om ons te contacteren — we beantwoorden je graag.
+        Cocon maakt zich klaar om de deuren te openen. Online een afspraak inplannen kan nog niet, maar je kan nu al ontdekken wat we te bieden hebben, van <strong>bekkenbodemtherapie</strong> tot <strong>zwangerschapsbegeleiding</strong> en gerichte <strong>revalidatie</strong>. Heb je nu al een vraag of wil je iets bespreken? Aarzel zeker niet om ons te contacteren, we beantwoorden je graag.
       </p>
 
       <div class="afspraak-modal__actions">
@@ -75,6 +75,7 @@ import X from '@lucide/astro/icons/x';
     pointer-events: none;
   }
 
+  .afspraak-modal[data-state='opening'],
   .afspraak-modal[data-state='open'],
   .afspraak-modal[data-state='closing'] {
     display: flex;
@@ -93,7 +94,7 @@ import X from '@lucide/astro/icons/x';
   .afspraak-modal__backdrop {
     position: absolute;
     inset: 0;
-    background-color: rgba(0, 51, 32, 0.45); /* primary-green at 45% */
+    background-color: rgba(0, 0, 0, 0.5); /* neutral black at 50% */
     backdrop-filter: blur(2px);
     opacity: 0;
     transition: opacity 0.25s ease-out;
@@ -304,15 +305,25 @@ import X from '@lucide/astro/icons/x';
         window.clearTimeout(closeTimeout);
         closeTimeout = null;
       }
+
+      // Two-step entrance so CSS transitions actually run.
+      // Step 1: flip data-state to 'opening' — this changes the container from
+      // display:none to display:flex but the panel/backdrop start at their
+      // "closed" transform/opacity values.
+      modal!.setAttribute('data-state', 'opening');
       modal!.removeAttribute('inert');
       modal!.setAttribute('aria-hidden', 'false');
-      modal!.setAttribute('data-state', 'open');
       document.body.classList.add('afspraak-modal-open');
 
-      // Move focus into the modal on the next frame so the entrance animation has started.
-      // Land on the dismiss button (footer "Sluit") rather than the corner X — so keyboard
-      // users get the obvious primary action right away.
+      // Step 2: force a layout pass, then on the next frame flip to 'open' so
+      // the transition has both a starting and an ending value to interpolate.
+      // Without this, going from display:none straight to the open transform
+      // never animates (the browser has no prior state to interpolate from) —
+      // which is why the sheet only slid out but never in.
+      void modal!.offsetHeight; // commit the 'opening' layout
       requestAnimationFrame(() => {
+        modal!.setAttribute('data-state', 'open');
+        // Land focus on the Sluit button (clear primary action for keyboards)
         const focusables = getFocusable();
         const dismiss = modal!.querySelector<HTMLElement>('.afspraak-modal__dismiss-btn');
         (dismiss ?? focusables[0])?.focus();

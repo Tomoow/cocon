@@ -26,6 +26,24 @@ export default defineConfig({
     }),
   ],
   vite: {
-    plugins: [tailwindcss()]
-  }
+    plugins: [
+      tailwindcss(),
+      // Dev-only: Vite/sirv doesn't know about .lottie files and serves them
+      // with an empty Content-Type, which makes @lottiefiles/dotlottie-wc fail
+      // to load the animation locally. Production (Cloudflare Workers) serves
+      // these as `application/zip+dotlottie`, so we mirror that here so the
+      // dev experience matches.
+      {
+        name: 'serve-lottie-mime',
+        configureServer(server) {
+          server.middlewares.use((req, res, next) => {
+            if (req.url && /\.lottie(\?|$)/.test(req.url)) {
+              res.setHeader('Content-Type', 'application/zip+dotlottie');
+            }
+            next();
+          });
+        },
+      },
+    ],
+  },
 });

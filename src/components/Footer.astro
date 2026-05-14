@@ -206,21 +206,16 @@ function isActive(href: string, path: string): boolean {
       justify-content: flex-end;
     }
 
+    /* Both Bedrijfsinformatie and Contact left-align — previously Contact was
+       right-aligned which caused the email/phone to hug the right edge on
+       narrow tablet widths where space was tight. Left-aligning keeps the
+       text reading naturally regardless of column width. */
     .footer__block-group .footer__block {
       align-items: flex-start;
-      text-align: right;
-    }
-
-    .footer__block-group .footer__block:first-child {
       text-align: left;
-      align-items: flex-start;
     }
 
     .footer__block-group .footer__list {
-      align-items: flex-start;
-    }
-
-    .footer__block-group .footer__block:first-child .footer__list {
       align-items: flex-start;
     }
   }

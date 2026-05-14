@@ -19,5 +19,19 @@
   "routes": [
     { "pattern": "kine-cocon.be", "custom_domain": true },
     { "pattern": "www.kine-cocon.be", "custom_domain": true }
+  ],
+  // Outbound email binding for the contact form.
+  //
+  // The worker can send emails to `info@kine-cocon.be` only — that address is
+  // a Cloudflare Email Routing rule that forwards to the practice's Hotmail,
+  // so every form submission lands in the same inbox as direct mail (and is
+  // visible in Email Routing → Activity log for traceability).
+  //
+  // The MIME body is built in src/pages/api/contact.ts.
+  "send_email": [
+    {
+      "name": "CONTACT_EMAIL",
+      "destination_address": "info@kine-cocon.be"
+    }
   ]
 }

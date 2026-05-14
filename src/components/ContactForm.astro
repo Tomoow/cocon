@@ -67,9 +67,25 @@ import MessageSquare from '@lucide/astro/icons/message-square';
 
   <div class="contact-form__actions">
     <Button type="submit" showArrow class="contact-form__submit">
-      <span class="contact-form__submit-label" data-default-label="Bericht versturen" data-sent-label="Verstuurd">Bericht versturen</span>
+      <span
+        class="contact-form__submit-label"
+        data-default-label="Bericht versturen"
+        data-sending-label="Versturen ..."
+        data-sent-label="Verstuurd"
+      >Bericht versturen</span>
     </Button>
   </div>
+
+  <!-- Inline error banner — shown by the page script when /api/contact
+       returns a failure. `aria-live="polite"` so screen readers announce
+       it without interrupting whatever the user was doing. -->
+  <p
+    class="contact-form__error"
+    data-contact-error
+    role="alert"
+    aria-live="polite"
+    hidden
+  ></p>
 </form>
 
 <style>
@@ -155,5 +171,45 @@ import MessageSquare from '@lucide/astro/icons/message-square';
 
   .contact-form__actions {
     display: flex;
+  }
+
+  /* Error banner: shown when the /api/contact endpoint fails. Hidden by
+     the `hidden` attribute by default; the page script toggles it. */
+  .contact-form__error {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    background-color: rgba(220, 38, 38, 0.08);
+    border: 1px solid rgba(220, 38, 38, 0.25);
+    border-radius: 0.75rem;
+    color: #991b1b;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+
+  .contact-form__error[hidden] {
+    display: none;
+  }
+
+  /* Disabled-state polish for the submit button:
+     - `not-allowed` cursor for the standard "can't click" affordance
+     - 0.6 opacity so the muted look is obvious at a glance
+     - Hide the arrow (the Button component renders it in an aria-hidden
+       span next to the label) so during "Versturen ..." / "Verstuurd"
+       the button reads as a status pill rather than a CTA
+
+     Both the <button> and its arrow <span> are rendered by Button.astro,
+     not by ContactForm.astro. That means they carry Button's astro-cid,
+     not ContactForm's. We have to wrap the whole selector chain in
+     `:global(...)` — otherwise Astro scopes the rule to ContactForm's cid
+     and it never matches the actual button. The :disabled:hover pair
+     gives us enough specificity to beat Tailwind's `hover:opacity-90`
+     so the dim state survives even when the cursor is over the button. */
+  :global(.contact-form__submit:disabled),
+  :global(.contact-form__submit:disabled:hover) {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  :global(.contact-form__submit:disabled > span[aria-hidden='true']) {
+    display: none;
   }
 </style>

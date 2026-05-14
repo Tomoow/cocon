@@ -16,6 +16,7 @@
     "@lucide/astro": "^0.563.0",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.17.1",
+    "mimetext": "^3.0.28",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
