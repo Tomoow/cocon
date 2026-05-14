@@ -15,5 +15,9 @@
     "enabled": true
   },
   "workers_dev": true,
-  "preview_urls": true
+  "preview_urls": true,
+  "routes": [
+    { "pattern": "kine-cocon.be", "custom_domain": true },
+    { "pattern": "www.kine-cocon.be", "custom_domain": true }
+  ]
 }
