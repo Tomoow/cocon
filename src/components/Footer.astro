@@ -295,10 +295,15 @@ function isActive(href: string, path: string): boolean {
     padding: 0;
   }
 
+  /* These rows aren't interactive (they're spans, not anchors). The
+     previous :hover/:focus-visible rule flipped them to white text,
+     which made them invisible against the cream footer background.
+     Keep them inert on hover so the colour doesn't change. */
   .footer__link--text:hover,
   .footer__link--text:focus-visible {
     background: none;
-    color: var(--color-white);
+    color: var(--color-primary);
+    opacity: 1;
   }
 
   .footer__link-icon {
