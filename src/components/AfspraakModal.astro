@@ -9,7 +9,6 @@
  * `/afspraak` route is redirected to `/` (see astro.config) so users
  * still land somewhere sensible.
  */
-import Button from './Button.astro';
 import X from '@lucide/astro/icons/x';
 ---
 
@@ -42,11 +41,6 @@ import X from '@lucide/astro/icons/x';
     </button>
 
     <div class="afspraak-modal__content">
-      <span class="afspraak-modal__badge">
-        <span class="afspraak-modal__badge-dot" aria-hidden="true"></span>
-        <span>Opening coming soon</span>
-      </span>
-
       <h2 id="afspraak-modal-title" class="afspraak-modal__title">
         We openen<br />begin augustus 2026
       </h2>
@@ -56,7 +50,6 @@ import X from '@lucide/astro/icons/x';
       </p>
 
       <div class="afspraak-modal__actions">
-        <Button href="/contact" showArrow>Stuur ons een bericht</Button>
         <button
           type="button"
           class="afspraak-modal__dismiss-btn"
@@ -113,19 +106,19 @@ import X from '@lucide/astro/icons/x';
   /* Panel: bottom sheet on mobile, centered card on desktop --------- */
   .afspraak-modal__panel {
     position: relative;
+    /* Mobile: full bleed — stretch across the entire viewport, no gaps */
     width: 100%;
-    max-width: 32rem;
+    max-width: none;
     max-height: 92dvh;
     overflow-y: auto;
-    background-color: var(--color-background-warm, #fff6f0);
+    background-color: #ffffff;
     color: var(--color-primary);
-    border-radius: 1.5rem 1.5rem 0 0; /* top corners on mobile sheet */
-    padding: 2rem 1.5rem 2rem;
+    /* Top corners rounded on mobile sheet */
+    border-radius: 1.5rem 1.5rem 0 0;
+    padding: 2.5rem 1.5rem 2rem;
     box-shadow: 0 -16px 48px rgba(0, 0, 0, 0.18);
     transform: translateY(100%); /* mobile: starts off-screen below */
     transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.32, 1);
-    /* Reserve room for the drag handle */
-    padding-top: 2.5rem;
   }
 
   .afspraak-modal[data-state='open'] .afspraak-modal__panel {
@@ -134,8 +127,11 @@ import X from '@lucide/astro/icons/x';
 
   @media (min-width: 768px) {
     .afspraak-modal__panel {
-      border-radius: 1.25rem; /* all four corners on desktop modal */
-      padding: 2.5rem 2.5rem 2.5rem;
+      /* Desktop: constrained, centered card */
+      width: 100%;
+      max-width: 32rem;
+      border-radius: 1.25rem; /* all four corners */
+      padding: 2.5rem;
       box-shadow: 0 24px 64px rgba(0, 0, 0, 0.24);
       /* Desktop: fade + scale entrance instead of slide-up */
       transform: translateY(8px) scale(0.96);
@@ -202,30 +198,6 @@ import X from '@lucide/astro/icons/x';
     flex-direction: column;
     gap: 1rem;
     font-family: 'Raleway', sans-serif;
-  }
-
-  .afspraak-modal__badge {
-    display: inline-flex;
-    align-self: flex-start;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: var(--color-background-subtle);
-    color: var(--color-primary);
-    padding: 0.25rem 0.625rem;
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-    font-weight: 400;
-    line-height: 1.2;
-  }
-
-  .afspraak-modal__badge-dot {
-    display: inline-block;
-    width: 0.5rem;
-    height: 0.625rem;
-    background-color: var(--color-accent);
-    border-radius: 50%;
-    transform: rotate(43.62deg);
-    flex-shrink: 0;
   }
 
   .afspraak-modal__title {
@@ -337,12 +309,13 @@ import X from '@lucide/astro/icons/x';
       modal!.setAttribute('data-state', 'open');
       document.body.classList.add('afspraak-modal-open');
 
-      // Move focus into the modal on the next frame so the entrance animation has started
+      // Move focus into the modal on the next frame so the entrance animation has started.
+      // Land on the dismiss button (footer "Sluit") rather than the corner X — so keyboard
+      // users get the obvious primary action right away.
       requestAnimationFrame(() => {
         const focusables = getFocusable();
-        // Prefer the primary CTA over the close button so keyboard users land on the action
-        const primary = modal!.querySelector<HTMLElement>('.afspraak-modal__content a[href]');
-        (primary ?? focusables[0])?.focus();
+        const dismiss = modal!.querySelector<HTMLElement>('.afspraak-modal__dismiss-btn');
+        (dismiss ?? focusables[0])?.focus();
       });
     }
 
