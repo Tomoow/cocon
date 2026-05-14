@@ -1,0 +1,430 @@
+---
+/**
+ * AfspraakModal — pre-opening teaser shown when visitors click any
+ * "Afspraak maken" button. Desktop: centered modal with fade+scale.
+ * Mobile (<768px): bottom sheet sliding up from the bottom.
+ *
+ * Intercepts clicks on any link with href="/afspraak" so we don't
+ * need to change every CTA on the site. If JS fails to load, the
+ * `/afspraak` route is redirected to `/` (see astro.config) so users
+ * still land somewhere sensible.
+ */
+import Button from './Button.astro';
+import X from '@lucide/astro/icons/x';
+---
+
+<div
+  id="afspraak-modal"
+  class="afspraak-modal"
+  aria-hidden="true"
+  inert
+  data-afspraak-modal
+>
+  <div class="afspraak-modal__backdrop" data-afspraak-close></div>
+
+  <div
+    class="afspraak-modal__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="afspraak-modal-title"
+    aria-describedby="afspraak-modal-body"
+  >
+    <!-- Mobile-only drag handle bar (purely visual, signals "this slides") -->
+    <span class="afspraak-modal__handle" aria-hidden="true"></span>
+
+    <button
+      type="button"
+      class="afspraak-modal__close"
+      aria-label="Sluit"
+      data-afspraak-close
+    >
+      <X class="size-5" aria-hidden="true" />
+    </button>
+
+    <div class="afspraak-modal__content">
+      <span class="afspraak-modal__badge">
+        <span class="afspraak-modal__badge-dot" aria-hidden="true"></span>
+        <span>Opening coming soon</span>
+      </span>
+
+      <h2 id="afspraak-modal-title" class="afspraak-modal__title">
+        We openen<br />begin augustus 2026
+      </h2>
+
+      <p id="afspraak-modal-body" class="afspraak-modal__text">
+        Cocon maakt zich klaar om de deuren te openen. Online een afspraak inplannen kan nog niet, maar je kan nu al ontdekken wat we te bieden hebben — van <strong>bekkenbodemtherapie</strong> tot <strong>zwangerschapsbegeleiding</strong> en gerichte <strong>revalidatie</strong>. Heb je nu al een vraag of wil je iets bespreken? Aarzel zeker niet om ons te contacteren — we beantwoorden je graag.
+      </p>
+
+      <div class="afspraak-modal__actions">
+        <Button href="/contact" showArrow>Stuur ons een bericht</Button>
+        <button
+          type="button"
+          class="afspraak-modal__dismiss-btn"
+          data-afspraak-close
+        >
+          Sluit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Container: full-screen overlay; hidden by default via inert+CSS.
+     When [data-state="open"], we let the backdrop fade in and the panel slide in. */
+  .afspraak-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200; /* above the header (z-100) */
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .afspraak-modal[data-state='open'],
+  .afspraak-modal[data-state='closing'] {
+    display: flex;
+    pointer-events: auto;
+  }
+
+  /* Desktop: centered modal */
+  @media (min-width: 768px) {
+    .afspraak-modal {
+      align-items: center;
+      padding: 1.5rem;
+    }
+  }
+
+  /* Backdrop ---------------------------------------------------------- */
+  .afspraak-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 51, 32, 0.45); /* primary-green at 45% */
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    transition: opacity 0.25s ease-out;
+  }
+
+  .afspraak-modal[data-state='open'] .afspraak-modal__backdrop {
+    opacity: 1;
+  }
+
+  /* Panel: bottom sheet on mobile, centered card on desktop --------- */
+  .afspraak-modal__panel {
+    position: relative;
+    width: 100%;
+    max-width: 32rem;
+    max-height: 92dvh;
+    overflow-y: auto;
+    background-color: var(--color-background-warm, #fff6f0);
+    color: var(--color-primary);
+    border-radius: 1.5rem 1.5rem 0 0; /* top corners on mobile sheet */
+    padding: 2rem 1.5rem 2rem;
+    box-shadow: 0 -16px 48px rgba(0, 0, 0, 0.18);
+    transform: translateY(100%); /* mobile: starts off-screen below */
+    transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.32, 1);
+    /* Reserve room for the drag handle */
+    padding-top: 2.5rem;
+  }
+
+  .afspraak-modal[data-state='open'] .afspraak-modal__panel {
+    transform: translateY(0);
+  }
+
+  @media (min-width: 768px) {
+    .afspraak-modal__panel {
+      border-radius: 1.25rem; /* all four corners on desktop modal */
+      padding: 2.5rem 2.5rem 2.5rem;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.24);
+      /* Desktop: fade + scale entrance instead of slide-up */
+      transform: translateY(8px) scale(0.96);
+      opacity: 0;
+      transition:
+        transform 0.22s ease-out,
+        opacity 0.22s ease-out;
+    }
+    .afspraak-modal[data-state='open'] .afspraak-modal__panel {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Drag handle (mobile only) --------------------------------------- */
+  .afspraak-modal__handle {
+    position: absolute;
+    top: 0.75rem;
+    left: 50%;
+    width: 2.5rem;
+    height: 0.25rem;
+    margin-left: -1.25rem;
+    border-radius: 9999px;
+    background-color: rgba(0, 51, 32, 0.18);
+  }
+
+  @media (min-width: 768px) {
+    .afspraak-modal__handle {
+      display: none;
+    }
+  }
+
+  /* Close (X) button ------------------------------------------------- */
+  .afspraak-modal__close {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 9999px;
+    background: transparent;
+    color: var(--color-primary);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+
+  .afspraak-modal__close:hover,
+  .afspraak-modal__close:focus-visible {
+    background-color: rgba(0, 51, 32, 0.08);
+  }
+
+  .afspraak-modal__close:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Content ---------------------------------------------------------- */
+  .afspraak-modal__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  .afspraak-modal__badge {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--color-background-subtle);
+    color: var(--color-primary);
+    padding: 0.25rem 0.625rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  .afspraak-modal__badge-dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.625rem;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    transform: rotate(43.62deg);
+    flex-shrink: 0;
+  }
+
+  .afspraak-modal__title {
+    font-family: 'Spectral', serif;
+    font-size: 1.75rem; /* 28px on mobile */
+    font-weight: 500;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    color: var(--color-primary);
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .afspraak-modal__title {
+      font-size: 2.25rem; /* 36px on desktop */
+      letter-spacing: -1.5px;
+    }
+  }
+
+  .afspraak-modal__text {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .afspraak-modal__text strong {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .afspraak-modal__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    margin-top: 0.5rem;
+  }
+
+  @media (min-width: 480px) {
+    .afspraak-modal__actions {
+      flex-direction: row;
+    }
+  }
+
+  /* Inline dismiss button — styled like the site's secondary button so it
+     visually matches the primary CTA next to it. Plain <button> instead of
+     <Button> because the latter doesn't forward data-* attributes. */
+  .afspraak-modal__dismiss-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--color-primary);
+    border-radius: 9999px;
+    background-color: var(--color-surface, #fff);
+    color: var(--color-primary);
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.25;
+    cursor: pointer;
+    transition: background-color 0.15s ease, opacity 0.15s ease;
+  }
+
+  .afspraak-modal__dismiss-btn:hover {
+    background-color: var(--color-background-muted);
+  }
+
+  .afspraak-modal__dismiss-btn:active {
+    background: color-mix(in srgb, var(--color-background-muted) 95%, black);
+  }
+
+  .afspraak-modal__dismiss-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-primary), 0 0 0 4px var(--color-background-default);
+  }
+
+  /* When the modal is open we want the body not to scroll behind it */
+  :global(body.afspraak-modal-open) {
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  (function () {
+    const modal = document.querySelector<HTMLElement>('[data-afspraak-modal]');
+    if (!modal) return;
+
+    let lastTrigger: HTMLElement | null = null;
+    let closeTimeout: number | null = null;
+
+    function getFocusable(): HTMLElement[] {
+      return Array.from(
+        modal!.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((el) => !el.hasAttribute('inert') && el.offsetParent !== null);
+    }
+
+    function open(trigger?: HTMLElement) {
+      lastTrigger = trigger ?? null;
+      if (closeTimeout != null) {
+        window.clearTimeout(closeTimeout);
+        closeTimeout = null;
+      }
+      modal!.removeAttribute('inert');
+      modal!.setAttribute('aria-hidden', 'false');
+      modal!.setAttribute('data-state', 'open');
+      document.body.classList.add('afspraak-modal-open');
+
+      // Move focus into the modal on the next frame so the entrance animation has started
+      requestAnimationFrame(() => {
+        const focusables = getFocusable();
+        // Prefer the primary CTA over the close button so keyboard users land on the action
+        const primary = modal!.querySelector<HTMLElement>('.afspraak-modal__content a[href]');
+        (primary ?? focusables[0])?.focus();
+      });
+    }
+
+    function close() {
+      modal!.setAttribute('data-state', 'closing');
+      modal!.setAttribute('aria-hidden', 'true');
+      modal!.setAttribute('inert', '');
+      document.body.classList.remove('afspraak-modal-open');
+
+      // Wait for the panel transition to finish before fully hiding so the user sees the slide-out
+      closeTimeout = window.setTimeout(() => {
+        modal!.removeAttribute('data-state');
+        closeTimeout = null;
+      }, 320);
+
+      // Return focus to whatever opened the modal (good for keyboard users)
+      lastTrigger?.focus();
+      lastTrigger = null;
+    }
+
+    // ---- Intercept all "Afspraak maken" links/buttons across the site ----
+    function isAfspraakHref(href: string | null): boolean {
+      if (!href) return false;
+      try {
+        const url = new URL(href, window.location.origin);
+        // Match /afspraak with or without trailing slash, same-origin only
+        return (
+          url.origin === window.location.origin &&
+          /^\/afspraak\/?$/.test(url.pathname)
+        );
+      } catch {
+        return false;
+      }
+    }
+
+    document.addEventListener(
+      'click',
+      (e) => {
+        const target = e.target as HTMLElement | null;
+        if (!target) return;
+        const link = target.closest<HTMLAnchorElement>('a[href]');
+        if (!link) return;
+        if (!isAfspraakHref(link.getAttribute('href'))) return;
+        // Respect modifier-clicks (open in new tab) and middle-clicks
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        e.preventDefault();
+        open(link);
+      },
+      // Use capture so we intercept before any other click handlers (e.g. menu-close)
+      true
+    );
+
+    // ---- Dismissal: backdrop, close button, Escape key ----
+    modal.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement | null;
+      if (target?.closest('[data-afspraak-close]')) {
+        e.preventDefault();
+        close();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (modal.getAttribute('data-state') !== 'open') return;
+      close();
+    });
+
+    // Focus trap inside the modal while open
+    modal.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab') return;
+      if (modal.getAttribute('data-state') !== 'open') return;
+      const focusables = getFocusable();
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+  })();
+</script>

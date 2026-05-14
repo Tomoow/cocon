@@ -14,6 +14,12 @@ export default defineConfig({
   // imageService: 'compile' optimizes images at build time only — Cloudflare
   // Workers don't support sharp at runtime, and all our pages are prerendered.
   adapter: cloudflare({ imageService: 'compile' }),
+  // /afspraak is intercepted client-side and shown as a modal/sheet (see
+  // AfspraakModal.astro). The redirect is the no-JS fallback so the link
+  // never 404s — visitors land on the home page instead.
+  redirects: {
+    '/afspraak': '/',
+  },
   integrations: [
     sitemap({
       filter: (page) => !page.includes('/thank-you'),
