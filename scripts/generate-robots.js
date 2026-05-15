@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const site = process.env.SITE_URL || 'https://yourdomain.com';
+const site = process.env.SITE_URL || 'https://kine-cocon.be';
 const robots = `User-agent: *
 Allow: /
 

@@ -1,7 +1,16 @@
 ---
 /**
- * Base layout: imports global Tailwind styles and provides semantic document shell.
- * Use this for all pages; design tokens and component-specific styles come next.
+ * Base layout: imports global Tailwind styles, sets up SEO metadata
+ * (title/description/canonical/Open Graph/Twitter), and renders the
+ * semantic document shell.
+ *
+ * Per-page knobs:
+ *   - title       short page label; "| Cocon Kinesitherapie" is appended
+ *                 automatically except on the home page (isHome)
+ *   - description meta description (~150-160 chars ideal)
+ *   - ogImage     absolute or root-relative URL of the social-share image
+ *   - isHome      home gets its own non-suffixed title and includes the
+ *                 LocalBusiness JSON-LD
  */
 import '../styles/global.css';
 import Header from '../components/Header.astro';
@@ -12,13 +21,61 @@ import AfspraakModal from '../components/AfspraakModal.astro';
 interface Props {
   title: string;
   description?: string;
+  ogImage?: string;
+  isHome?: boolean;
 }
 
-const { title, description = 'Static site built with Astro and Tailwind on Cloudflare Pages.' } = Astro.props;
+const {
+  title,
+  description = 'Cocon is een kinesitherapiepraktijk in Kapelle-op-den-Bos, gespecialiseerd in bekkenbodemtherapie, zwangerschapsbegeleiding, revalidatie en algemene klachten.',
+  ogImage = '/images/hero/hero-picture.png',
+  isHome = false,
+} = Astro.props;
+
+// Canonical URL — astro `site` is the production base. Astro.url.pathname
+// gives the current path so each page has its own canonical.
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://kine-cocon.be').href;
+const absoluteOgImage = new URL(ogImage, Astro.site ?? 'https://kine-cocon.be').href;
+
+// Compose the title. On home we use a brand-led title; on subpages we
+// append the brand so it's clear which site the page belongs to in
+// Google's results.
+const pageTitle = isHome
+  ? 'Cocon | Kinesitherapie & bekkenbodemtherapie in Kapelle-op-den-Bos'
+  : `${title} | Cocon Kinesitherapie`;
+
+// LocalBusiness JSON-LD — only emitted on the home page so we don't
+// duplicate the practice's identity across every page. Helps Google
+// surface the practice in the Map / local pack once Business Profile
+// verification is also done.
+const localBusinessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Physiotherapy',
+  name: 'Cocon Kinesitherapie',
+  description,
+  url: 'https://kine-cocon.be',
+  telephone: '+32470626848',
+  email: 'info@kine-cocon.be',
+  image: absoluteOgImage,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Mechelseweg 62',
+    addressLocality: 'Kapelle-op-den-Bos',
+    postalCode: '1880',
+    addressCountry: 'BE',
+  },
+  areaServed: {
+    '@type': 'Place',
+    name: 'Kapelle-op-den-Bos en omgeving',
+  },
+  // Practice opens August 2026; openingHours can be added when the
+  // schedule is finalised.
+  sameAs: ['https://www.instagram.com/kine_cocon/'],
+};
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="nl">
   <head>
     <meta charset="utf-8" />
     <!-- Favicon: SVG as default (best practice), PNG fallbacks for older contexts -->
@@ -29,7 +86,29 @@ const { title, description = 'Static site built with Astro and Tailwind on Cloud
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
+    <link rel="canonical" href={canonicalURL} />
+    <title>{pageTitle}</title>
+
+    <!-- Open Graph (Facebook, WhatsApp, LinkedIn, etc. link previews) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={absoluteOgImage} />
+    <meta property="og:locale" content="nl_BE" />
+    <meta property="og:site_name" content="Cocon Kinesitherapie" />
+
+    <!-- Twitter card (mostly used by Twitter/X but other apps read it too) -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={absoluteOgImage} />
+
+    {isHome && (
+      <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
+    )}
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap" as="style" />

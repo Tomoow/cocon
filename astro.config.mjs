@@ -4,9 +4,12 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import cloudflare from '@astrojs/cloudflare';
 
-// Set SITE_URL in Cloudflare (or .env) to your production URL,
-// e.g. https://cocon.lievenstom1997.workers.dev or later https://cocon.be
-const site = process.env.SITE_URL || 'https://yourdomain.com';
+// Production canonical URL. Used for:
+//   - sitemap-index.xml + sitemap-0.xml entries
+//   - <link rel="canonical"> tags
+//   - Open Graph / og:url
+// Can be overridden via `SITE_URL` env var for staging/preview builds.
+const site = process.env.SITE_URL || 'https://kine-cocon.be';
 
 // https://astro.build/config
 export default defineConfig({
