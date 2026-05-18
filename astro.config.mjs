@@ -17,11 +17,18 @@ export default defineConfig({
   // imageService: 'compile' optimizes images at build time only — Cloudflare
   // Workers don't support sharp at runtime, and all our pages are prerendered.
   adapter: cloudflare({ imageService: 'compile' }),
+  // Canonicalise URLs with a trailing slash. The sitemap and all internal
+  // links use the slashed form, and requests for the no-slash variant
+  // auto-redirect to the canonical version. Without this, Google sees
+  // internal links pointing at /contact while the sitemap says /contact/,
+  // which it flags as "Redirect error" in Search Console.
+  trailingSlash: 'always',
   // /afspraak is intercepted client-side and shown as a modal/sheet (see
   // AfspraakModal.astro). The redirect is the no-JS fallback so the link
   // never 404s — visitors land on the home page instead.
   redirects: {
     '/afspraak': '/',
+    '/afspraak/': '/',
   },
   integrations: [
     sitemap({

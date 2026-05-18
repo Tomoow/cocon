@@ -23,10 +23,10 @@ const { currentPath = '/' } = Astro.props;
 
 const navItems = [
   { href: '/', label: 'Home', icon: House },
-  { href: '/tarieven', label: 'Tarieven & info', icon: BadgeEuro },
-  { href: '/over-ons', label: 'Over ons', icon: Users },
-  { href: '/faq', label: 'FAQ', icon: CircleHelp },
-  { href: '/contact', label: 'Contact', icon: MessageCircle },
+  { href: '/tarieven/', label: 'Tarieven & info', icon: BadgeEuro },
+  { href: '/over-ons/', label: 'Over ons', icon: Users },
+  { href: '/faq/', label: 'FAQ', icon: CircleHelp },
+  { href: '/contact/', label: 'Contact', icon: MessageCircle },
 ];
 
 function isActive(href: string, path: string): boolean {
@@ -80,7 +80,7 @@ function isActive(href: string, path: string): boolean {
         <IconButton href="https://facebook.com" label="Facebook">
           <Facebook class="size-5" />
         </IconButton>
-        <Button href="/afspraak" showArrow class="shrink-0">
+        <Button href="/afspraak/" showArrow class="shrink-0">
           Afspraak maken
         </Button>
       </div>
@@ -93,7 +93,7 @@ function isActive(href: string, path: string): boolean {
         <IconButton href="https://facebook.com" label="Facebook">
           <Facebook class="size-5" />
         </IconButton>
-        <Button href="/afspraak" showArrow class="shrink-0">
+        <Button href="/afspraak/" showArrow class="shrink-0">
           Afspraak maken
         </Button>
         <button
@@ -110,7 +110,7 @@ function isActive(href: string, path: string): boolean {
 
       <!-- Mobile (< md): CTA + hamburger -->
       <div class="flex items-center gap-3 md:hidden">
-        <Button href="/afspraak" class="shrink-0">Afspraak maken</Button>
+        <Button href="/afspraak/" class="shrink-0">Afspraak maken</Button>
         <button
           type="button"
           aria-expanded="false"
