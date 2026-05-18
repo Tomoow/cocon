@@ -23,12 +23,23 @@ export default defineConfig({
   // internal links pointing at /contact while the sitemap says /contact/,
   // which it flags as "Redirect error" in Search Console.
   trailingSlash: 'always',
+  // Inline the page-level stylesheets into each HTML document instead of
+  // serving them as separate render-blocking <link rel="stylesheet"> files.
+  // Removes 2 fetches from the critical request chain (was: HTML → JS → 2
+  // CSS, now: HTML → JS). For a small marketing site where each visitor
+  // hits 1-2 pages, the cost (~12 KB extra in each HTML) is much smaller
+  // than the benefit (fewer round-trips before first paint).
+  build: {
+    inlineStylesheets: 'always',
+  },
   // /afspraak is intercepted client-side and shown as a modal/sheet (see
   // AfspraakModal.astro). The redirect is the no-JS fallback so the link
   // never 404s — visitors land on the home page instead.
   redirects: {
+    // Both the no-slash and trailing-slash forms collapse to the same
+    // entry in Cloudflare's _redirects (Astro normalises the key), so
+    // listing both raises a duplicate-rule error at deploy time.
     '/afspraak': '/',
-    '/afspraak/': '/',
   },
   integrations: [
     sitemap({
