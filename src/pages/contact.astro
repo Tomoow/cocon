@@ -324,6 +324,12 @@ import mailSentLottie from '../assets/images/mail-sent.json?url';
         return;
       }
 
+      // Track the successful submission in Umami. We only fire on success
+      // (not on validation failure or network error) so the metric reflects
+      // actual delivered messages. The optional chaining guards against
+      // ad-blockers that block umami's script. See docs/TRACKING.md.
+      (window as unknown as { umami?: { track: (name: string) => void } }).umami?.track?.('form-contact-submit');
+
       // Success: continue into the "Verstuurd" stage, play the mail-sent
       // lottie, then reset everything to idle and clear the form.
       state = 'sent';

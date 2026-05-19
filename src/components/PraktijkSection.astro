@@ -129,10 +129,20 @@ const contactItems = [
       </ul>
 
       <div class="praktijk-section__actions">
-        <Button href={googleMapsHref} variant="secondary">
+        <Button
+          href={googleMapsHref}
+          variant="secondary"
+          umamiEvent="cta-directions"
+          umamiEventSource="praktijk-google-maps"
+        >
           Via Google maps
         </Button>
-        <Button href={wazeHref} variant="secondary">
+        <Button
+          href={wazeHref}
+          variant="secondary"
+          umamiEvent="cta-directions"
+          umamiEventSource="praktijk-waze"
+        >
           Via Waze
         </Button>
       </div>

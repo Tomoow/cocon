@@ -10,9 +10,25 @@ interface Props {
   size?: 'md' | 'lg';
   showArrow?: boolean;
   class?: string;
+  /** Umami event name (`data-umami-event="..."`). When set, the button
+   *  emits this event on click. See docs/TRACKING.md for the inventory. */
+  umamiEvent?: string;
+  /** Optional umami event property `data-umami-event-source` —
+   *  used to differentiate the same logical event by location
+   *  (e.g. cta-afspraak from "header-desktop" vs "hero"). */
+  umamiEventSource?: string;
 }
 
-const { href, type = 'button', variant = 'primary', size = 'md', showArrow = false, class: className = '' } = Astro.props;
+const {
+  href,
+  type = 'button',
+  variant = 'primary',
+  size = 'md',
+  showArrow = false,
+  class: className = '',
+  umamiEvent,
+  umamiEventSource,
+} = Astro.props;
 const base = 'inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
 const sizeClass = size === 'lg' ? 'btn-lg gap-2 px-10 text-2xl' : 'gap-2 px-4 py-3';
 const primaryClass = 'btn-primary group bg-primary text-white hover:opacity-90';
@@ -26,6 +42,8 @@ const arrowSize = size === 'lg' ? 24 : 20;
   <a
     href={href}
     class={`${base} ${sizeClass} ${linkClass} ${className}`}
+    data-umami-event={umamiEvent}
+    data-umami-event-source={umamiEventSource}
   >
     <slot />
     {showArrow && (
@@ -41,6 +59,8 @@ const arrowSize = size === 'lg' ? 24 : 20;
   <button
     type={type}
     class={`${base} ${sizeClass} ${variant === 'primary' ? 'group ' + primaryClass : variant === 'secondary' ? secondaryClass : 'group ' + tertiaryClass} ${className}`}
+    data-umami-event={umamiEvent}
+    data-umami-event-source={umamiEventSource}
   >
     <slot />
     {showArrow && (

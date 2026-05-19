@@ -63,10 +63,20 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
         Gespecialiseerde zorg voor <strong>bekkenbodemgezondheid</strong>, <strong>zwangerschap</strong>, <strong>revalidatie</strong> en <strong>algemene klachten</strong> in een ruimte die is ontworpen voor zowel preventie als herstel.
       </p>
       <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
-        <Button href="/afspraak/" showArrow>
+        <Button
+          href="/afspraak/"
+          showArrow
+          umamiEvent="cta-afspraak"
+          umamiEventSource="hero"
+        >
           Maak een afspraak
         </Button>
-        <Button href="/tarieven/" variant="secondary">
+        <Button
+          href="/tarieven/"
+          variant="secondary"
+          umamiEvent="cta-tarieven"
+          umamiEventSource="hero"
+        >
           Bekijk onze tarieven
         </Button>
       </div>

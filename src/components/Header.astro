@@ -74,26 +74,62 @@ function isActive(href: string, path: string): boolean {
 
       <!-- Desktop (lg): icon buttons + CTA -->
       <div class="hidden items-center gap-3 lg:flex">
-        <IconButton href="https://www.instagram.com/kine_cocon/" label="Instagram">
+        <IconButton
+          href="https://www.instagram.com/kine_cocon/"
+          label="Instagram"
+          umamiEvent="cta-social"
+          umamiEventNetwork="instagram"
+          umamiEventSource="header-desktop"
+        >
           <Instagram class="size-5" />
         </IconButton>
-        <IconButton href="https://facebook.com" label="Facebook">
+        <IconButton
+          href="https://facebook.com"
+          label="Facebook"
+          umamiEvent="cta-social"
+          umamiEventNetwork="facebook"
+          umamiEventSource="header-desktop"
+        >
           <Facebook class="size-5" />
         </IconButton>
-        <Button href="/afspraak/" showArrow class="shrink-0">
+        <Button
+          href="/afspraak/"
+          showArrow
+          class="shrink-0"
+          umamiEvent="cta-afspraak"
+          umamiEventSource="header-desktop"
+        >
           Afspraak maken
         </Button>
       </div>
 
       <!-- iPad (md to lg): icon buttons + CTA + hamburger -->
       <div class="hidden items-center gap-3 md:flex lg:hidden">
-        <IconButton href="https://www.instagram.com/kine_cocon/" label="Instagram">
+        <IconButton
+          href="https://www.instagram.com/kine_cocon/"
+          label="Instagram"
+          umamiEvent="cta-social"
+          umamiEventNetwork="instagram"
+          umamiEventSource="header-tablet"
+        >
           <Instagram class="size-5" />
         </IconButton>
-        <IconButton href="https://facebook.com" label="Facebook">
+        <IconButton
+          href="https://facebook.com"
+          label="Facebook"
+          umamiEvent="cta-social"
+          umamiEventNetwork="facebook"
+          umamiEventSource="header-tablet"
+        >
           <Facebook class="size-5" />
         </IconButton>
-        <Button href="/afspraak/" showArrow class="shrink-0">
+        <Button
+          href="/afspraak/"
+          showArrow
+          class="shrink-0"
+          umamiEvent="cta-afspraak"
+          umamiEventSource="header-tablet"
+        >
           Afspraak maken
         </Button>
         <button
@@ -110,7 +146,12 @@ function isActive(href: string, path: string): boolean {
 
       <!-- Mobile (< md): CTA + hamburger -->
       <div class="flex items-center gap-3 md:hidden">
-        <Button href="/afspraak/" class="shrink-0">Afspraak maken</Button>
+        <Button
+          href="/afspraak/"
+          class="shrink-0"
+          umamiEvent="cta-afspraak"
+          umamiEventSource="header-mobile"
+        >Afspraak maken</Button>
         <button
           type="button"
           aria-expanded="false"
@@ -154,10 +195,22 @@ function isActive(href: string, path: string): boolean {
         })}
       </nav>
       <div class="mt-6 flex gap-3">
-        <IconButton href="https://www.instagram.com/kine_cocon/" label="Instagram">
+        <IconButton
+          href="https://www.instagram.com/kine_cocon/"
+          label="Instagram"
+          umamiEvent="cta-social"
+          umamiEventNetwork="instagram"
+          umamiEventSource="header-mobile-menu"
+        >
           <Instagram class="size-5" />
         </IconButton>
-        <IconButton href="https://facebook.com" label="Facebook">
+        <IconButton
+          href="https://facebook.com"
+          label="Facebook"
+          umamiEvent="cta-social"
+          umamiEventNetwork="facebook"
+          umamiEventSource="header-mobile-menu"
+        >
           <Facebook class="size-5" />
         </IconButton>
       </div>

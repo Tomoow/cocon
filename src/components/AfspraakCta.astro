@@ -40,10 +40,23 @@ const {
       </p>
     </div>
     <div class="afspraak-cta__actions">
-      <Button href={appointmentHref} size="lg" showArrow>
+      <Button
+        href={appointmentHref}
+        size="lg"
+        showArrow
+        umamiEvent="cta-afspraak"
+        umamiEventSource="afspraak-band"
+      >
         Maak een afspraak
       </Button>
-      <Button href={phoneHref} size="lg" variant="secondary" class="afspraak-cta__phone-btn">
+      <Button
+        href={phoneHref}
+        size="lg"
+        variant="secondary"
+        class="afspraak-cta__phone-btn"
+        umamiEvent="cta-phone"
+        umamiEventSource="afspraak-band"
+      >
         <Phone class="size-6" aria-hidden="true" />
         {phoneLabel}
       </Button>

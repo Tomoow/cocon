@@ -22,7 +22,13 @@ const tarievenCards = [
       { label: 'Eerste behandeling', duration: '45 min', price: '€55' },
       { label: 'Vervolg behandelingen', duration: '30 min', price: '€37' },
     ],
-    cta: { label: 'Online afspraak maken', href: '/afspraak/', showArrow: true },
+    cta: {
+      label: 'Online afspraak maken',
+      href: '/afspraak/',
+      showArrow: true,
+      umamiEvent: 'cta-afspraak',
+      umamiEventSource: 'tarieven-card-algemeen',
+    },
     highlighted: false,
   },
   {
@@ -34,7 +40,13 @@ const tarievenCards = [
       { label: 'Eerste behandeling', duration: '45 min', price: '€60' },
       { label: 'Vervolg behandelingen', duration: '30 min', price: '€40' },
     ],
-    cta: { label: 'Online afspraak maken', href: '/afspraak/', showArrow: true },
+    cta: {
+      label: 'Online afspraak maken',
+      href: '/afspraak/',
+      showArrow: true,
+      umamiEvent: 'cta-afspraak',
+      umamiEventSource: 'tarieven-card-bekkenbodem',
+    },
     highlighted: true,
     highlightLabel: 'Specialisatie',
   },
@@ -46,7 +58,13 @@ const tarievenCards = [
     rows: [
       { label: 'Alle huisbezoeken', duration: '30 min', price: '€45' },
     ],
-    cta: { label: 'Bel 0470 62 68 48', href: 'tel:+32470626848', showArrow: false },
+    cta: {
+      label: 'Bel 0470 62 68 48',
+      href: 'tel:+32470626848',
+      showArrow: false,
+      umamiEvent: 'cta-phone',
+      umamiEventSource: 'tarieven-card-huisbezoek',
+    },
     highlighted: false,
   },
 ];
@@ -151,7 +169,13 @@ const insurances: Insurance[] = [
             <p class="tarieven-card__disclaimer">
               <span class="tarieven-card__disclaimer-star" aria-hidden="true">*</span> Je mutualiteit betaalt hier nog een deel van terug
             </p>
-            <Button href={card.cta.href} showArrow={card.cta.showArrow} class="tarieven-card__cta">
+            <Button
+              href={card.cta.href}
+              showArrow={card.cta.showArrow}
+              class="tarieven-card__cta"
+              umamiEvent={card.cta.umamiEvent}
+              umamiEventSource={card.cta.umamiEventSource}
+            >
               {card.cta.label}
             </Button>
           </div>

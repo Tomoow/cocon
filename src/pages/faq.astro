@@ -130,7 +130,12 @@ const categories: FaqCategory[] = [
             <h2 class="faq-category__title" id={`faq-cat-${i}-heading`}>{cat.title}</h2>
             <p class="faq-category__description">{cat.description}</p>
           </div>
-          <a class="faq-category__cta" href={cat.cta.href}>
+          <a
+            class="faq-category__cta"
+            href={cat.cta.href}
+            data-umami-event="cta-contact"
+            data-umami-event-source={`faq-cat-${i}`}
+          >
             <span>{cat.cta.label}</span>
             <ArrowUpRight class="size-4" aria-hidden="true" />
           </a>

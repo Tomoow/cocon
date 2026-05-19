@@ -109,6 +109,12 @@ const localBusinessSchema = {
       <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
     )}
 
+    <!-- Umami Analytics: cookieless, GDPR-friendly page view + event tracking.
+         Custom events are wired across the site via `data-umami-event="..."`
+         on CTAs and programmatically on successful contact-form submit. See
+         docs/TRACKING.md for the full inventory. -->
+    <script is:inline defer src="https://cloud.umami.is/script.js" data-website-id="db0345e1-ced4-4bf3-8607-6474b5cce507"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap" as="style" />

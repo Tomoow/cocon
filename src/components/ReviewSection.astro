@@ -72,7 +72,14 @@ const BREAKPOINT_PX = 1040;
 
   <!-- CTA button: shared between grid and carousel, centered -->
   <div class="review-section__cta-wrapper">
-    <Button href={ctaHref} variant="tertiary" showArrow={true} class="review-section__cta">
+    <Button
+      href={ctaHref}
+      variant="tertiary"
+      showArrow={true}
+      class="review-section__cta"
+      umamiEvent="cta-review-leave"
+      umamiEventSource="review-section"
+    >
       Laat een recensie achter
     </Button>
   </div>

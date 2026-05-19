@@ -109,7 +109,12 @@ function isActive(href: string, path: string): boolean {
         <h3 class="footer__heading" id="footer-contact">Contact</h3>
         <ul class="footer__list">
           <li>
-            <a href="mailto:info@kine-cocon.be" class="footer__link">
+            <a
+              href="mailto:info@kine-cocon.be"
+              class="footer__link"
+              data-umami-event="cta-email"
+              data-umami-event-source="footer"
+            >
               <span class="footer__link-icon" aria-hidden="true">
                 <Mail />
               </span>
@@ -117,7 +122,12 @@ function isActive(href: string, path: string): boolean {
             </a>
           </li>
           <li>
-            <a href="tel:+32470626848" class="footer__link">
+            <a
+              href="tel:+32470626848"
+              class="footer__link"
+              data-umami-event="cta-phone"
+              data-umami-event-source="footer"
+            >
               <span class="footer__link-icon" aria-hidden="true">
                 <Phone />
               </span>
@@ -126,10 +136,26 @@ function isActive(href: string, path: string): boolean {
           </li>
         </ul>
         <div class="footer__socials">
-          <IconButton href="https://www.instagram.com/kine_cocon/" label="Instagram" variant="primary" class="footer__social-btn">
+          <IconButton
+            href="https://www.instagram.com/kine_cocon/"
+            label="Instagram"
+            variant="primary"
+            class="footer__social-btn"
+            umamiEvent="cta-social"
+            umamiEventNetwork="instagram"
+            umamiEventSource="footer"
+          >
             <Instagram class="size-5" />
           </IconButton>
-          <IconButton href="https://facebook.com" label="Facebook" variant="primary" class="footer__social-btn">
+          <IconButton
+            href="https://facebook.com"
+            label="Facebook"
+            variant="primary"
+            class="footer__social-btn"
+            umamiEvent="cta-social"
+            umamiEventNetwork="facebook"
+            umamiEventSource="footer"
+          >
             <Facebook class="size-5" />
           </IconButton>
         </div>
