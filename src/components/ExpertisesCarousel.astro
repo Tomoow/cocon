@@ -15,8 +15,8 @@ export interface CardData {
   number: string;
   title: string;
   description: string;
-  /** Bullet points shown on the back of the card after the user flips it */
-  backBullets: string[];
+  /** Prose paragraphs shown on the back of the card after the user flips it */
+  backParagraphs: string[];
 }
 
 interface Props {
@@ -43,7 +43,7 @@ const { cards, class: className } = Astro.props;
           number={card.number}
           title={card.title}
           description={card.description}
-          backBullets={card.backBullets}
+          backParagraphs={card.backParagraphs}
         />
       </li>
     ))}
