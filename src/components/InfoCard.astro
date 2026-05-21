@@ -49,7 +49,7 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
           <span class="info-card__number-inner">{number}</span>
         </span>
         <h3 class="info-card__title">{title}</h3>
-        <p class="info-card__description">{description}</p>
+        <p class="info-card__description" set:html={description} />
         <span class="info-card__cta">
           <span>{ctaLabel}</span>
           <ArrowRight class="info-card__cta-icon size-4" aria-hidden="true" />
@@ -57,15 +57,23 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
       </div>
     </div>
 
-    <!-- Back face: clickable anywhere to flip back -->
+    <!-- Back face: clickable anywhere to flip back.
+         Structure: scrollable body wraps title + prose; Terug lives
+         in a pinned footer outside the scroll so the bottom padding
+         can't be eaten by scroll mechanics. A soft white fade sits
+         just above the footer to hint that there's scrollable content
+         above (purely visual; works on every card whether scrollable
+         or not). -->
     <div class="info-card__face info-card__back" data-flip-trigger role="button" tabindex="-1" aria-label="Terug naar voorkant" aria-expanded="true">
       <div class="info-card__back-body">
         <h3 class="info-card__back-title">{title}</h3>
         <div class="info-card__back-prose">
           {backParagraphs.map((paragraph) => (
-            <p class="info-card__back-paragraph">{paragraph}</p>
+            <p class="info-card__back-paragraph" set:html={paragraph} />
           ))}
         </div>
+      </div>
+      <div class="info-card__back-footer">
         <span class="info-card__back-cta">Terug</span>
       </div>
     </div>
@@ -237,6 +245,13 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
     flex: 1;
   }
 
+  /* Scannability: highlight keywords inside the description with a
+     subtle weight bump. Same color (already primary) so the emphasis
+     reads without feeling shouty. */
+  .info-card__description strong {
+    font-weight: 600;
+  }
+
   .info-card__cta {
     display: inline-flex;
     align-items: center;
@@ -260,29 +275,53 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
     transform: translateX(2px);
   }
 
-  /* Back face */
+  /* Back face: a fixed flex column with a scrollable body and a
+     pinned footer. The card itself doesn't scroll (overflow:hidden
+     from the shared front/back rule above); only the body does. */
   .info-card__back {
-    overflow: auto;
+    overflow: hidden;
   }
 
   .info-card__back-body {
-    /* Extra bottom padding (2.25rem instead of 1.5rem) so the "Terug" CTA
-       has clear breathing room from the rounded card edge when the back
-       content is long enough to scroll. The card's own border-radius
-       eats some of the visual space at the corners, so a tighter padding
-       reads as "stuck to the edge" even when it's mathematically there. */
-    padding: 1.5rem 1.25rem 2.25rem;
+    flex: 1;
+    /* `min-height: 0` is the canonical fix that lets a flex child
+       actually scroll — without it, the child claims its content's
+       intrinsic height as min-height and overflow:auto does nothing. */
+    min-height: 0;
+    overflow-y: auto;
+    padding: 1.5rem 1.25rem 0.5rem;
     display: flex;
     flex-direction: column;
-    /* `min-height` (not `height`) so the body grows with longer copy.
-       With `height: 100%`, overflowing prose pushed past the body and
-       the padding-bottom got clipped at the original card boundary
-       instead of moving down with the content. `box-sizing: border-box`
-       keeps the min-height calculation predictable when padding is
-       included. */
-    min-height: 100%;
-    box-sizing: border-box;
     gap: 1rem;
+  }
+
+  .info-card__back-footer {
+    position: relative;
+    flex-shrink: 0;
+    padding: 0.75rem 1.25rem 1.5rem;
+    background: var(--color-surface);
+  }
+
+  /* Soft white fade just above the footer — hints that there's
+     scrollable content above. Visible by default; the page script
+     (see bottom of file) toggles `.is-back-bottom` on the card when
+     the body is scrolled to the bottom or isn't scrollable at all,
+     which hides the fade so it doesn't cover the last line of prose. */
+  .info-card__back-footer::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    height: 1.5rem;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--color-surface));
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.18s ease-out;
+  }
+
+  .info-card.is-back-bottom .info-card__back-footer::before {
+    opacity: 0;
   }
 
   .info-card__back-title {
@@ -316,11 +355,21 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
     line-height: 1.55;
   }
 
+  /* Scannability: highlight keywords in the back prose. Back text is
+     `--color-text-secondary` by default, so we bump strong to
+     `--color-primary` + weight 600 — two cues that compound nicely
+     for visitors scanning rather than reading. */
+  .info-card__back-paragraph strong {
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+
   .info-card__back-cta {
     font-size: 1rem;
     font-weight: 500;
     color: var(--color-primary);
-    margin-top: auto;
+    /* Terug lives in the pinned .info-card__back-footer now, which
+       is itself a flex sibling — no need for margin-top:auto. */
     pointer-events: none;
   }
 </style>
@@ -362,6 +411,26 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
           }
         });
       });
+
+      // Fade visibility: hide the white fade above the footer when the
+      // back body is either fully scrolled to the bottom OR not
+      // scrollable at all (so the fade doesn't cover the last sentence
+      // on short cards).
+      const body = card.querySelector<HTMLElement>('.info-card__back-body');
+      if (body) {
+        const updateFade = () => {
+          // 1px slack to account for sub-pixel rounding across devices
+          const atBottom = body.scrollHeight - body.scrollTop - body.clientHeight <= 1;
+          const notScrollable = body.scrollHeight <= body.clientHeight + 1;
+          card.classList.toggle('is-back-bottom', atBottom || notScrollable);
+        };
+        body.addEventListener('scroll', updateFade, { passive: true });
+        window.addEventListener('resize', updateFade);
+        // Defer the first measurement until after layout (back-face is
+        // absolute-positioned and might not have its final size on the
+        // initial paint frame).
+        requestAnimationFrame(updateFade);
+      }
     });
   }
 </script>

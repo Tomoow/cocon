@@ -12,6 +12,10 @@ import expertise3 from '../assets/images/expertises/expertise-3.png';
 import expertise5 from '../assets/images/expertises/expertise-5.png';
 
 // 4 expertises in a 2×2 grid (Figma 0:648 desktop, 0:1913 mobile).
+// `description` and `backParagraphs` may contain inline HTML — they're
+// rendered with `set:html` in InfoCard. Keep the markup limited to
+// <strong> for keyword scanning; if you need richer formatting,
+// also extend InfoCard's strong-styling CSS.
 const expertisesCards = [
   {
     imageSrc: expertise1,
@@ -19,10 +23,10 @@ const expertisesCards = [
     number: '01',
     title: 'Bekkenbodemtherapie',
     description:
-      'Heb je last van urineverlies, obstipatie, een zwaar gevoel of andere klachten in de bekkenbodem? Bekkenbodemtherapie kan helpen. Bij zowel vrouwen en mannen.',
+      'Heb je last van <strong>urineverlies</strong>, <strong>obstipatie</strong>, een <strong>zwaar gevoel</strong> of andere klachten in de bekkenbodem? Bekkenbodemtherapie kan helpen. Bij zowel <strong>vrouwen en mannen</strong>.',
     backParagraphs: [
-      'De bekkenbodem speelt een belangrijke rol bij plassen, stoelgang en seksualiteit. Je kan terecht bij klachten zoals urineverlies, aandrang, constipatie, bekkenpijn, vaginale klachten of ander ongemak in de bekkenregio. Deze klachten kunnen een grote impact hebben op het dagelijks leven.',
-      'Met een persoonlijke aanpak gaan we samen op zoek naar de oorzaak en werken we gericht aan herstel. Tijdens de behandeling besteden we onder andere aandacht aan toilethouding, het leren ontspannen en aanspannen van de bekkenbodemspieren en, indien nodig, het gebruik van biofeedback om de spieren beter te leren aanvoelen en trainen.',
+      'De bekkenbodem speelt een belangrijke rol bij <strong>plassen, stoelgang en seksualiteit</strong>. Je kan terecht bij klachten zoals <strong>urineverlies, aandrang, constipatie, bekkenpijn, vaginale klachten</strong> of ander ongemak in de bekkenregio. Deze klachten kunnen een grote impact hebben op het dagelijks leven.',
+      'Met een persoonlijke aanpak gaan we samen op zoek naar de oorzaak en werken we gericht aan <strong>herstel</strong>. Tijdens de behandeling besteden we onder andere aandacht aan <strong>toilethouding</strong>, het leren ontspannen en aanspannen van de <strong>bekkenbodemspieren</strong> en, indien nodig, het gebruik van <strong>biofeedback</strong> om de spieren beter te leren aanvoelen en trainen.',
     ],
   },
   {
@@ -31,10 +35,10 @@ const expertisesCards = [
     number: '02',
     title: 'Zwangerschap & postnatale',
     description:
-      'Tijdens en na een zwangerschap verandert er veel in je lichaam. Met gerichte kinesitherapie helpen we je om klachten te voorkomen, te herstellen en je lichaam opnieuw te vertrouwen.',
+      'Tijdens en na een <strong>zwangerschap</strong> verandert er veel in je lichaam. Met gerichte kinesitherapie helpen we je om <strong>klachten te voorkomen</strong>, te <strong>herstellen</strong> en je lichaam opnieuw te vertrouwen.',
     backParagraphs: [
-      'Tijdens de zwangerschap verandert er veel in je lichaam. Vanaf 12 weken zwangerschap kan je terecht voor begeleiding om klachten te voorkomen of vroegtijdig aan te pakken. We werken aan bewustwording en controle van de bekkenbodemspieren en bereiden je voor op de bevalling, met uitleg over arbeid, weeën en hoe je je lichaam hierbij kan ondersteunen. Dit kan individueel of samen met je partner.',
-      'Na de bevalling begeleiden we je herstel op jouw tempo. Samen werken we aan een veilige opbouw, afgestemd op jouw lichaam en doelen — van comfortabel bewegen in het dagelijks leven tot een terugkeer naar sport.',
+      'Tijdens de zwangerschap verandert er veel in je lichaam. <strong>Vanaf 12 weken zwangerschap</strong> kan je terecht voor begeleiding om klachten te voorkomen of vroegtijdig aan te pakken. We werken aan <strong>bewustwording en controle van de bekkenbodemspieren</strong> en bereiden je voor op de <strong>bevalling</strong>, met uitleg over arbeid, weeën en hoe je je lichaam hierbij kan ondersteunen. Dit kan <strong>individueel of samen met je partner</strong>.',
+      'Na de <strong>bevalling</strong> begeleiden we je herstel op jouw tempo. Samen werken we aan een veilige opbouw, afgestemd op jouw lichaam en doelen, van comfortabel bewegen in het dagelijks leven tot een <strong>terugkeer naar sport</strong>.',
     ],
   },
   {
@@ -43,11 +47,11 @@ const expertisesCards = [
     number: '03',
     title: 'Orthopedische revalidatie',
     description:
-      'Na een operatie, blessure of lange periode van klachten begeleiden we je stap voor stap naar herstel, aangepast aan jouw lichaam en tempo.',
+      'Na een <strong>operatie</strong>, <strong>blessure</strong> of lange periode van klachten begeleiden we je stap voor stap naar <strong>herstel</strong>, aangepast aan jouw lichaam en tempo.',
     backParagraphs: [
-      'Orthopedische revalidatie ondersteunt je herstel na een operatie, blessure of ongeval. We begeleiden je stap voor stap in het terug opbouwen van mobiliteit, kracht en vertrouwen in bewegen. Alles gebeurt op jouw tempo en wordt afgestemd op jouw mogelijkheden en persoonlijke doelen.',
-      'In de eerste weken na een ingreep, of wanneer verplaatsen nog moeilijk is, zijn huisbezoeken mogelijk zodat de revalidatie vlot en comfortabel kan starten in je eigen omgeving.',
-      'Voorbeelden van klachten of ingrepen: meniscusoperatie, kruisbandreconstructie, heup-, schouder- of knieprothese, enkelverstuiking of -breuk, schouderproblemen (zoals rotator cuff letsel) of herstel na fracturen en sportblessures.',
+      'Orthopedische revalidatie ondersteunt je herstel na een <strong>operatie, blessure of ongeval</strong>. We begeleiden je stap voor stap in het terug opbouwen van <strong>mobiliteit, kracht en vertrouwen</strong> in bewegen. Alles gebeurt op jouw tempo en wordt afgestemd op jouw mogelijkheden en persoonlijke doelen.',
+      'In de eerste weken na een ingreep, of wanneer verplaatsen nog moeilijk is, zijn <strong>huisbezoeken</strong> mogelijk zodat de revalidatie vlot en comfortabel kan starten in je eigen omgeving.',
+      'Voorbeelden van klachten of ingrepen: <strong>meniscusoperatie</strong>, <strong>kruisbandreconstructie</strong>, <strong>heup-, schouder- of knieprothese</strong>, <strong>enkelverstuiking of -breuk</strong>, <strong>schouderproblemen</strong> (zoals rotator cuff letsel) of herstel na <strong>fracturen en sportblessures</strong>.',
     ],
   },
   {
@@ -56,11 +60,11 @@ const expertisesCards = [
     number: '04',
     title: 'Algemene kinesitherapie',
     description:
-      'Algemene kinesitherapie voor spier- en gewrichtsklachten, met oefentherapie, manuele therapie en dry needling.',
+      'Algemene kinesitherapie voor <strong>spier- en gewrichtsklachten</strong>, met <strong>oefentherapie</strong>, <strong>manuele therapie</strong> en <strong>dry needling</strong>.',
     backParagraphs: [
-      'Algemene kinesitherapie helpt bij spier- en gewrichtsklachten zoals pijn, stijfheid of overbelasting, na een blessure, operatie of bij langdurige klachten.',
-      'De behandeling wordt afgestemd op jouw noden en bestaat vaak uit oefentherapie om kracht, controle en beweeglijkheid stap voor stap op te bouwen. Indien nodig kunnen ook manuele therapie en dry needling worden ingezet.',
-      'Het doel is om je opnieuw vlot en zo comfortabel mogelijk te laten bewegen in het dagelijks leven, werk of sport, met aandacht voor herstel en het voorkomen van terugkerende klachten.',
+      'Algemene kinesitherapie helpt bij <strong>spier- en gewrichtsklachten</strong> zoals <strong>pijn, stijfheid of overbelasting</strong>, na een blessure, operatie of bij langdurige klachten.',
+      'De behandeling wordt afgestemd op jouw noden en bestaat vaak uit <strong>oefentherapie</strong> om kracht, controle en beweeglijkheid stap voor stap op te bouwen. Indien nodig kunnen ook <strong>manuele therapie</strong> en <strong>dry needling</strong> worden ingezet.',
+      'Het doel is om je opnieuw vlot en zo comfortabel mogelijk te laten bewegen in het <strong>dagelijks leven, werk of sport</strong>, met aandacht voor herstel en het <strong>voorkomen van terugkerende klachten</strong>.',
     ],
   },
 ];
