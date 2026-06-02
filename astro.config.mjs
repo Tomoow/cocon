@@ -43,7 +43,15 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/thank-you'),
+      // Hide pages from the sitemap that shouldn't appear as Google
+      // results. They're still reachable via the footer / direct URL,
+      // and each emits `<meta name="robots" content="noindex,nofollow">`
+      // (via BaseLayout's `noindex` prop) as a belt-and-suspenders
+      // signal to crawlers.
+      filter: (page) =>
+        !page.includes('/thank-you') &&
+        !page.includes('/privacy') &&
+        !page.includes('/voorwaarden'),
     }),
   ],
   vite: {

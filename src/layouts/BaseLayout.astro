@@ -23,6 +23,11 @@ interface Props {
   description?: string;
   ogImage?: string;
   isHome?: boolean;
+  /** When true, emits `<meta name="robots" content="noindex,nofollow">`
+   *  so search engines exclude the page from their index. Use for legal
+   *  pages, post-submit confirmation pages, etc. — anything that would
+   *  look out of place as a standalone Google result. */
+  noindex?: boolean;
 }
 
 const {
@@ -30,6 +35,7 @@ const {
   description = 'Cocon is een kinesitherapiepraktijk in Kapelle-op-den-Bos, gespecialiseerd in bekkenbodemtherapie, zwangerschapsbegeleiding, revalidatie en algemene klachten.',
   ogImage = '/images/hero/hero-picture.png',
   isHome = false,
+  noindex = false,
 } = Astro.props;
 
 // Canonical URL — astro `site` is the production base. Astro.url.pathname
@@ -86,6 +92,7 @@ const localBusinessSchema = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
     <link rel="canonical" href={canonicalURL} />
     <title>{pageTitle}</title>
 
