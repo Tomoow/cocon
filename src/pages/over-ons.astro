@@ -76,24 +76,43 @@ const specialisaties = [
       </header>
       <div class="gezicht-section__intro">
         <p>
-          Cocon is voor mij een plek waar je even mag vertragen. Waar er ruimte is om te herstellen van binnenuit, op jouw tempo, en met aandacht voor wat je lichaam op dat moment nodig heeft. De naam verwijst naar de cocon van zwangerschap en de postnatale periode, maar ook breder naar elk herstelproces waarin je stap voor stap opnieuw vertrouwen mag opbouwen in je lichaam.
+          Cocon is voor mij een plek waar je even mag <strong>vertragen</strong>. Waar er ruimte is om te <strong>herstellen van binnenuit</strong>, op jouw tempo, en met aandacht voor wat je lichaam op dat moment nodig heeft. De naam verwijst naar de cocon van <strong>zwangerschap en de postnatale periode</strong>, maar ook breder naar elk <strong>herstelproces</strong> waarin je stap voor stap opnieuw <strong>vertrouwen</strong> mag opbouwen in je lichaam.
         </p>
         <p>
-          Als kinesitherapeut begeleid ik mensen bij klachten die hun dagelijks leven beïnvloeden of sporten bemoeilijken. Dat gaat van pijn en overbelasting tot bewegingsproblemen, maar altijd met oog voor wat voor jou belangrijk is in het dagelijks functioneren. Daarnaast heb ik een bijzondere focus op bekkenbodemtherapie en zwangerschapsbegeleiding.
+          Als kinesitherapeut begeleid ik mensen bij klachten die hun <strong>dagelijks leven</strong> beïnvloeden of <strong>sporten</strong> bemoeilijken. Dat gaat van <strong>pijn en overbelasting tot bewegingsproblemen</strong>, maar altijd met oog voor wat voor jou belangrijk is in het dagelijks functioneren. Daarnaast heb ik een bijzondere focus op <strong>bekkenbodemtherapie en zwangerschapsbegeleiding</strong>.
         </p>
         <p>
-          Mijn eerste kennismaking met de bekkenbodem kwam er tijdens mijn stage op de perinatale dienst van UZ Leuven. Wat me daar vooral is bijgebleven, is hoe groot de impact van dit vaak "onzichtbare" stukje van het lichaam kan zijn op zo veel dagelijkse dingen, en hoe waardevol het is wanneer iemand daarin mee op weg wordt geholpen.
+          Mijn eerste kennismaking met de bekkenbodem kwam er tijdens mijn stage op de <strong>perinatale dienst van UZ Leuven</strong>. Wat me daar vooral is bijgebleven, is hoe groot de impact van dit vaak "onzichtbare" stukje van het lichaam kan zijn op zo veel dagelijkse dingen, en hoe waardevol het is wanneer iemand daarin mee op weg wordt geholpen.
         </p>
         <p>
-          Daarna werkte ik vier jaar als algemeen kinesitherapeut. In die periode groeide mijn ervaring in het breed begeleiden van mensen met verschillende klachten. Ik leerde het lichaam beter begrijpen als één geheel, met veel aandacht voor functioneel herstel en orthopedische revalidatie.
+          Daarna werkte ik <strong>vier jaar als algemeen kinesitherapeut</strong>. In die periode groeide mijn ervaring in het breed begeleiden van mensen met verschillende klachten. Ik leerde het lichaam beter begrijpen als één geheel, met veel aandacht voor <strong>functioneel herstel en orthopedische revalidatie</strong>.
         </p>
         <p>
-          Toch bleef de interesse in de bekkenbodem aanwezig, waardoor ik me verder specialiseerde via de opleiding aan SOMT in Nederland. Zo groeide mijn werk geleidelijk uit tot een combinatie van algemene kinesitherapie en meer specifieke begeleiding rond bekkenbodem en zwangerschap.
+          Toch bleef de interesse in de bekkenbodem aanwezig, waardoor ik me verder specialiseerde via de opleiding aan <strong>SOMT in Nederland</strong>. Zo groeide mijn werk geleidelijk uit tot een combinatie van <strong>algemene kinesitherapie</strong> en meer specifieke begeleiding rond <strong>bekkenbodem en zwangerschap</strong>.
         </p>
         <p>
-          Wat ik belangrijk vind in mijn begeleiding, is dat je je op je gemak voelt en dat er echt geluisterd wordt. Samen zoeken we stap voor stap naar wat jouw lichaam nodig heeft, in jouw tempo.
+          Wat ik belangrijk vind in mijn begeleiding, is dat je je <strong>op je gemak voelt</strong> en dat er echt <strong>geluisterd</strong> wordt. Samen zoeken we <strong>stap voor stap</strong> naar wat jouw lichaam nodig heeft, in jouw tempo.
         </p>
         <p class="gezicht-section__attribution">— Lynn Beunnens, kinesist &amp; oprichter Cocon</p>
+      </div>
+    </div>
+    <!-- Right-side column on desktop: image on top, credentials below.
+         On mobile this stacks under the intro so the photo + opleidingen
+         live together regardless of breakpoint. -->
+    <div class="gezicht-section__sidebar">
+      <div class="gezicht-section__image-frame">
+        <span class="gezicht-section__ellipse" aria-hidden="true" />
+        <Image
+          src={lynnPortrait}
+          alt="Lynn Beunnens, kinesist en oprichter van Cocon"
+          width={400}
+          height={400}
+          format="webp"
+          widths={[320, 400, 600, 800]}
+          sizes="(max-width: 767px) 320px, 400px"
+          loading="lazy"
+          class="gezicht-section__image"
+        />
       </div>
       <ul class="gezicht-section__credentials" role="list">
         {credentials.map(({ icon: Icon, title, detail, detailPrefix, detailLink, tooltip, goldIcon }) => (
@@ -136,20 +155,6 @@ const specialisaties = [
           </li>
         ))}
       </ul>
-    </div>
-    <div class="gezicht-section__image-frame">
-      <span class="gezicht-section__ellipse" aria-hidden="true" />
-      <Image
-        src={lynnPortrait}
-        alt="Lynn Beunnens, kinesist en oprichter van Cocon"
-        width={400}
-        height={400}
-        format="webp"
-        widths={[320, 400, 600, 800]}
-        sizes="(max-width: 767px) 320px, 400px"
-        loading="lazy"
-        class="gezicht-section__image"
-      />
     </div>
   </section>
 
@@ -267,6 +272,13 @@ const specialisaties = [
     color: var(--color-primary);
     font-size: 1rem;
     line-height: 1.75;
+  }
+
+  /* Scannability: highlight keywords with a subtle weight bump.
+     Same primary-green color (already inherited) so it reads as
+     emphasis without shouting. */
+  .gezicht-section__intro :global(strong) {
+    font-weight: 600;
   }
 
   .gezicht-section__attribution {
@@ -406,19 +418,30 @@ const specialisaties = [
     visibility: visible;
   }
 
+  /* Right-side column: image on top, credentials below it.
+     Behaves like the old image-frame at the section level — same
+     width constraint and flex-shrink — so the section's existing
+     row layout on desktop keeps working. */
+  .gezicht-section__sidebar {
+    width: 100%;
+    max-width: 400px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    .gezicht-section__sidebar {
+      width: 400px;
+    }
+  }
+
   /* Image with brand-skewed peach ellipse behind */
   .gezicht-section__image-frame {
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 400px;
-    flex-shrink: 0;
-  }
-
-  @media (min-width: 1024px) {
-    .gezicht-section__image-frame {
-      width: 400px;
-    }
   }
 
   .gezicht-section__ellipse {
