@@ -401,9 +401,10 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
   }
 
   function initCardFlip() {
-    function flipCard(card: Element) {
-      card.classList.toggle('is-flipped');
-      const expanded = card.classList.contains('is-flipped');
+    // Apply a card's open/closed state: flip class, ARIA, tabindex, and the
+    // focus/blur dance that keeps mobile page-scroll working after a flip.
+    function setCardState(card: Element, expanded: boolean) {
+      card.classList.toggle('is-flipped', expanded);
       const front = card.querySelector('.info-card__front');
       const back = card.querySelector('.info-card__back');
       card.querySelectorAll('[data-flip-trigger]').forEach((el) => {
@@ -427,6 +428,18 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
           (back as HTMLElement).blur();
         }
       }
+    }
+
+    function flipCard(card: Element) {
+      const willOpen = !card.classList.contains('is-flipped');
+      // Single-open: when opening a card, flip any other open card back first
+      // so at most one card is ever revealed at a time.
+      if (willOpen) {
+        document.querySelectorAll('[data-flip-card].is-flipped').forEach((other) => {
+          if (other !== card) setCardState(other, false);
+        });
+      }
+      setCardState(card, willOpen);
     }
 
     document.querySelectorAll('[data-flip-card]').forEach((card) => {

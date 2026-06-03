@@ -278,6 +278,14 @@ function isActive(href: string, path: string): boolean {
     max-width: 24rem;
   }
 
+  /* More breathing room between the (now larger) wordmark and the
+     bedrijfsinfo beneath it on desktop. */
+  @media (min-width: 768px) {
+    .footer__brand {
+      gap: 2.5rem;
+    }
+  }
+
   @media (min-width: 1024px) {
     .footer__brand {
       flex: 0 0 auto;
@@ -313,7 +321,10 @@ function isActive(href: string, path: string): boolean {
 
   @media (min-width: 768px) {
     .footer__logo-img {
-      width: 12.5rem; /* 200px — desktop */
+      /* Larger desktop wordmark. Stays within the 24rem brand column so the
+         Menu/Contact columns (flex:1 of the remainder) never lose room and
+         wrap — the brand box is a fixed 24rem, so logo size doesn't touch them. */
+      width: 22rem; /* 352px — desktop */
     }
   }
 
