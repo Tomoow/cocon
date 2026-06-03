@@ -1,8 +1,26 @@
 ---
 /**
- * Footer: light cream background, Menu / Bedrijfsinformatie / Contact columns,
- * dark-green Cocon logo with orange dot, legal bar.
- * Figma: 98:5581 (current redesign — light theme, Spectral section headings).
+ * Footer (Figma 110:6385 desktop / 179:1880 mobile):
+ *
+ *   ┌────────────────────────────── footer__main ──────────────────────────────┐
+ *   │  ┌── brand ──┐                        ┌── columns ──────────────────┐    │
+ *   │  │  Cocon    │                        │  Menu        Contact         │    │
+ *   │  │  logo     │                        │  Home        info@…          │    │
+ *   │  │           │                        │  Tarieven    0470…           │    │
+ *   │  │  📍 …     │                        │  Over ons    [IG] [FB]       │    │
+ *   │  │  📍📍 …    │                        │  FAQ                          │    │
+ *   │  │  🏢 …     │                        │  Contact                      │    │
+ *   │  └───────────┘                        └──────────────────────────────┘    │
+ *   └──────────────────────────────────────────────────────────────────────────┘
+ *   ┌─ legal row (no divider above) ───────────────────────────────────────────┐
+ *   │  Voorwaarden • Privacy                      © Cocon • Website By Tom L  │
+ *   └──────────────────────────────────────────────────────────────────────────┘
+ *
+ *   Behind everything: footer-image.png on ≥768 / mobile-footer.png on <768,
+ *   rendered via ::before at 80% opacity so content keeps full contrast.
+ *
+ *   footer__main has min-height 650px on desktop (per Figma) so the
+ *   landscape illustration has room to breathe under the columns.
  */
 import IconButton from './IconButton.astro';
 import House from '@lucide/astro/icons/house';
@@ -40,42 +58,14 @@ function isActive(href: string, path: string): boolean {
 
 <footer class="footer" aria-label="Footer">
   <div class="footer__inner container-content">
-    <div class="footer__columns">
-      <nav class="footer__block footer__block--menu" aria-label="Menu">
-        <h3 class="footer__heading">Menu</h3>
-        <ul class="footer__list">
-          {navItems.map(({ href, label, icon: Icon }) => {
-            const active = isActive(href, currentPath);
-            return (
-              <li>
-                {active ? (
-                  <span class:list={['footer__link', 'footer__link--active']} aria-current="page">
-                    <span class="footer__link-icon" aria-hidden="true">
-                      <Icon />
-                    </span>
-                    {label}
-                  </span>
-                ) : (
-                  <a
-                    href={href}
-                    class="footer__link"
-                  >
-                    <span class="footer__link-icon" aria-hidden="true">
-                      <Icon />
-                    </span>
-                    {label}
-                  </a>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-
-      <div class="footer__block-group">
-      <div class="footer__block" aria-labelledby="footer-bedrijfsinformatie">
-        <h3 class="footer__heading" id="footer-bedrijfsinformatie">Bedrijfsinformatie</h3>
-        <ul class="footer__list">
+    <div class="footer__main">
+      <!-- Brand column: logo + bedrijfsinfo. No "Bedrijfsinformatie" heading
+           per the redesign — the info just sits under the wordmark. -->
+      <div class="footer__brand">
+        <a href="/" class="footer__logo-link" aria-label="Cocon home">
+          <img src="/logo/cocon.svg" alt="" width="500" height="103" class="footer__logo-img" loading="lazy" />
+        </a>
+        <ul class="footer__list footer__bedrijfsinfo" aria-label="Bedrijfsinformatie">
           <li>
             <span class="footer__link footer__link--text">
               <span class="footer__link-icon" aria-hidden="true">
@@ -105,69 +95,92 @@ function isActive(href: string, path: string): boolean {
         </ul>
       </div>
 
-      <div class="footer__block" aria-labelledby="footer-contact">
-        <h3 class="footer__heading" id="footer-contact">Contact</h3>
-        <ul class="footer__list">
-          <li>
-            <a
-              href="mailto:info@kine-cocon.be"
-              class="footer__link"
-              data-umami-event="cta-email"
-              data-umami-event-source="footer"
+      <!-- Right side: Menu + Contact columns -->
+      <div class="footer__columns">
+        <nav class="footer__block footer__block--menu" aria-label="Menu">
+          <h3 class="footer__heading">Menu</h3>
+          <ul class="footer__list">
+            {navItems.map(({ href, label, icon: Icon }) => {
+              const active = isActive(href, currentPath);
+              return (
+                <li>
+                  {active ? (
+                    <span class:list={['footer__link', 'footer__link--active']} aria-current="page">
+                      <span class="footer__link-icon" aria-hidden="true">
+                        <Icon />
+                      </span>
+                      {label}
+                    </span>
+                  ) : (
+                    <a href={href} class="footer__link">
+                      <span class="footer__link-icon" aria-hidden="true">
+                        <Icon />
+                      </span>
+                      {label}
+                    </a>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        <div class="footer__block footer__block--contact" aria-labelledby="footer-contact">
+          <h3 class="footer__heading" id="footer-contact">Contact</h3>
+          <ul class="footer__list">
+            <li>
+              <a
+                href="mailto:info@kine-cocon.be"
+                class="footer__link"
+                data-umami-event="cta-email"
+                data-umami-event-source="footer"
+              >
+                <span class="footer__link-icon" aria-hidden="true">
+                  <Mail />
+                </span>
+                info@kine-cocon.be
+              </a>
+            </li>
+            <li>
+              <a
+                href="tel:+32470626848"
+                class="footer__link"
+                data-umami-event="cta-phone"
+                data-umami-event-source="footer"
+              >
+                <span class="footer__link-icon" aria-hidden="true">
+                  <Phone />
+                </span>
+                0470 62 68 48
+              </a>
+            </li>
+          </ul>
+          <div class="footer__socials">
+            <IconButton
+              href="https://www.instagram.com/kine_cocon/"
+              label="Instagram"
+              variant="primary"
+              class="footer__social-btn"
+              umamiEvent="cta-social"
+              umamiEventNetwork="instagram"
+              umamiEventSource="footer"
             >
-              <span class="footer__link-icon" aria-hidden="true">
-                <Mail />
-              </span>
-              info@kine-cocon.be
-            </a>
-          </li>
-          <li>
-            <a
-              href="tel:+32470626848"
-              class="footer__link"
-              data-umami-event="cta-phone"
-              data-umami-event-source="footer"
+              <Instagram class="size-5" />
+            </IconButton>
+            <IconButton
+              href="https://facebook.com"
+              label="Facebook"
+              variant="primary"
+              class="footer__social-btn"
+              umamiEvent="cta-social"
+              umamiEventNetwork="facebook"
+              umamiEventSource="footer"
             >
-              <span class="footer__link-icon" aria-hidden="true">
-                <Phone />
-              </span>
-              0470 62 68 48
-            </a>
-          </li>
-        </ul>
-        <div class="footer__socials">
-          <IconButton
-            href="https://www.instagram.com/kine_cocon/"
-            label="Instagram"
-            variant="primary"
-            class="footer__social-btn"
-            umamiEvent="cta-social"
-            umamiEventNetwork="instagram"
-            umamiEventSource="footer"
-          >
-            <Instagram class="size-5" />
-          </IconButton>
-          <IconButton
-            href="https://facebook.com"
-            label="Facebook"
-            variant="primary"
-            class="footer__social-btn"
-            umamiEvent="cta-social"
-            umamiEventNetwork="facebook"
-            umamiEventSource="footer"
-          >
-            <Facebook class="size-5" />
-          </IconButton>
+              <Facebook class="size-5" />
+            </IconButton>
+          </div>
         </div>
       </div>
-      </div>
-    </div>
-
-    <div class="footer__logo">
-      <a href="/" class="footer__logo-link" aria-label="Cocon home">
-        <!-- Light theme: dark-green wordmark on cream background -->
-        <img src="/logo/cocon.svg" alt="" width="500" height="103" class="footer__logo-img" loading="lazy" />
-      </a>
     </div>
 
     <div class="footer__legal">
@@ -185,72 +198,148 @@ function isActive(href: string, path: string): boolean {
 
 <style>
   .footer {
+    /* Cream base — the bg-image (added via ::before) sits on top at 80%
+       opacity so the cream still tints through. */
+    position: relative;
+    isolation: isolate;
     background-color: var(--color-background-warm);
     color: var(--color-primary);
     padding: 5rem 0 2rem;
     font-family: 'Raleway', sans-serif;
+    overflow: hidden;
   }
+
+  /* Background illustration overlay. 80% opacity per Figma — keeps the
+     cream visible behind the landscape shapes and softens contrast so
+     foreground text stays readable. SVG so it scales without
+     pixelating and gzip-compresses tiny (~2KB each). */
+  .footer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/images/footer/footer-bg-desktop.svg');
+    background-size: cover;
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    opacity: 0.8;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* TEMP: testing if the desktop SVG also looks good when scaled down
+     on mobile. If yes, we can drop the mobile-specific variant and
+     just keep one file. Restore the @media swap below if mobile needs
+     its own portrait composition.
+     @media (max-width: 767px) {
+       .footer::before {
+         background-image: url('/images/footer/footer-bg-mobile.svg');
+       }
+     } */
 
   .footer__inner {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     gap: 2.5rem;
   }
 
+  /* Top section: brand on left, columns on right.
+     Stacks on mobile/tablet (brand on top), side-by-side on desktop
+     ≥1024px. Threshold is 1024 (not 768) because brand 24rem +
+     columns ~27rem + 4rem gap = ~55rem (880px) of content + container
+     padding needs ~960-1000px to breathe — below that the row gets
+     cramped, so columns wrap below the brand instead. */
+  .footer__main {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .footer__main {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 4rem;
+      /* Top section min-height. */
+      min-height: 580px;
+    }
+  }
+
+  /* Brand column: logo + bedrijfsinfo stacked vertically. Fixed width
+     on the desktop breakpoint (where brand sits next to columns);
+     left to flow naturally below desktop so it can take the full
+     container width when stacked. */
+  .footer__brand {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 24rem;
+  }
+
+  @media (min-width: 1024px) {
+    .footer__brand {
+      flex: 0 0 auto;
+      width: 24rem;
+    }
+  }
+
+  .footer__logo-link {
+    display: block;
+    width: fit-content;
+    text-decoration: none;
+    color: var(--color-primary);
+    transition: opacity 0.2s ease;
+  }
+
+  .footer__logo-link:hover {
+    opacity: 0.9;
+  }
+
+  .footer__logo-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+  }
+
+  /* Logo size per Figma redesign — smaller than before. Bigger on mobile
+     for legibility, smaller on desktop where the columns get the spotlight. */
+  .footer__logo-img {
+    display: block;
+    width: 16rem; /* 256px — mobile */
+    height: auto;
+    max-width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .footer__logo-img {
+      width: 12.5rem; /* 200px — desktop */
+    }
+  }
+
+  /* Bedrijfsinfo block — no heading, just the list with icons */
+  .footer__bedrijfsinfo {
+    margin: 0;
+  }
+
+  /* Right-side columns: Menu + Contact. Row by default with
+     `flex-wrap: wrap` so they stay side-by-side as long as both fit;
+     they only stack underneath each other when the viewport is too
+     narrow (small mobile, < ~432px container — matches Menu's 11rem
+     min-width + Contact's 12rem + 4rem gap). On desktop the columns
+     are pushed to the right edge to sit opposite the brand block. */
   .footer__columns {
     display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2.5rem 4rem; /* row-gap col-gap */
   }
 
-  .footer__block-group {
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
-  }
-
-  /* Tablet: Menu and block group side by side; Contact already under Bedrijfsinformatie (block group column) */
-  @media (min-width: 768px) {
+  @media (min-width: 1024px) {
     .footer__columns {
-      flex-direction: row;
-      gap: 0;
-      align-items: flex-start;
-    }
-
-    .footer__block--menu {
-      flex: 0 0 50%;
-      width: 50%;
-    }
-
-    .footer__block-group {
-      flex: 0 0 50%;
-      width: 50%;
-      display: flex;
-      flex-direction: column;
-      gap: 2.5rem;
-      align-items: flex-start;
+      flex: 1;
       justify-content: flex-end;
-    }
-
-    /* Both Bedrijfsinformatie and Contact left-align — previously Contact was
-       right-aligned which caused the email/phone to hug the right edge on
-       narrow tablet widths where space was tight. Left-aligning keeps the
-       text reading naturally regardless of column width. */
-    .footer__block-group .footer__block {
       align-items: flex-start;
-      text-align: left;
-    }
-
-    .footer__block-group .footer__list {
-      align-items: flex-start;
-    }
-  }
-
-  /* Desktop: Bedrijfsinformatie and Contact side by side within block group */
-  @media (min-width: 968px) {
-    .footer__block-group {
-      flex-direction: row;
-      gap: 2.5rem;
     }
   }
 
@@ -260,9 +349,18 @@ function isActive(href: string, path: string): boolean {
     gap: 1rem;
   }
 
+  /* min-widths set the wrap-threshold for the columns. With these in
+     place, Menu+Contact wrap below each other only when the columns
+     container falls below ~27rem (≈432px) — narrow phones. */
+  .footer__block--menu {
+    min-width: 11rem;
+  }
+  .footer__block--contact {
+    min-width: 12rem;
+  }
+
   .footer__heading {
-    /* Spectral Medium 28px / -1.5px tracking on desktop, slightly smaller on mobile so
-       long words like "Bedrijfsinformatie" don't overflow narrow viewports. */
+    /* Spectral Medium — slightly smaller on mobile so it doesn't crowd. */
     font-family: 'Spectral', serif;
     font-size: 1.375rem; /* 22px mobile */
     font-weight: 500;
@@ -321,10 +419,8 @@ function isActive(href: string, path: string): boolean {
     padding: 0;
   }
 
-  /* These rows aren't interactive (they're spans, not anchors). The
-     previous :hover/:focus-visible rule flipped them to white text,
-     which made them invisible against the cream footer background.
-     Keep them inert on hover so the colour doesn't change. */
+  /* Inert text rows: keep them readable on hover instead of flipping to
+     white (which used to make them disappear against the cream). */
   .footer__link--text:hover,
   .footer__link--text:focus-visible {
     background: none;
@@ -346,9 +442,6 @@ function isActive(href: string, path: string): boolean {
     height: 1.25rem;
   }
 
-  /* Wraps the text content (and inline dots) so it flows as one block —
-     prevents the parent inline-flex from breaking the text into separate
-     flex items at every space. */
   .footer__link-text {
     display: inline-block;
     flex: 1;
@@ -372,45 +465,15 @@ function isActive(href: string, path: string): boolean {
     margin-top: 0.25rem;
   }
 
-  /* Light theme: keep IconButton's default skewed light-green ellipse with primary icon */
-
-  .footer__logo {
-    width: 100%;
-  }
-
-  .footer__logo-link {
-    display: block;
-    width: 100%;
-    text-decoration: none;
-    color: var(--color-primary);
-    transition: opacity 0.2s ease;
-  }
-
-  .footer__logo-link:hover {
-    opacity: 0.9;
-  }
-
-  .footer__logo-link:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 4px;
-  }
-
-  .footer__logo-img {
-    display: block;
-    width: 100%;
-    height: auto;
-    max-width: 100%;
-  }
-
-
+  /* Legal row at the bottom. Sits over the dark-green hill in the
+     footer-image, so the copy is white for contrast. No divider line
+     above this row — the landscape illustration is the separator. */
   .footer__legal {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(0, 51, 32, 0.15);
     font-size: 0.875rem;
-    color: var(--color-primary);
+    color: var(--color-white);
   }
 
   @media (min-width: 768px) {
@@ -427,8 +490,11 @@ function isActive(href: string, path: string): boolean {
     gap: 0.35rem;
   }
 
+  /* Anchor links inside the legal row inherit white from the parent
+     instead of hard-coding the primary green that the rest of the
+     footer uses. */
   .footer__legal-link {
-    color: var(--color-primary);
+    color: inherit;
     text-decoration: none;
   }
 

@@ -133,6 +133,19 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
     transform: rotateY(180deg);
   }
 
+  /* Explicitly hide the non-visible face from pointer/touch input.
+     `backface-visibility: hidden` already hides it visually, but on
+     mobile the back face's overflow-y:auto can still claim touch
+     events even when it's rotated away — which freezes page scroll
+     until the user touches outside the card. Toggling pointer-events
+     per flip state guarantees only the visible face responds. */
+  .info-card:not(.is-flipped) .info-card__back {
+    pointer-events: none;
+  }
+  .info-card.is-flipped .info-card__front {
+    pointer-events: none;
+  }
+
   .info-card__front:focus-visible,
   .info-card__back:focus-visible {
     outline: 2px solid var(--color-primary);
@@ -289,6 +302,11 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
        intrinsic height as min-height and overflow:auto does nothing. */
     min-height: 0;
     overflow-y: auto;
+    /* Isolate inner scroll: scrolling inside this area never chains
+       to the page. Avoids the iOS quirk where after scrolling a
+       nested region the page scroll can briefly feel "locked" until
+       the touch context resets. */
+    overscroll-behavior: contain;
     padding: 1.5rem 1.25rem 0.5rem;
     display: flex;
     flex-direction: column;
@@ -394,7 +412,20 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
       if (front && back) {
         (front as HTMLElement).setAttribute('tabindex', expanded ? '-1' : '0');
         (back as HTMLElement).setAttribute('tabindex', expanded ? '0' : '-1');
-        if (expanded) (back as HTMLElement).focus();
+        if (expanded) {
+          // `preventScroll: true` stops the browser from auto-scrolling
+          // the page to bring the card into view — that auto-scroll can
+          // fight with the user's own scroll attempts right after a flip.
+          (back as HTMLElement).focus({ preventScroll: true });
+        } else {
+          // Crucial: when flipping closed, move focus OFF the back face.
+          // The back has overflow-y:auto, and mobile browsers keep
+          // treating a focused scrollable as the touch scroll target —
+          // even when it's been rotated out of view via backface-
+          // visibility:hidden. That's what was blocking page scroll
+          // after closing a card.
+          (back as HTMLElement).blur();
+        }
       }
     }
 

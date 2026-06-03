@@ -181,32 +181,43 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
     flex-shrink: 0;
   }
 
-  /* Heading: Spectral Medium 60px (-3px tracking) on desktop, scaled on mobile */
+  /* Heading static line: fluid Spectral Medium scaling 36px → 60px, kept on
+     ONE line (nowrap). Between ~1024–1440px Lynn sits beside the text and the
+     column gets narrow, so a fixed 60px overflowed/wrapped there. The clamp
+     scales it down smoothly with the viewport; the JS auto-fit below is the
+     hard guarantee it never wraps even when the column is unusually tight. */
   .hero-heading-static {
     font-family: 'Spectral', serif;
-    font-size: 2.25rem; /* 36px on mobile */
+    font-size: clamp(2.25rem, 1.2rem + 2.82vw, 3.75rem); /* 36px → 60px */
     font-weight: 500; /* medium */
     color: var(--color-primary);
     letter-spacing: -1.5px;
     line-height: 1.05;
+    white-space: nowrap;
   }
-  /* Typing line: Raleway Light 44px on desktop, scaled on mobile */
+  /* Typing line: Raleway Light 44px on desktop, scaled on mobile.
+     Pinned to a single row that can never wrap — long phrases like
+     "tijdens en na je zwangerschap" used to wrap on narrow viewports
+     and grow the hero by one line height, which shifted the entire
+     page down mid-scroll. The line now overflows hidden if a phrase
+     is wider than the column, so the surrounding layout stays stable
+     regardless of phrase length. */
   .hero-typing-line {
-    display: inline-block;
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
     font-family: 'Raleway', sans-serif;
-    font-size: 1.625rem; /* 26px mobile */
+    font-size: clamp(1.625rem, 0.82rem + 2.14vw, 2.75rem); /* 26px → 44px */
     font-weight: 300; /* light */
     color: var(--color-primary);
     line-height: 1.1;
   }
 
-  @media (min-width: 768px) {
+  /* Tighter tracking only at the large end, where the heading is near 60px. */
+  @media (min-width: 1200px) {
     .hero-heading-static {
-      font-size: 3.75rem; /* 60px */
       letter-spacing: -3px;
-    }
-    .hero-typing-line {
-      font-size: 2.75rem; /* 44px */
     }
   }
   .hero-cursor {
@@ -364,11 +375,74 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
 
 <script>
   (function () {
-    const typingLine = document.querySelector('.hero-typing-line[data-typing-phrases]');
+    const typingLine = document.querySelector<HTMLElement>('.hero-typing-line[data-typing-phrases]');
     const phrases = typingLine ? JSON.parse(typingLine.getAttribute('data-typing-phrases') || '[]') : [];
     const el = document.getElementById('hero-typing-text');
     const cursor = document.getElementById('hero-typing-cursor');
     if (!el || !cursor || !phrases.length) return;
+
+    /* Auto-fit: keep BOTH the static heading and the typing line on ONE line.
+       Between ~1024–1440px Lynn sits beside the text, so the text column is
+       narrow and a fixed-size title overflowed/wrapped. We measure each line
+       against the ACTUAL text-column width (the title block, not the shrink-
+       wrapped h1) and shrink the font only when it doesn't fit — capped at the
+       CSS clamp size, so wide desktop keeps full size. Re-runs on resize +
+       after web fonts load (metrics shift once Spectral/Raleway swap in). */
+    const titleBlock = document.querySelector<HTMLElement>('.hero-title-block');
+    const staticEl = document.querySelector<HTMLElement>('.hero-heading-static');
+    const staticText = staticEl ? (staticEl.textContent || '') : '';
+
+    function measureMaxWidth(refEl: HTMLElement, strings: string[], sizePx: number): number {
+      const cs = getComputedStyle(refEl);
+      const probe = document.createElement('span');
+      probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;left:-9999px;top:0;';
+      probe.style.fontFamily = cs.fontFamily;
+      probe.style.fontWeight = cs.fontWeight;
+      probe.style.fontStyle = cs.fontStyle;
+      probe.style.letterSpacing = cs.letterSpacing;
+      probe.style.fontSize = sizePx + 'px';
+      document.body.appendChild(probe);
+      let max = 0;
+      for (let i = 0; i < strings.length; i++) {
+        probe.textContent = strings[i];
+        max = Math.max(max, probe.getBoundingClientRect().width);
+      }
+      document.body.removeChild(probe);
+      return max;
+    }
+
+    function fitLine(el: HTMLElement | null, strings: string[], allowance: number, available: number) {
+      if (!el || !available) return;
+      el.style.fontSize = ''; // reset to the CSS/clamp "ideal" size
+      const ideal = parseFloat(getComputedStyle(el).fontSize);
+      if (!ideal) return;
+      const maxWidth = measureMaxWidth(el, strings, ideal);
+      if (maxWidth + allowance > available) {
+        const newSize = Math.max(14, ideal * (available - allowance) / maxWidth);
+        el.style.fontSize = newSize + 'px';
+      }
+    }
+
+    function fitHeading() {
+      const available = titleBlock ? titleBlock.clientWidth : 0;
+      if (!available) return;
+      // Static heading: tiny allowance. Typing line: reserve cursor room (8px).
+      fitLine(staticEl, [staticText], 2, available);
+      fitLine(typingLine, phrases, 8, available);
+    }
+
+    fitHeading();
+    let resizeRaf: number | null = null;
+    window.addEventListener('resize', function () {
+      if (resizeRaf != null) return;
+      resizeRaf = window.requestAnimationFrame(function () {
+        resizeRaf = null;
+        fitHeading();
+      });
+    });
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(fitHeading).catch(function () {});
+    }
 
     const TYPE_SPEED_MS = 90;
     const DELETE_SPEED_MS = 60;
