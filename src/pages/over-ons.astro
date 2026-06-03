@@ -3,9 +3,6 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import AfspraakCta from '../components/AfspraakCta.astro';
-import Baby from '@lucide/astro/icons/baby';
-import Heart from '@lucide/astro/icons/heart';
-import Users from '@lucide/astro/icons/users';
 import GraduationCap from '@lucide/astro/icons/graduation-cap';
 import Award from '@lucide/astro/icons/award';
 import Info from '@lucide/astro/icons/info';
@@ -45,19 +42,19 @@ const credentials: Credential[] = [
 
 const specialisaties = [
   {
-    icon: Baby,
+    image: '/images/prenataal.svg',
     title: 'Prenatale kiné',
     description:
       'Ademhaling, bekkenbodem reëducatie (oefeningen), voorbereiding op de bevalling, klachten tijdens de zwangerschap (urineverlies, bekkenklachten), preventie postnatale klachten.',
   },
   {
-    icon: Heart,
+    image: '/images/postnataal.svg',
     title: 'Postnatale kiné',
     description:
       'Herstel na zwangerschap, bekkenbodemtherapie, oefentherapie, opbouw core stability, rug- en bekkenklachten.',
   },
   {
-    icon: Users,
+    image: '/images/voorbereiding.svg',
     title: 'Voorbereiding op bevalling',
     description:
       'Voorbereiding op bevalling met partner, hoe vang je weeën op, rol van partner tijdens arbeid (weeën), ademhalingsoefeningen, perstechniek.',
@@ -164,13 +161,9 @@ const specialisaties = [
         id="specialisatie-heading"
       />
       <ul class="specialisatie-grid" role="list">
-        {specialisaties.map(({ icon: Icon, title, description }) => (
+        {specialisaties.map(({ image, title, description }) => (
           <li class="specialisatie-card">
-            <span class="specialisatie-card__icon" aria-hidden="true">
-              <span class="specialisatie-card__icon-inner">
-                <Icon class="size-8" />
-              </span>
-            </span>
+            <img class="specialisatie-card__icon" src={image} alt="" width="120" height="120" loading="lazy" />
             <h3 class="specialisatie-card__title">{title}</h3>
             <p class="specialisatie-card__description">{description}</p>
           </li>
@@ -507,29 +500,22 @@ const specialisaties = [
     font-family: 'Raleway', sans-serif;
   }
 
+  /* Branded illustration (square SVG) replacing the old icon badge. */
   .specialisatie-card__icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 4.5rem;
-    height: 5.5rem;
-    background-color: var(--color-background-muted);
-    border-radius: 50%;
-    transform: rotate(45deg);
-    color: var(--color-primary);
-  }
-
-  .specialisatie-card__icon-inner {
-    display: inline-flex;
-    transform: rotate(-45deg);
+    display: block;
+    width: 7.5rem;
+    height: 7.5rem;
+    object-fit: contain;
   }
 
   .specialisatie-card__title {
+    /* Spectral Medium (only 400/500 are loaded — 600 would faux-bold). */
+    font-family: var(--font-card-title-family);
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--color-primary);
     line-height: 1.5;
-    letter-spacing: 0.0165em;
+    letter-spacing: -1.5px;
     margin: 0;
   }
 
