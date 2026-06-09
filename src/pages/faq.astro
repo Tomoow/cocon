@@ -343,7 +343,13 @@ const categories: FaqCategory[] = [
     margin-top: 0.25rem;
   }
 
-  .faq-details[open] .faq-summary__icon {
+  /* No-JS (and reduced-motion) fallback: rotate on the native open state. */
+  .faq-details:not(.is-enhanced)[open] .faq-summary__icon {
+    transform: rotate(180deg);
+  }
+  /* JS-enhanced: rotate from the intended state, toggled on click so the
+     chevron animates in lockstep with the height transition (incl. closing). */
+  .faq-details.is-enhanced.is-open .faq-summary__icon {
     transform: rotate(180deg);
   }
 
@@ -358,3 +364,93 @@ const categories: FaqCategory[] = [
     line-height: 1.6;
   }
 </style>
+
+<script>
+  /**
+   * Smooth open/close for the native <details> accordions.
+   *
+   * <details> normally snaps open instantly. We keep the element (and its
+   * accessibility + no-JS behaviour) intact and animate the whole <details>
+   * height between "summary only" and "summary + answer" with the Web
+   * Animations API — the same height-interpolation idea as Radix's
+   * --radix-accordion-content-height, but framework-free.
+   *
+   * Graceful degradation: without JS (or with prefers-reduced-motion) the
+   * accordion just toggles instantly via the browser default.
+   */
+  function initFaqAccordions() {
+    // Respect reduced-motion: skip enhancement, leave the native instant
+    // toggle (and the :not(.is-enhanced)[open] chevron rule) in charge.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const DURATION = 280;
+    const EASING = 'cubic-bezier(0.33, 1, 0.68, 1)'; // easeOutCubic
+
+    document.querySelectorAll<HTMLDetailsElement>('.faq-details').forEach((details) => {
+      const summary = details.querySelector<HTMLElement>('.faq-summary');
+      const content = details.querySelector<HTMLElement>('.faq-answer');
+      if (!summary || !content) return;
+
+      details.classList.add('is-enhanced');
+      details.classList.toggle('is-open', details.open);
+
+      let animation: Animation | null = null;
+      let isClosing = false;
+      let isExpanding = false;
+
+      function finish(open: boolean) {
+        details.open = open;
+        details.classList.toggle('is-open', open);
+        animation = null;
+        isClosing = false;
+        isExpanding = false;
+        details.style.height = '';
+        details.style.overflow = '';
+      }
+
+      function shrink() {
+        isClosing = true;
+        details.classList.remove('is-open'); // chevron rotates up with the collapse
+        const start = `${details.offsetHeight}px`;
+        const end = `${summary!.offsetHeight}px`;
+        animation?.cancel();
+        animation = details.animate({ height: [start, end] }, { duration: DURATION, easing: EASING });
+        animation.onfinish = () => finish(false);
+        animation.oncancel = () => { isClosing = false; };
+      }
+
+      function expand() {
+        isExpanding = true;
+        const start = `${details.offsetHeight}px`;
+        const end = `${summary!.offsetHeight + content!.offsetHeight}px`;
+        animation?.cancel();
+        animation = details.animate({ height: [start, end] }, { duration: DURATION, easing: EASING });
+        animation.onfinish = () => finish(true);
+        animation.oncancel = () => { isExpanding = false; };
+      }
+
+      function open() {
+        details.style.height = `${details.offsetHeight}px`;
+        details.open = true; // put the answer in the DOM (clipped by height + overflow)
+        details.classList.add('is-open'); // chevron rotates down as it expands
+        window.requestAnimationFrame(expand);
+      }
+
+      summary.addEventListener('click', (e) => {
+        e.preventDefault();
+        details.style.overflow = 'hidden';
+        if (isClosing || !details.open) {
+          open();
+        } else if (isExpanding || details.open) {
+          shrink();
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFaqAccordions);
+  } else {
+    initFaqAccordions();
+  }
+</script>
