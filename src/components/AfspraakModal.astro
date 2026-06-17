@@ -352,7 +352,30 @@ import X from '@lucide/astro/icons/x';
       }
     }
 
-    document.addEventListener(
+    // Fire the Umami event ourselves. We stop the click from propagating
+    // (below), so Umami never sees it — replicate its data-umami-event-*
+    // → eventData extraction so the analytics are unchanged.
+    function trackAfspraakEvent(link: HTMLElement) {
+      const eventName = link.getAttribute('data-umami-event');
+      if (!eventName) return;
+      const data: Record<string, string> = {};
+      link.getAttributeNames().forEach((name) => {
+        const m = name.match(/^data-umami-event-(.+)$/);
+        const val = m && link.getAttribute(name);
+        if (m && val != null) data[m[1]] = val;
+      });
+      (window as any).umami?.track?.(eventName, Object.keys(data).length ? data : undefined);
+    }
+
+    // Listen on `window` in the CAPTURE phase. This is deliberate: Umami's
+    // tracker also hooks link clicks, and for any <a data-umami-event> it
+    // records the event and then runs its own `location.href = href` — which
+    // preventDefault() cannot cancel. That made the modal flash open and then
+    // navigate to /afspraak/ (a 404) on devices where Umami loads (e.g. mobile,
+    // or any browser without an ad-blocker). A window-level capture listener
+    // runs before Umami's document-level handler, so stopImmediatePropagation()
+    // prevents Umami from firing at all.
+    window.addEventListener(
       'click',
       (e) => {
         const target = e.target as HTMLElement | null;
@@ -363,9 +386,10 @@ import X from '@lucide/astro/icons/x';
         // Respect modifier-clicks (open in new tab) and middle-clicks
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         e.preventDefault();
+        e.stopImmediatePropagation();
+        trackAfspraakEvent(link);
         open(link);
       },
-      // Use capture so we intercept before any other click handlers (e.g. menu-close)
       true
     );
 
