@@ -166,9 +166,6 @@ const insurances: Insurance[] = [
                 </li>
               ))}
             </ul>
-            <p class="tarieven-card__disclaimer">
-              <span class="tarieven-card__disclaimer-star" aria-hidden="true">*</span> Je mutualiteit betaalt hier nog een deel van terug
-            </p>
             <Button
               href={card.cta.href}
               showArrow={card.cta.showArrow}
@@ -178,6 +175,9 @@ const insurances: Insurance[] = [
             >
               {card.cta.label}
             </Button>
+            <p class="tarieven-card__disclaimer">
+              <span class="tarieven-card__disclaimer-star" aria-hidden="true">*</span> Je mutualiteit betaalt hier nog een deel van terug
+            </p>
           </div>
         </li>
       ))}
@@ -212,10 +212,7 @@ const insurances: Insurance[] = [
         </div>
         <div class="info-card__rich">
           <p>
-            Na <strong>je laatste sessie</strong> (vroeger kan ook indien gewenst) krijg je van ons een <strong>getuigschrift</strong> dat je opstuurt naar je mutualiteit of post in hun brievenbus.
-          </p>
-          <p class="info-card__note">
-            → Heb je recht op een <a href="https://www.riziv.fgov.be/nl/thema-s/verzorging-kosten-en-terugbetaling/financiele-toegankelijkheid/de-verhoogde-tegemoetkoming" target="_blank" rel="noopener noreferrer">verhoogde tegemoetkoming</a>? Dan passen wij het lagere <a href="https://www.riziv.fgov.be/nl/professionals/individuele-zorgverleners/kinesitherapeuten/kinesitherapieverstrekkingen-vaste-remgelden" target="_blank" rel="noopener noreferrer">RIZIV-tarief</a> toe.
+            Na elke sessie sturen wij <strong>automatisch je getuigschrift digitaal</strong> door naar de mutualiteit. Je betaalt de volledige sessie zelf en de mutualiteit stort het terugbetalingsbedrag nadien <strong>automatisch op je rekening</strong>. Zo moet je nooit meer zelf langsgaan bij je mutualiteit om het getuigschrift binnen te brengen, handig toch?
           </p>
         </div>
       </li>
@@ -230,7 +227,7 @@ const insurances: Insurance[] = [
           </h3>
         </div>
         <p class="info-card__body">
-          Voor- en nazorgkine kan dikwijls extra terugbetaald worden via je <strong>hospitalisatieverzekering</strong> (= voor en na een ziekenhuisopname zoals bij een operatie of bevalling).
+          Voor en na een ziekenhuisopname (zoals bij een operatie of bevalling) word je vaak nog extra gedekt door je <strong>hospitalisatieverzekering</strong>.
         </p>
         <button
           type="button"
@@ -277,7 +274,7 @@ const insurances: Insurance[] = [
       <header class="verz-dialog__header">
         <div class="verz-dialog__heading">
           <p class="verz-dialog__eyebrow">Populaire hospitalisatieverzekeringen</p>
-          <h2 class="verz-dialog__title" id="verz-dialog-title">Voor- en nazorgperiode</h2>
+          <h2 class="verz-dialog__title" id="verz-dialog-title">Periode waarin je bezoek bij een kinesist gedekt is door je hospitalisatieverzekering.</h2>
         </div>
         <button type="button" class="verz-dialog__close" data-close-dialog aria-label="Sluiten">
           <X class="size-5" aria-hidden="true" />
@@ -507,13 +504,15 @@ const insurances: Insurance[] = [
     color: var(--color-primary);
   }
 
-  /* Bottom section: pricing rows + CTA. flex:1 so pricing pushes the CTA down to align across cards */
+  /* Bottom section fills the remaining card height so the pricing rows sit at
+     the TOP (first row aligned across all cards — incl. the single-row
+     Huisbezoek card) while the CTA + disclaimer are pushed to the bottom. */
   .tarieven-card__bottom {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
     padding: 1.5rem;
-    margin-top: auto;
+    flex: 1;
   }
 
   .tarieven-card__rows {
@@ -523,6 +522,10 @@ const insurances: Insurance[] = [
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    /* Grow to fill the bottom section so the rows stay at the TOP (first row
+       aligned across cards, incl. the single-row Huisbezoek card) while the
+       CTA + disclaimer are pushed to the bottom. */
+    flex: 1;
   }
 
   .tarieven-card__row {
@@ -531,6 +534,14 @@ const insurances: Insurance[] = [
     gap: 0.75rem;
     border-top: 1px solid #dcdcdc;
     padding-top: 0.875rem;
+  }
+
+  /* No divider above the first price row (Eerste behandeling / Alle
+     huisbezoeken) — the section break already separates it from the
+     description; dividers remain only between rows. */
+  .tarieven-card__row:first-child {
+    border-top: none;
+    padding-top: 0;
   }
 
   .tarieven-card__row-text {
@@ -573,7 +584,7 @@ const insurances: Insurance[] = [
     margin-left: 0.125rem;
   }
 
-  /* Disclaimer above the CTA: small grey text, matches Figma 121:6848 */
+  /* Disclaimer below the CTA: small grey text, matches Figma 121:6848 */
   .tarieven-card__disclaimer {
     margin: 0;
     color: #676767;
@@ -950,16 +961,12 @@ const insurances: Insurance[] = [
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.875rem;
-    background-color: rgba(239, 240, 235, 0.5);
-    border-radius: 1rem;
-    padding: 1rem;
   }
 
   @media (min-width: 768px) {
     .verz-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 1rem;
-      padding: 1.25rem;
     }
   }
 

@@ -204,37 +204,36 @@ function isActive(href: string, path: string): boolean {
     isolation: isolate;
     background-color: var(--color-background-warm);
     color: var(--color-primary);
-    padding: 5rem 0 2rem;
+    /* Bottom padding lifts the legal row above the decoration's dark-green
+       ellipse so its text stays on the light cream area and readable. The
+       ellipse fills roughly the bottom ~100px of the artwork at natural size,
+       and on mobile/tablet the stacked legal sits right over the centred
+       ellipse — so it needs ~112px there. Wide desktop drops to 60px (below),
+       where the legal sits out at the left/right edges, clear of the ellipse. */
+    padding: 5rem 0 7rem;
     font-family: 'Raleway', sans-serif;
     overflow: hidden;
   }
 
-  /* Background illustration overlay. 80% opacity per Figma — keeps the
-     cream visible behind the landscape shapes and softens contrast so
-     foreground text stays readable. SVG so it scales without
-     pixelating and gzip-compresses tiny (~2KB each). */
+  /* Decorative background (Figma 110:6385): overlapping translucent
+     ellipses (decoration.svg), anchored to the bottom.
+       • ≥ 1440px: scales up to fill the full width, so the composition
+         always reaches both edges — no clipped gap on large screens.
+       • < 1440px: holds its natural 1440px width and is simply cropped at
+         the sides (centered) — it never scales down.
+     `max(100%, 1440px)` expresses both in one value. The SVG bakes in its
+     own ellipse opacity (0.75 / 0.85), so it renders at full strength. */
   .footer::before {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: url('/images/footer/footer-bg-desktop.svg');
-    background-size: cover;
+    background-image: url('/decoration.svg');
+    background-size: max(100%, 1440px) auto;
     background-position: center bottom;
     background-repeat: no-repeat;
-    opacity: 0.8;
     pointer-events: none;
     z-index: 0;
   }
-
-  /* TEMP: testing if the desktop SVG also looks good when scaled down
-     on mobile. If yes, we can drop the mobile-specific variant and
-     just keep one file. Restore the @media swap below if mobile needs
-     its own portrait composition.
-     @media (max-width: 767px) {
-       .footer::before {
-         background-image: url('/images/footer/footer-bg-mobile.svg');
-       }
-     } */
 
   .footer__inner {
     position: relative;
@@ -257,13 +256,31 @@ function isActive(href: string, path: string): boolean {
   }
 
   @media (min-width: 1024px) {
+    /* Centering inside the taller section handles the top space, so the
+       footer needs no extra top padding on desktop. */
+    .footer {
+      padding-top: 0;
+    }
     .footer__main {
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: flex-start;
+      /* Grid (not flex) so the content row sits vertically centered within
+         the taller section while brand + columns stay top-aligned with
+         each other. */
+      display: grid;
+      grid-template-columns: 24rem 1fr;
+      align-items: start;
+      align-content: center;
       gap: 4rem;
-      /* Top section min-height. */
-      min-height: 580px;
+      /* Taller content section per Figma 110:6385. */
+      min-height: 650px;
+    }
+  }
+
+  /* Wide desktop: the legal row sits out at the left/right edges, clear of
+     the centred dark-green ellipse, so it no longer needs the extra lift —
+     back to the 60px bottom padding. */
+  @media (min-width: 1200px) {
+    .footer {
+      padding-bottom: 3.75rem;
     }
   }
 
@@ -476,15 +493,18 @@ function isActive(href: string, path: string): boolean {
     margin-top: 0.25rem;
   }
 
-  /* Legal row at the bottom. Sits over the dark-green hill in the
-     footer-image, so the copy is white for contrast. No divider line
-     above this row — the landscape illustration is the separator. */
+  /* Legal row at the bottom (Figma 110:6441). The extra bottom padding on
+     .footer lifts this row above the decoration's dark-green ellipse, so the
+     muted-green text sits on the light cream area and stays readable on every
+     screen size (no background pill needed). */
   .footer__legal {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 0.75rem;
-    font-size: 0.875rem;
-    color: var(--color-white);
+    font-size: 0.875rem; /* 14px on mobile so the copy pill fits narrow phones */
+    letter-spacing: -0.01em;
+    color: #2b503c;
   }
 
   @media (min-width: 768px) {
@@ -492,18 +512,31 @@ function isActive(href: string, path: string): boolean {
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
+      font-size: 1rem; /* 16px per Figma on desktop */
     }
   }
 
-  .footer__legal-links {
+  .footer__legal-links,
+  .footer__legal-copy {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.625rem;
   }
 
-  /* Anchor links inside the legal row inherit white from the parent
-     instead of hard-coding the primary green that the rest of the
-     footer uses. */
+  @media (min-width: 768px) {
+    .footer__legal-links,
+    .footer__legal-copy {
+      gap: 0.75rem;
+    }
+  }
+
+  /* The gap sets the spacing between the legal items, so the dot doesn't
+     need its own horizontal margin here. */
+  .footer__legal .footer__dot {
+    margin: 0;
+  }
+
+  /* Legal anchors inherit the muted-green from the parent. */
   .footer__legal-link {
     color: inherit;
     text-decoration: none;
@@ -511,9 +544,5 @@ function isActive(href: string, path: string): boolean {
 
   .footer__legal-link:hover {
     text-decoration: underline;
-  }
-
-  .footer__legal-copy {
-    opacity: 0.95;
   }
 </style>
