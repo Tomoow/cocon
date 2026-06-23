@@ -1,8 +1,15 @@
 ---
 /**
  * InfoCard: white card with ellipse-clipped image, brand-skewed number badge,
- * Spectral title, description, and a "Meer informatie →" link. Clicking the
- * front (anywhere — including the link) flips the card to reveal bullet points.
+ * Spectral title, description, and a "Meer informatie →" button that flips the
+ * card to reveal the detailed prose.
+ *
+ * Accessibility: this is a DISCLOSURE, not a giant button. The title and
+ * description (front) and the title + prose (back) are real, readable text in
+ * the a11y tree. The "Meer informatie" / "Terug" controls are real <button>s
+ * with aria-expanded; the non-visible face is `inert` so screen readers only
+ * ever see the active side. Clicking anywhere on the active face still flips
+ * it (mouse/touch convenience) via a single card-level click handler.
  *
  * Figma: 0:648 (desktop grid), 0:1913 (mobile stack).
  */
@@ -25,12 +32,20 @@ interface Props {
 }
 
 const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel = 'Meer informatie' } = Astro.props;
+
+// Unique id so the front control can `aria-controls` the back region. Slug
+// from the title + a short build-time suffix to stay unique even if two cards
+// share a title.
+const slug = title.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+const backId = `info-card-back-${slug || 'card'}-${Math.random().toString(36).slice(2, 7)}`;
 ---
 
 <article class="info-card" data-flip-card>
   <div class="info-card__inner">
-    <!-- Front face: clickable anywhere to flip -->
-    <div class="info-card__face info-card__front" data-flip-trigger role="button" tabindex="0" aria-label={`${ctaLabel} over ${title}`} aria-expanded="false">
+    <!-- Front face: readable content (title + description) + a real toggle
+         button. Clicking anywhere on the face also flips it (mouse/touch),
+         handled by the card-level click listener in the script. -->
+    <div class="info-card__face info-card__front">
       <div class="info-card__image-wrap">
         <Image
           src={imageSrc}
@@ -50,23 +65,26 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
         </span>
         <h3 class="info-card__title">{title}</h3>
         <p class="info-card__description" set:html={description} />
-        <span class="info-card__cta">
+        <button
+          type="button"
+          class="info-card__cta"
+          data-flip-trigger
+          aria-expanded="false"
+          aria-controls={backId}
+          aria-label={`${ctaLabel} over ${title}`}
+        >
           <span>{ctaLabel}</span>
           <ArrowRight class="info-card__cta-icon size-4" aria-hidden="true" />
-        </span>
+        </button>
       </div>
     </div>
 
-    <!-- Back face: clickable anywhere to flip back.
-         Structure: scrollable body wraps title + prose; Terug lives
-         in a pinned footer outside the scroll so the bottom padding
-         can't be eaten by scroll mechanics. A soft white fade sits
-         just above the footer to hint that there's scrollable content
-         above (purely visual; works on every card whether scrollable
-         or not). -->
-    <div class="info-card__face info-card__back" data-flip-trigger role="button" tabindex="-1" aria-label="Terug naar voorkant" aria-expanded="true">
+    <!-- Back face: readable title + prose, plus a real "Terug" button. It's
+         `inert` while the front is showing so screen readers only ever see the
+         active side. Scrollable body + pinned footer (with a soft fade hint). -->
+    <div class="info-card__face info-card__back" id={backId} inert>
       <div class="info-card__back-body">
-        <h3 class="info-card__back-title">{title}</h3>
+        <h3 class="info-card__back-title" tabindex="-1">{title}</h3>
         <div class="info-card__back-prose">
           {backParagraphs.map((paragraph) => (
             <p class="info-card__back-paragraph" set:html={paragraph} />
@@ -74,7 +92,15 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
         </div>
       </div>
       <div class="info-card__back-footer">
-        <span class="info-card__back-cta">Terug</span>
+        <button
+          type="button"
+          class="info-card__back-cta"
+          data-flip-trigger
+          aria-expanded="false"
+          aria-label={`Terug naar ${title}`}
+        >
+          Terug
+        </button>
       </div>
     </div>
   </div>
@@ -146,10 +172,18 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
     pointer-events: none;
   }
 
-  .info-card__front:focus-visible,
-  .info-card__back:focus-visible {
+  /* Focus ring on the real toggle buttons (the faces are no longer focusable). */
+  .info-card__cta:focus-visible,
+  .info-card__back-cta:focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+    border-radius: 0.5rem;
+  }
+
+  /* The back title is focused programmatically on flip (so a screen reader
+     starts reading the revealed content); it's not a tab stop, so no ring. */
+  .info-card__back-title:focus {
+    outline: none;
   }
 
   /* Image: top of card, ellipse-clipped via shared clipPath in BaseLayout */
@@ -271,13 +305,17 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
     gap: 0.5rem;
     align-self: flex-end;
     margin-top: auto;
+    /* Real <button> now — reset the UA chrome, keep the link-like look. */
+    border: 0;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
     color: var(--color-primary);
     font-size: 1rem;
     font-weight: 500;
     line-height: 1.5;
     letter-spacing: -0.0195em;
-    /* Pointer-events: none so it inherits the card's click; visual element only. */
-    pointer-events: none;
   }
 
   .info-card__cta-icon {
@@ -383,12 +421,15 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
   }
 
   .info-card__back-cta {
+    /* Real <button> now — reset the UA chrome. */
+    border: 0;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
     font-size: 1rem;
     font-weight: 500;
     color: var(--color-primary);
-    /* Terug lives in the pinned .info-card__back-footer now, which
-       is itself a flex sibling — no need for margin-top:auto. */
-    pointer-events: none;
   }
 </style>
 
@@ -401,31 +442,32 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
   }
 
   function initCardFlip() {
-    // Apply a card's open/closed state: flip class, ARIA, tabindex, and the
-    // focus/blur dance that keeps mobile page-scroll working after a flip.
-    function setCardState(card: Element, expanded: boolean) {
+    // Apply a card's open/closed state: flip class, aria-expanded on the
+    // toggle buttons, and `inert` on the non-visible face so screen readers
+    // only ever see the active side. `manageFocus` is true only for the card
+    // the user actually toggled, so auto-closing other cards never steals focus.
+    function setCardState(card: Element, expanded: boolean, manageFocus: boolean) {
       card.classList.toggle('is-flipped', expanded);
-      const front = card.querySelector('.info-card__front');
-      const back = card.querySelector('.info-card__back');
+      const front = card.querySelector<HTMLElement>('.info-card__front');
+      const back = card.querySelector<HTMLElement>('.info-card__back');
       card.querySelectorAll('[data-flip-trigger]').forEach((el) => {
         (el as HTMLElement).setAttribute('aria-expanded', String(expanded));
       });
-      if (front && back) {
-        (front as HTMLElement).setAttribute('tabindex', expanded ? '-1' : '0');
-        (back as HTMLElement).setAttribute('tabindex', expanded ? '0' : '-1');
-        if (expanded) {
-          // `preventScroll: true` stops the browser from auto-scrolling
-          // the page to bring the card into view — that auto-scroll can
-          // fight with the user's own scroll attempts right after a flip.
-          (back as HTMLElement).focus({ preventScroll: true });
-        } else {
-          // Crucial: when flipping closed, move focus OFF the back face.
-          // The back has overflow-y:auto, and mobile browsers keep
-          // treating a focused scrollable as the touch scroll target —
-          // even when it's been rotated out of view via backface-
-          // visibility:hidden. That's what was blocking page scroll
-          // after closing a card.
-          (back as HTMLElement).blur();
+      if (!front || !back) return;
+      if (expanded) {
+        front.setAttribute('inert', '');
+        back.removeAttribute('inert');
+        // Move focus to the revealed heading so a screen reader starts reading
+        // the back content. preventScroll keeps the page from jumping.
+        if (manageFocus) {
+          back.querySelector<HTMLElement>('.info-card__back-title')?.focus({ preventScroll: true });
+        }
+      } else {
+        back.setAttribute('inert', '');
+        front.removeAttribute('inert');
+        // Return focus to the front toggle button.
+        if (manageFocus) {
+          front.querySelector<HTMLElement>('[data-flip-trigger]')?.focus({ preventScroll: true });
         }
       }
     }
@@ -433,28 +475,21 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
     function flipCard(card: Element) {
       const willOpen = !card.classList.contains('is-flipped');
       // Single-open: when opening a card, flip any other open card back first
-      // so at most one card is ever revealed at a time.
+      // (without stealing focus to it).
       if (willOpen) {
         document.querySelectorAll('[data-flip-card].is-flipped').forEach((other) => {
-          if (other !== card) setCardState(other, false);
+          if (other !== card) setCardState(other, false, false);
         });
       }
-      setCardState(card, willOpen);
+      setCardState(card, willOpen, true);
     }
 
     document.querySelectorAll('[data-flip-card]').forEach((card) => {
-      card.querySelectorAll('[data-flip-trigger]').forEach((trigger) => {
-        trigger.addEventListener('click', (e) => {
-          e.preventDefault();
-          flipCard(card);
-        });
-        trigger.addEventListener('keydown', (e) => {
-          if ((e as KeyboardEvent).key === 'Enter' || (e as KeyboardEvent).key === ' ') {
-            e.preventDefault();
-            flipCard(card);
-          }
-        });
-      });
+      // One click handler per card: a click anywhere on the active face — incl.
+      // the real toggle buttons (whose Enter/Space fire a native click that
+      // bubbles here) — flips the card. The inert face can't be clicked, so
+      // clicks are naturally scoped to the visible side.
+      card.addEventListener('click', () => flipCard(card));
 
       // Fade visibility: hide the white fade above the footer when the
       // back body is either fully scrolled to the bottom OR not
