@@ -53,8 +53,8 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
         <h1 class="hero-heading">
           <span class="hero-heading-static">Kinesitherapie op maat</span>
           <br />
-          <span class="hero-typing-line" data-typing-phrases={JSON.stringify(typingPhrases)}>
-            <span class="hero-typing" id="hero-typing-text" aria-live="polite" />
+          <span class="hero-typing-line" data-typing-phrases={JSON.stringify(typingPhrases)} aria-hidden="true">
+            <span class="hero-typing" id="hero-typing-text" />
             <span class="hero-cursor" id="hero-typing-cursor" aria-hidden="true" />
           </span>
         </h1>
