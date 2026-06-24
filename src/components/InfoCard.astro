@@ -37,7 +37,13 @@ const { imageSrc, imageAlt, number, title, description, backParagraphs, ctaLabel
 // from the title + a short build-time suffix to stay unique even if two cards
 // share a title.
 const slug = title.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-const backId = `info-card-back-${slug || 'card'}-${Math.random().toString(36).slice(2, 7)}`;
+const uid = `${slug || 'card'}-${Math.random().toString(36).slice(2, 7)}`;
+const backId = `info-card-back-${uid}`;
+// Ids so focusing a card's control also announces its text: the front button
+// `aria-describedby` the teaser, and the revealed back heading `aria-describedby`
+// the prose — so a screen reader reads the heading AND the description together.
+const descId = `info-card-desc-${uid}`;
+const proseId = `info-card-prose-${uid}`;
 ---
 
 <article class="info-card" data-flip-card>
@@ -64,7 +70,7 @@ const backId = `info-card-back-${slug || 'card'}-${Math.random().toString(36).sl
           <span class="info-card__number-inner">{number}</span>
         </span>
         <h3 class="info-card__title">{title}</h3>
-        <p class="info-card__description" set:html={description} />
+        <p class="info-card__description" id={descId} set:html={description} />
         <button
           type="button"
           class="info-card__cta"
@@ -72,6 +78,7 @@ const backId = `info-card-back-${slug || 'card'}-${Math.random().toString(36).sl
           aria-expanded="false"
           aria-controls={backId}
           aria-label={`${ctaLabel} over ${title}`}
+          aria-describedby={descId}
         >
           <span>{ctaLabel}</span>
           <ArrowRight class="info-card__cta-icon size-4" aria-hidden="true" />
@@ -84,8 +91,8 @@ const backId = `info-card-back-${slug || 'card'}-${Math.random().toString(36).sl
          active side. Scrollable body + pinned footer (with a soft fade hint). -->
     <div class="info-card__face info-card__back" id={backId} inert>
       <div class="info-card__back-body">
-        <h3 class="info-card__back-title" tabindex="-1">{title}</h3>
-        <div class="info-card__back-prose">
+        <h3 class="info-card__back-title" tabindex="-1" aria-describedby={proseId}>{title}</h3>
+        <div class="info-card__back-prose" id={proseId}>
           {backParagraphs.map((paragraph) => (
             <p class="info-card__back-paragraph" set:html={paragraph} />
           ))}
