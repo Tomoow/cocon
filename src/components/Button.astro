@@ -17,6 +17,10 @@ interface Props {
    *  used to differentiate the same logical event by location
    *  (e.g. cta-afspraak from "header-desktop" vs "hero"). */
   umamiEventSource?: string;
+  /** Set on external links (e.g. target="_blank"). When target is "_blank"
+   *  and no rel is given, a safe rel is applied automatically. */
+  target?: string;
+  rel?: string;
 }
 
 const {
@@ -28,7 +32,11 @@ const {
   class: className = '',
   umamiEvent,
   umamiEventSource,
+  target,
+  rel,
 } = Astro.props;
+// Safe default rel for new-tab links (avoids reverse-tabnabbing).
+const resolvedRel = rel ?? (target === '_blank' ? 'noopener noreferrer' : undefined);
 const base = 'inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
 const sizeClass = size === 'lg' ? 'btn-lg gap-2 px-10 text-2xl' : 'gap-2 px-4 py-3';
 const primaryClass = 'btn-primary group bg-primary text-white hover:opacity-90';
@@ -42,6 +50,8 @@ const arrowSize = size === 'lg' ? 24 : 20;
   <a
     href={href}
     class={`${base} ${sizeClass} ${linkClass} ${className}`}
+    target={target}
+    rel={resolvedRel}
     data-umami-event={umamiEvent}
     data-umami-event-source={umamiEventSource}
   >
