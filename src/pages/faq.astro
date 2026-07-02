@@ -6,6 +6,8 @@ import ArrowUpRight from '@lucide/astro/icons/arrow-up-right';
 
 interface FaqItem {
   question: string;
+  /** May contain limited inline HTML (e.g. <a>) — rendered with set:html.
+   *  Keep it to trusted, hand-written markup. */
   answer: string;
 }
 
@@ -34,14 +36,29 @@ const categories: FaqCategory[] = [
           'Voor de meeste behandelingen heb je een voorschrift van je huisarts of specialist nodig om recht te hebben op terugbetaling via je mutualiteit. Voor een eerste intake mag je ook zonder voorschrift langskomen, we zoeken samen uit wat je nodig hebt.',
       },
       {
+        question: 'Wat kost een sessie?',
+        answer:
+          'Een eerste behandeling kost €55 (algemene kinesitherapie) of €60 (bekkenbodemtherapie), vervolgbehandelingen €37 of €40. Je mutualiteit betaalt hier een deel van terug. Alle details vind je op de <a href="/tarieven/">Tarieven & info pagina</a>.',
+      },
+      {
+        question: 'Wat breng ik mee naar mijn eerste afspraak?',
+        answer:
+          'Je identiteitskaart, je doktersvoorschrift, eventuele medische verslagen en comfortabele kledij.',
+      },
+      {
         question: 'Hoe wordt de terugbetaling geregeld?',
         answer:
-          'Na de laatste sessie krijg je een getuigschrift dat je bij je mutualiteit indient voor terugbetaling. Wens je dit liever na elke sessie? Dan kan dat ook, geef het gerust aan. Het RIZIV-tarief geldt bij verhoogde tegemoetkoming; voor andere situaties hanteren we onze eigen tarieven (zie de Tarieven & info pagina).',
+          'Daar hoef je zelf niets voor te doen: na elke sessie sturen wij je getuigschrift automatisch digitaal door naar je mutualiteit, die het terugbetalingsbedrag nadien op je rekening stort. Het RIZIV-tarief geldt bij verhoogde tegemoetkoming; voor andere situaties hanteren we onze eigen tarieven (zie de <a href="/tarieven/">Tarieven & info pagina</a>).',
       },
       {
         question: 'Hoe maak ik een afspraak?',
         answer:
           'Een afspraak maken kan online via de afspraakknop bovenaan de website, je hebt geen account nodig en ontvangt meteen een bevestiging. Lukt dat niet, bel of mail dan even, we plannen je graag in.',
+      },
+      {
+        question: 'Wat als ik mijn afspraak moet annuleren?',
+        answer:
+          'Annuleer minstens 24 uur op voorhand, dan kunnen we iemand anders inplannen. Bij laattijdige annulatie wordt de sessie aangerekend.',
       },
     ],
   },
@@ -89,7 +106,7 @@ const categories: FaqCategory[] = [
           'In de eerste weken werken we vooral met ademhaling, lichte bekkenbodemactivatie en zachte mobilisaties. Pas wanneer het herstel het toelaat, bouwen we stap voor stap intensiever op, altijd op maat van jouw bevalling en herstel.',
       },
       {
-        question: 'Hoe verloopt een eerste consult bekkenbodem?',
+        question: 'Hoe verloopt een eerste postnatale consultatie?',
         answer:
           'We bekijken eerst je voorgeschiedenis en bevalling. Daarna volgt een onderzoek van houding, buikwand en bekkenbodem (extern of, mits toestemming, intern), en stellen we samen een herstelplan op.',
       },
@@ -99,24 +116,45 @@ const categories: FaqCategory[] = [
           'Ja. Via het RIZIV heb je recht op 9 perinatale sessies aan een verlaagd tarief, op voorschrift van je arts of vroedvrouw. Aanvullende terugbetalingen via je mutualiteit kunnen daarbovenop van toepassing zijn.',
       },
       {
-        question: 'Geef je ook kinésitherapie aan huis voor zwangere vrouwen?',
+        question: 'Geef je ook kinesitherapie aan huis voor zwangere vrouwen?',
         answer:
           'Bij medische noodzaak, bijvoorbeeld voorgeschreven bedrust, is een huisbezoek mogelijk. Neem hiervoor contact op zodat we samen kunnen bekijken wat haalbaar is.',
       },
       {
         question: 'Vanaf wanneer in de zwangerschap kan ik beginnen met perinatale kinesitherapie?',
         answer:
-          'In principe kan je vanaf het tweede trimester starten met perinatale begeleiding. Heb je specifieke klachten zoals rug- of bekkenpijn, dan plannen we eerder in. We stemmen het tempo af op jouw zwangerschap en welbevinden.',
+          'In principe kan je vanaf 12 weken zwangerschap starten met perinatale begeleiding. Heb je specifieke klachten zoals rug- of bekkenpijn, dan plannen we eerder in. We stemmen het tempo af op jouw zwangerschap en welbevinden.',
       },
     ],
   },
 ];
+
+// FAQPage JSON-LD: built from the same `categories` array as the visible
+// accordions, so schema and page can never drift apart. Answers may contain
+// inline HTML (rendered via set:html) — strip tags for the schema text.
+const stripHtml = (s: string) => s.replace(/<[^>]+>/g, '');
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: categories.flatMap((cat) =>
+    cat.items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: stripHtml(item.answer),
+      },
+    }))
+  ),
+};
 ---
 
 <BaseLayout title="FAQ" description="Antwoorden op veelgestelde vragen over kinesitherapie, bekkenbodemtherapie en pre- en postnatale begeleiding bij Cocon in Kapelle-op-den-Bos.">
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
   <div class="page-header container-content">
     <SectionHeading
       title="Veelgestelde vragen"
+      as="h1"
       subtitle="Een afspraak maken roept vaak vragen op. Hier vind je op de meestgestelde vragen een antwoord"
       align="center"
     />
@@ -151,7 +189,7 @@ const categories: FaqCategory[] = [
                     <ChevronDown class="size-6" />
                   </span>
                 </summary>
-                <p class="faq-answer">{item.answer}</p>
+                <p class="faq-answer" set:html={item.answer} />
               </details>
             </li>
           ))}
@@ -362,6 +400,17 @@ const categories: FaqCategory[] = [
     font-size: 1.125rem;
     font-weight: 400;
     line-height: 1.6;
+  }
+
+  /* Inline links inside answers (injected via set:html, so :global) */
+  .faq-answer :global(a) {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .faq-answer :global(a:hover) {
+    opacity: 0.8;
   }
 </style>
 

@@ -23,6 +23,10 @@ interface Props {
   description?: string;
   ogImage?: string;
   isHome?: boolean;
+  /** When true, `title` is used verbatim (no "| Cocon Kinesitherapie"
+   *  suffix). For subpages that carry their own brand + location in the
+   *  title, e.g. tarieven. */
+  plainTitle?: boolean;
   /** When true, emits `<meta name="robots" content="noindex,nofollow">`
    *  so search engines exclude the page from their index. Use for legal
    *  pages, post-submit confirmation pages, etc. — anything that would
@@ -33,22 +37,34 @@ interface Props {
 const {
   title,
   description = 'Cocon is een kinesitherapiepraktijk in Kapelle-op-den-Bos, gespecialiseerd in bekkenbodemtherapie, zwangerschapsbegeleiding, revalidatie en algemene klachten.',
-  ogImage = '/images/hero/hero-picture.png',
+  ogImage = '/images/og-card.png',
   isHome = false,
+  plainTitle = false,
   noindex = false,
 } = Astro.props;
+
+// Social-share image metadata. The default og-card.png is a dedicated
+// 1200×630 landscape card (WhatsApp/Facebook/LinkedIn crop portrait
+// images badly); width/height let scrapers reserve the right box before
+// downloading, alt is read by assistive tech on platforms that support it.
+const ogImageWidth = 1200;
+const ogImageHeight = 630;
+const ogImageAlt = 'Cocon — kinesitherapie & bekkenbodemtherapie in Kapelle-op-den-Bos';
 
 // Canonical URL — astro `site` is the production base. Astro.url.pathname
 // gives the current path so each page has its own canonical.
 const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://kine-cocon.be').href;
 const absoluteOgImage = new URL(ogImage, Astro.site ?? 'https://kine-cocon.be').href;
 
-// Compose the title. On home we use a brand-led title; on subpages we
-// append the brand so it's clear which site the page belongs to in
-// Google's results.
+// Compose the title. Home leads with the service + location keywords
+// (Google truncates around 55-60 chars, so the location must survive);
+// subpages append the brand so it's clear which site the page belongs
+// to in Google's results, unless the page brings its own full title.
 const pageTitle = isHome
-  ? 'Cocon | Kinesitherapie & bekkenbodemtherapie in Kapelle-op-den-Bos'
-  : `${title} | Cocon Kinesitherapie`;
+  ? 'Kinesitherapie & bekkenbodemtherapie Kapelle-op-den-Bos | Cocon'
+  : plainTitle
+    ? title
+    : `${title} | Cocon Kinesitherapie`;
 
 // LocalBusiness JSON-LD — only emitted on the home page so we don't
 // duplicate the practice's identity across every page. Helps Google
@@ -57,6 +73,9 @@ const pageTitle = isHome
 const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'Physiotherapy',
+  // Stable entity id so other pages' markup (e.g. the Person schema on
+  // /over-ons/) can reference this exact business node.
+  '@id': 'https://kine-cocon.be/#business',
   name: 'Cocon Kinesitherapie',
   description,
   url: 'https://kine-cocon.be',
@@ -70,12 +89,29 @@ const localBusinessSchema = {
     postalCode: '1880',
     addressCountry: 'BE',
   },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 51.0124,
+    longitude: 4.3803,
+  },
+  hasMap: 'https://www.google.com/maps/search/?api=1&query=Mechelseweg+62+1880+Kapelle-op-den-Bos',
   areaServed: {
     '@type': 'Place',
     name: 'Kapelle-op-den-Bos en omgeving',
   },
-  // Practice opens August 2026; openingHours can be added when the
-  // schedule is finalised.
+  priceRange: '€37 - €60',
+  paymentAccepted: 'Payconiq',
+  currenciesAccepted: 'EUR',
+  vatID: 'BE 1004.016.118',
+  foundingDate: '2026-08-01',
+  founder: {
+    '@type': 'Person',
+    '@id': 'https://kine-cocon.be/over-ons/#lynn',
+    name: 'Lynn Beunnens',
+  },
+  // Practice opens August 2026; openingHoursSpecification can be added
+  // when the schedule is finalised (hours currently live on the Google
+  // Business Profile).
   sameAs: ['https://www.instagram.com/kine_cocon/'],
 };
 ---
@@ -106,6 +142,9 @@ const localBusinessSchema = {
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={absoluteOgImage} />
+    <meta property="og:image:width" content={String(ogImageWidth)} />
+    <meta property="og:image:height" content={String(ogImageHeight)} />
+    <meta property="og:image:alt" content={ogImageAlt} />
     <meta property="og:locale" content="nl_BE" />
     <meta property="og:site_name" content="Cocon Kinesitherapie" />
 
@@ -126,13 +165,13 @@ const localBusinessSchema = {
          docs/TRACKING.md for the full inventory. -->
     <script is:inline defer src="https://cloud.umami.is/script.js" data-website-id="db0345e1-ced4-4bf3-8607-6474b5cce507"></script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap" as="style" />
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-    <noscript>
-      <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
-    </noscript>
+    <!-- Fonts are self-hosted via @fontsource (imported in global.css) —
+         no third-party font origins. -->
+
+    <!-- JS detection: the .fade-in hidden state in global.css is scoped to
+         `.js` so content stays visible when JavaScript is disabled/blocked.
+         Inline + first so it runs before first paint. -->
+    <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body class="min-h-screen antialiased bg-background-subtle">
     <!-- Shared clipPath for info card image: angle other way, wider, bloater (fuller oval) -->
@@ -143,8 +182,10 @@ const localBusinessSchema = {
         </clipPath>
       </defs>
     </svg>
+    <!-- Skip link: first focusable element on every page (WCAG 2.4.1) -->
+    <a href="#main-content" class="skip-link">Ga naar inhoud</a>
     <Header currentPath={Astro.url.pathname} />
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       <slot />
     </main>
     <Footer currentPath={Astro.url.pathname} />

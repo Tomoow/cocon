@@ -45,29 +45,70 @@ const specialisaties = [
     image: '/images/prenataal.svg',
     title: 'Prenatale kiné',
     description:
-      'Ademhaling, bekkenbodem reëducatie (oefeningen), voorbereiding op de bevalling, klachten tijdens de zwangerschap (urineverlies, bekkenklachten), preventie postnatale klachten.',
+      'Tijdens je zwangerschap werken we aan ademhaling en bekkenbodemreëducatie, bereiden we je voor op de bevalling en pakken we klachten zoals urineverlies of bekkenpijn aan — ook preventief, om postnatale klachten voor te zijn.',
   },
   {
     image: '/images/postnataal.svg',
     title: 'Postnatale kiné',
     description:
-      'Herstel na zwangerschap, bekkenbodemtherapie, oefentherapie, opbouw core stability, rug- en bekkenklachten.',
+      'Na de bevalling begeleiden we je herstel met bekkenbodemtherapie en oefentherapie: we bouwen je core stability geleidelijk weer op en pakken rug- en bekkenklachten aan.',
   },
   {
     image: '/images/voorbereiding.svg',
     title: 'Voorbereiding op bevalling',
     description:
-      'Voorbereiding op bevalling met partner, hoe vang je weeën op, rol van partner tijdens arbeid (weeën), ademhalingsoefeningen, perstechniek.',
+      'We bereiden jou en je partner samen voor op de bevalling: hoe je weeën opvangt, welke rol je partner speelt tijdens de arbeid, en welke ademhalings- en perstechnieken je helpen.',
   },
 ];
+
+// Person JSON-LD: practitioner credentials are the strongest E-E-A-T
+// signal for a solo health practice. The @id links back to the
+// LocalBusiness entity emitted on the home page (BaseLayout).
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': 'https://kine-cocon.be/over-ons/#lynn',
+  name: 'Lynn Beunnens',
+  jobTitle: 'Kinesitherapeut',
+  url: 'https://kine-cocon.be/over-ons/',
+  worksFor: { '@id': 'https://kine-cocon.be/#business' },
+  alumniOf: [
+    { '@type': 'CollegeOrUniversity', name: 'KU Leuven' },
+    { '@type': 'CollegeOrUniversity', name: 'SOMT University of Physiotherapy' },
+  ],
+  hasCredential: [
+    {
+      '@type': 'EducationalOccupationalCredential',
+      name: 'Master in de Revalidatiewetenschappen en de Kinesitherapie',
+      recognizedBy: { '@type': 'CollegeOrUniversity', name: 'KU Leuven' },
+    },
+    {
+      '@type': 'EducationalOccupationalCredential',
+      name: 'Postgraduaat Pelvische Reëducatie & Perinatale Kinesitherapie',
+      recognizedBy: { '@type': 'CollegeOrUniversity', name: 'SOMT University of Physiotherapy' },
+    },
+    {
+      '@type': 'EducationalOccupationalCredential',
+      name: 'Bijzondere bekwaamheid in pelvische reëducatie en perinatale kinesitherapie',
+      recognizedBy: { '@type': 'GovernmentOrganization', name: 'Vlaams Departement Zorg' },
+    },
+  ],
+  knowsAbout: [
+    'Bekkenbodemtherapie',
+    'Pelvische reëducatie',
+    'Perinatale kinesitherapie',
+    'Orthopedische revalidatie',
+  ],
+};
 ---
 
 <BaseLayout title="Over ons" description="Maak kennis met Lynn, kinesist en oprichter van Cocon in Kapelle-op-den-Bos. Gespecialiseerd in pelvische reëducatie en perinatale kinesitherapie.">
+  <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
   <section class="gezicht-section container-content fade-in" aria-labelledby="gezicht-heading">
     <div class="gezicht-section__content">
       <header class="gezicht-section__heading">
         <h1 class="gezicht-section__title" id="gezicht-heading">
-          <span class="gezicht-section__title-text">Het gezicht achter cocon</span>
+          <span class="gezicht-section__title-text">Het gezicht achter Cocon</span>
           <span class="gezicht-section__title-dot" aria-hidden="true" />
         </h1>
       </header>
@@ -385,11 +426,22 @@ const specialisaties = [
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
     white-space: normal;
     text-align: left;
-    pointer-events: none;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.15s ease, visibility 0.15s ease;
     z-index: 10;
+  }
+
+  /* Invisible hover bridge across the 14px gap between trigger and panel so
+     the pointer can travel onto the tooltip text without it closing
+     (WCAG 1.4.13 "hoverable"). */
+  .cred-tooltip__content::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 14px;
   }
 
   /* Downward-pointing arrow, right-aligned to match card */
@@ -406,6 +458,13 @@ const specialisaties = [
   .cred-tooltip:focus-within .cred-tooltip__content {
     opacity: 1;
     visibility: visible;
+  }
+
+  /* Escape pressed (WCAG 1.4.13 "dismissable"): a page script toggles this
+     class; it wins from the hover/focus rule above until re-hover/re-focus. */
+  .cred-tooltip--dismissed .cred-tooltip__content {
+    opacity: 0 !important;
+    visibility: hidden !important;
   }
 
   /* Right-side column: image on top, credentials below it.
@@ -527,3 +586,20 @@ const specialisaties = [
     margin: 0;
   }
 </style>
+
+<script>
+  // WCAG 1.4.13 "dismissable": Escape hides the (CSS-driven) credential
+  // tooltip without moving pointer or focus. Re-hovering or re-focusing
+  // clears the dismissal so it can be shown again.
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    document.querySelectorAll('.cred-tooltip').forEach((tip) => {
+      tip.classList.add('cred-tooltip--dismissed');
+    });
+  });
+  document.querySelectorAll('.cred-tooltip').forEach((tip) => {
+    const undismiss = () => tip.classList.remove('cred-tooltip--dismissed');
+    tip.addEventListener('mouseleave', undismiss);
+    tip.addEventListener('focusout', undismiss);
+  });
+</script>

@@ -1,0 +1,114 @@
+---
+/**
+ * Custom 404 — served by the Cloudflare adapter (dist/404.html) for any
+ * unmatched route. Replaces Astro's default English fallback page with a
+ * branded Dutch page that routes visitors back into the site. The HTTP
+ * status stays 404, so no noindex is needed.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/Button.astro';
+---
+
+<BaseLayout title="Pagina niet gevonden" description="Deze pagina bestaat niet (meer). Ontdek onze tarieven of neem contact op met Cocon Kinesitherapie in Kapelle-op-den-Bos.">
+  <section class="notfound container-content">
+    <p class="notfound__code" aria-hidden="true">
+      4<span class="notfound__dot" />4
+    </p>
+    <h1 class="notfound__title">
+      Deze pagina bestaat niet<span class="notfound__title-dot" aria-hidden="true" />
+    </h1>
+    <p class="notfound__text">
+      De pagina die je zoekt is verhuisd of heeft nooit bestaan. Geen zorgen — via onderstaande knoppen ben je zo weer op weg.
+    </p>
+    <div class="notfound__actions">
+      <Button href="/" showArrow>Naar de homepagina</Button>
+      <Button href="/tarieven/" variant="secondary">Bekijk onze tarieven</Button>
+      <Button href="/contact/" variant="secondary">Contacteer ons</Button>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .notfound {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-top: 10.5rem;
+    padding-bottom: 6rem;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  @media (min-width: 768px) {
+    .notfound {
+      padding-top: 12.5rem;
+      padding-bottom: 8rem;
+    }
+  }
+
+  /* Big playful "4·4" with the brand-skewed orange ellipse as the zero */
+  .notfound__code {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
+    font-family: 'Spectral', serif;
+    font-size: clamp(5rem, 12vw, 8rem);
+    font-weight: 500;
+    letter-spacing: -4px;
+    line-height: 1;
+    color: var(--color-primary);
+  }
+
+  .notfound__dot {
+    display: inline-block;
+    width: 0.55em;
+    height: 0.7em;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    transform: rotate(43.62deg);
+  }
+
+  .notfound__title {
+    margin: 0 0 1rem;
+    font-family: var(--font-page-title-family);
+    font-size: var(--font-page-title-size-mobile);
+    font-weight: var(--font-page-title-weight);
+    letter-spacing: var(--font-page-title-tracking-mobile);
+    line-height: var(--font-page-title-line-height);
+    color: var(--color-primary);
+  }
+
+  @media (min-width: 768px) {
+    .notfound__title {
+      font-size: var(--font-page-title-size);
+      letter-spacing: var(--font-page-title-tracking);
+    }
+  }
+
+  .notfound__title-dot {
+    display: inline-block;
+    width: 8px;
+    height: 10px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    transform: rotate(45deg);
+  }
+
+  .notfound__text {
+    max-width: 32rem;
+    margin: 0 0 2rem;
+    color: var(--color-text-secondary);
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+
+  .notfound__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+</style>
