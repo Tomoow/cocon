@@ -22,19 +22,22 @@ const typingPhrases = [
   'voor gerichte revalidatie',
   'met persoonlijke begeleiding',
 ];
+// Shown instead of the typing loop for prefers-reduced-motion users
+// (WCAG 2.2.2): one static line that covers the rotating phrases.
+const staticPhrase = 'voor bekkenbodem, zwangerschap en revalidatie';
 const { announcementEnabled = false, announcementText = '' } = Astro.props as Props;
 ---
 <section class="hero relative min-h-screen overflow-hidden flex flex-col" aria-label="Welkom">
   <!-- Background image at 15% opacity -->
   <div
     class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-    style="background-image: url('/images/hero/hero-bg.png'); opacity: 0.15;"
+    style="background-image: url('/images/hero/hero-bg.webp'); opacity: 0.15;"
     aria-hidden="true"
   />
 
   <!-- Decorative floating ellipses (above bg, below content) -->
   <div class="hero-ellipses pointer-events-none absolute inset-0 z-[1] overflow-hidden" aria-hidden="true">
-    <img src="/images/hero/floating-ellipse.svg" alt="" class="hero-ellipse hero-ellipse-1" width="140" height="90" loading="eager" fetchpriority="high" />
+    <img src="/images/hero/floating-ellipse.svg" alt="" class="hero-ellipse hero-ellipse-1" width="140" height="90" loading="eager" />
     <img src="/images/hero/floating-ellipse.svg" alt="" class="hero-ellipse hero-ellipse-2" width="100" height="140" loading="eager" />
     <img src="/images/hero/floating-ellipse.svg" alt="" class="hero-ellipse hero-ellipse-3" width="180" height="110" loading="eager" />
     <img src="/images/hero/floating-ellipse.svg" alt="" class="hero-ellipse hero-ellipse-4" width="120" height="160" loading="eager" />
@@ -48,12 +51,12 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
       <div class="hero-title-block">
         <span class="hero-badge">
           <span class="hero-badge__dot" aria-hidden="true" />
-          <span class="hero-badge__text">Opening coming soon</span>
+          <span class="hero-badge__text">Opent 1 augustus 2026</span>
         </span>
-        <h1 class="hero-heading">
+        <h1 class="hero-heading" id="hero-heading" tabindex="-1">
           <span class="hero-heading-static">Kinesitherapie op maat</span>
           <br />
-          <span class="hero-typing-line" data-typing-phrases={JSON.stringify(typingPhrases)} aria-hidden="true">
+          <span class="hero-typing-line" data-typing-phrases={JSON.stringify(typingPhrases)} data-static-phrase={staticPhrase} aria-hidden="true">
             <span class="hero-typing" id="hero-typing-text" />
             <span class="hero-cursor" id="hero-typing-cursor" aria-hidden="true" />
           </span>
@@ -87,7 +90,7 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
       <div class="hero-picture-wrapper relative w-full min-w-[300px] max-w-[480px]">
         <Image
           src={heroPicture}
-          alt="Lynn"
+          alt="Lynn Beunnens, kinesitherapeute en oprichter van Cocon"
           width={480}
           height={600}
           format="webp"
@@ -227,10 +230,23 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
     margin-left: 2px;
     vertical-align: baseline;
     background-color: var(--color-accent);
-    animation: hero-cursor-blink 1s step-end infinite;
   }
-  @keyframes hero-cursor-blink {
-    50% { opacity: 0; }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-cursor {
+      animation: hero-cursor-blink 1s step-end infinite;
+    }
+  }
+  /* Reduced motion: the script shows a static phrase instead of the typing
+     loop — hide the (now meaningless) cursor entirely. */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-cursor {
+      display: none;
+    }
+  }
+  /* The announcement close button moves focus here (so keyboard users don't
+     fall back to <body>); it's not interactive, so no focus ring. */
+  .hero-heading:focus {
+    outline: none;
   }
   .hero-subtext {
     font-family: 'Raleway', sans-serif;
@@ -254,7 +270,11 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
   .hero-ellipse {
     position: absolute;
     object-fit: contain;
-    animation: hero-float 14s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-ellipse {
+      animation: hero-float 14s ease-in-out infinite;
+    }
   }
   .hero-ellipse-1 { width: 140px; height: 90px; top: 8%; left: 5%; animation-delay: 0s; }
   .hero-ellipse-2 { width: 100px; height: 140px; top: 22%; right: 12%; animation-delay: -2s; }
@@ -278,7 +298,11 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
     align-items: center;
     justify-content: center;
     transform: rotate(-45deg);
-    animation: hero-chevron-bounce 2s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-scroll-btn__icon {
+      animation: hero-chevron-bounce 2s ease-in-out infinite;
+    }
   }
   @keyframes hero-chevron-bounce {
     0%, 100% { transform: rotate(-45deg) translateY(0); }
@@ -377,9 +401,15 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
   (function () {
     const typingLine = document.querySelector<HTMLElement>('.hero-typing-line[data-typing-phrases]');
     const phrases = typingLine ? JSON.parse(typingLine.getAttribute('data-typing-phrases') || '[]') : [];
+    const staticPhrase = typingLine?.getAttribute('data-static-phrase') || '';
     const el = document.getElementById('hero-typing-text');
     const cursor = document.getElementById('hero-typing-cursor');
     if (!el || !cursor || !phrases.length) return;
+
+    // WCAG 2.2.2: users who prefer reduced motion get one static phrase
+    // instead of the infinite type/delete loop (the cursor is hidden via
+    // CSS). Parallax and the other decorative animations are skipped too.
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     /* Auto-fit: keep BOTH the static heading and the typing line on ONE line.
        Between ~1024–1440px Lynn sits beside the text, so the text column is
@@ -428,7 +458,7 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
       if (!available) return;
       // Static heading: tiny allowance. Typing line: reserve cursor room (8px).
       fitLine(staticEl, [staticText], 2, available);
-      fitLine(typingLine, phrases, 8, available);
+      fitLine(typingLine, prefersReducedMotion && staticPhrase ? [staticPhrase] : phrases, 8, available);
     }
 
     fitHeading();
@@ -482,9 +512,13 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
       }
     }
 
-    el.textContent = '';
-    charIndex = 0;
-    scheduleNext(500);
+    if (prefersReducedMotion) {
+      el.textContent = staticPhrase || phrases[0];
+    } else {
+      el.textContent = '';
+      charIndex = 0;
+      scheduleNext(500);
+    }
 
     window.addEventListener('beforeunload', function () {
       if (timeoutId != null) window.clearTimeout(timeoutId);
@@ -492,8 +526,9 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
 
     // Defer non-critical: Parallax, scroll button, and hero announcement can wait
     setTimeout(() => {
-      /* Parallax: Lynn + ellipse move slower on scroll */
-      const parallax = document.getElementById('hero-parallax');
+      /* Parallax: Lynn + ellipse move slower on scroll (skipped for
+         reduced-motion users) */
+      const parallax = prefersReducedMotion ? null : document.getElementById('hero-parallax');
       if (parallax) {
         let ticking = false;
         function updateParallax() {
@@ -523,11 +558,14 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
         });
       }
 
-      // Hero announcement close behaviour
+      // Hero announcement close behaviour. Hiding the bubble also hides the
+      // close button that holds focus — move focus to the hero heading first
+      // so keyboard users don't get dumped back to <body>.
       const announcement = document.querySelector<HTMLElement>('[data-hero-announcement]');
       const closeBtn = announcement?.querySelector<HTMLElement>('.hero-announcement__close');
       if (announcement && closeBtn) {
         closeBtn.addEventListener('click', () => {
+          document.getElementById('hero-heading')?.focus({ preventScroll: true });
           announcement.setAttribute('hidden', 'true');
         });
       }

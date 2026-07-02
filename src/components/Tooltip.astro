@@ -19,14 +19,17 @@ const { contentText, buttonText, buttonHref, id = 'tooltip-' + Math.random().toS
 ---
 
 <div class="tooltip-wrapper" data-tooltip-wrapper>
-  <div class="tooltip-trigger" data-tooltip-trigger id={`${id}-trigger`} role="button" tabindex="0" aria-describedby={id} aria-expanded="false">
+  <!-- Toggletip, not a tooltip: the panel contains interactive content
+       (close button + CTA link), which role="tooltip"/aria-describedby
+       would flatten to a plain description string. aria-expanded +
+       aria-controls expose it as a disclosure instead. -->
+  <div class="tooltip-trigger" data-tooltip-trigger id={`${id}-trigger`} role="button" tabindex="0" aria-controls={id} aria-expanded="false">
     <slot />
   </div>
   <div
     id={id}
     class="tooltip-panel"
     data-tooltip-panel
-    role="tooltip"
     hidden
     aria-hidden="true"
   >
@@ -356,9 +359,27 @@ const { contentText, buttonText, buttonHref, id = 'tooltip-' + Math.random().toS
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           e.stopPropagation();
-          if (isOpen) close();
-          else open();
+          if (isOpen) {
+            close();
+          } else {
+            open();
+            // Keyboard activation: move focus into the panel so its
+            // interactive content (close button, CTA) is the next Tab stop —
+            // the panel is re-parented to <body>, far away in DOM order.
+            requestAnimationFrame(() => {
+              panel.querySelector<HTMLElement>('[data-tooltip-close]')?.focus();
+            });
+          }
         }
+      });
+
+      // WCAG 1.4.13: Escape dismisses without moving pointer/focus intent —
+      // focus returns to the trigger if it was inside the panel.
+      document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape' || !isOpen) return;
+        const focusWasInPanel = panel.contains(document.activeElement);
+        close();
+        if (focusWasInPanel) (trigger as HTMLElement).focus();
       });
 
       const closeButton = panel.querySelector('[data-tooltip-close]');

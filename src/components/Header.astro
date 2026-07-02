@@ -61,6 +61,7 @@ function isActive(href: string, path: string): boolean {
             <a
               href={href}
               data-nav-index={i}
+              aria-current={active ? 'page' : undefined}
               class="relative z-10 flex items-center gap-2 rounded-full text-text-primary no-underline transition-opacity hover:opacity-80 active:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               <span class="header-nav-icon flex items-center justify-center text-primary [&_svg]:size-5" aria-hidden="true">
@@ -136,7 +137,7 @@ function isActive(href: string, path: string): boolean {
           type="button"
           aria-expanded="false"
           aria-controls="header-menu"
-          aria-label="Open menu"
+          aria-label="Menu openen"
           class="header-menu-toggle inline-flex items-center justify-center p-2 text-text-primary rounded-full hover:bg-background-muted active:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           <Menu class="size-6 header-menu-open-icon" aria-hidden="true" />
@@ -156,7 +157,7 @@ function isActive(href: string, path: string): boolean {
           type="button"
           aria-expanded="false"
           aria-controls="header-menu"
-          aria-label="Open menu"
+          aria-label="Menu openen"
           class="header-menu-toggle inline-flex items-center justify-center p-2 text-text-primary rounded-full hover:bg-background-muted active:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           <Menu class="size-6 header-menu-open-icon" aria-hidden="true" />
@@ -180,6 +181,7 @@ function isActive(href: string, path: string): boolean {
           return (
             <a
               href={href}
+              aria-current={active ? 'page' : undefined}
               class="header-menu-link relative flex items-center gap-3 py-2 pl-2 pr-3 text-text-primary no-underline transition-opacity hover:opacity-80 active:opacity-70 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               data-menu-close
             >
@@ -258,44 +260,65 @@ function isActive(href: string, path: string): boolean {
     const closeIcons = document.querySelectorAll('.header-menu-close-icon');
     if (!toggles.length || !menu || !openIcons.length || !closeIcons.length) return;
 
-    function openMenu() {
+    // While the menu dialog is open, the page behind its backdrop is made
+    // inert so keyboard/screen-reader focus can't wander into obscured
+    // content. The header itself stays live (it holds the toggle button).
+    const pageRegions = [document.querySelector('main'), document.querySelector('footer')];
+    let lastToggle: Element | null = null;
+
+    function openMenu(trigger?: Element) {
+      lastToggle = trigger ?? null;
       menu.classList.remove('hidden');
       menu.removeAttribute('aria-hidden');
       menu.removeAttribute('inert');
+      pageRegions.forEach((el) => el?.setAttribute('inert', ''));
       toggles.forEach((t) => {
         t.setAttribute('aria-expanded', 'true');
-        t.setAttribute('aria-label', 'Close menu');
+        t.setAttribute('aria-label', 'Menu sluiten');
       });
       openIcons.forEach((el) => el.classList.add('hidden'));
       closeIcons.forEach((el) => el.classList.remove('hidden'));
+      // Move focus into the dialog so keyboard/SR users land in the menu.
+      menu.querySelector<HTMLElement>('nav a')?.focus();
     }
 
-    function closeMenu() {
+    function closeMenu(restoreFocus = false) {
       menu.classList.add('hidden');
       menu.setAttribute('aria-hidden', 'true');
       menu.setAttribute('inert', '');
+      pageRegions.forEach((el) => el?.removeAttribute('inert'));
       toggles.forEach((t) => {
         t.setAttribute('aria-expanded', 'false');
-        t.setAttribute('aria-label', 'Open menu');
+        t.setAttribute('aria-label', 'Menu openen');
       });
       openIcons.forEach((el) => el.classList.remove('hidden'));
       closeIcons.forEach((el) => el.classList.add('hidden'));
+      // Only pull focus back on keyboard-style dismissal (Escape/toggle) —
+      // not when closing because a menu link navigates away.
+      if (restoreFocus) (lastToggle as HTMLElement | null)?.focus();
+      lastToggle = null;
     }
 
     toggles.forEach((toggle) => {
       toggle.addEventListener('click', () => {
         const isOpen = toggle.getAttribute('aria-expanded') === 'true';
-        if (isOpen) closeMenu();
-        else openMenu();
+        if (isOpen) closeMenu(true);
+        else openMenu(toggle);
       });
     });
 
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !menu.classList.contains('hidden')) {
+        closeMenu(true);
+      }
+    });
+
     menu.querySelectorAll('[data-menu-close]').forEach((el) => {
-      el.addEventListener('click', closeMenu);
+      el.addEventListener('click', () => closeMenu());
     });
 
     menu.addEventListener('click', (e) => {
-      if (e.target === menu) closeMenu();
+      if (e.target === menu) closeMenu(true);
     });
 
     // Defer non-critical: Nav oval positioning can wait slightly

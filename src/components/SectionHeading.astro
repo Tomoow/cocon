@@ -7,6 +7,9 @@
 interface Props {
   /** Title text (or use title slot for custom content) */
   title?: string;
+  /** Heading level: 'h2' (default) for in-page sections, 'h1' when the
+   *  SectionHeading is the page title (contact, tarieven, faq). */
+  as?: 'h1' | 'h2';
   subtitle: string;
   /** Optional id for the heading (e.g. for aria-labelledby) */
   id?: string;
@@ -20,21 +23,21 @@ interface Props {
   subtitleColor?: 'default' | 'white';
 }
 
-const { title, subtitle, id, class: className = '', align = 'center', titleColor = 'primary', subtitleColor = 'default' } = Astro.props;
+const { title, as: Heading = 'h2', subtitle, id, class: className = '', align = 'center', titleColor = 'primary', subtitleColor = 'default' } = Astro.props;
 const hasTitleSlot = Astro.slots.has('title');
 const titleId = id ? `${id}-title` : undefined;
 const isOnDark = titleColor === 'white' || subtitleColor === 'white';
 ---
 
 <header class:list={['section-heading', align === 'left' && 'section-heading--left', isOnDark && 'section-heading--on-dark', className].filter(Boolean)} id={id} aria-labelledby={titleId}>
-  <h2 class="section-heading__title" id={titleId}>
+  <Heading class="section-heading__title" id={titleId}>
     {hasTitleSlot ? (
       <slot name="title" />
     ) : (
       <span class="section-heading__title-text">{title}</span>
     )}
     <span class="section-heading__dot" aria-hidden="true" />
-  </h2>
+  </Heading>
   <p class="section-heading__subtitle">{subtitle}</p>
 </header>
 

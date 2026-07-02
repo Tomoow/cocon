@@ -1,6 +1,22 @@
 @import "tailwindcss";
 
 /* -------------------------------------------------------------------------
+   Self-hosted fonts (@fontsource) — same families/weights as the previous
+   Google Fonts embed, but served from our own origin (hashed under /_astro/
+   with immutable caching). Removes 2 third-party origins + 1 CSS round trip
+   from the critical font path. font-display: swap is fontsource's default.
+   ------------------------------------------------------------------------- */
+@import "@fontsource/raleway/300.css";
+@import "@fontsource/raleway/400.css";
+@import "@fontsource/raleway/400-italic.css";
+@import "@fontsource/raleway/500.css";
+@import "@fontsource/raleway/600.css";
+@import "@fontsource/raleway/700.css";
+@import "@fontsource/spectral/400.css";
+@import "@fontsource/spectral/400-italic.css";
+@import "@fontsource/spectral/500.css";
+
+/* -------------------------------------------------------------------------
    Subtle scrollbars: page (vertical) and carousel (horizontal).
    ------------------------------------------------------------------------- */
 /* Firefox */
@@ -229,14 +245,55 @@ html::-webkit-scrollbar-thumb:hover {
 
 /* -------------------------------------------------------------------------
    Fade-in scroll animation: sections fade in smoothly when scrolling.
+
+   Double-gated so content is never invisible:
+   - `.js` on <html> (set by an inline script in BaseLayout's <head>): if JS
+     is disabled/blocked, the hidden state never applies and everything is
+     simply visible.
+   - prefers-reduced-motion: users who opt out of motion get static, fully
+     visible sections (WCAG 2.3.3 / 2.2.2).
    ------------------------------------------------------------------------- */
-.fade-in {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+@media (prefers-reduced-motion: no-preference) {
+  .js .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .js .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.fade-in.visible {
-  opacity: 1;
+/* -------------------------------------------------------------------------
+   Skip link (WCAG 2.4.1 Bypass Blocks): visually hidden until focused, then
+   revealed above the fixed header so keyboard users can jump past the nav.
+   ------------------------------------------------------------------------- */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 300; /* above header (100) and modal (200) */
+  padding: 0.75rem 1.25rem;
+  border-radius: 9999px;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  font-family: 'Raleway', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
   transform: translateY(0);
+  outline: 2px solid var(--color-white);
+  outline-offset: 2px;
+}
+
+/* The skip link moves focus to <main tabindex="-1"> — suppress the focus
+   ring there; it's a landmark, not an interactive control. */
+#main-content:focus {
+  outline: none;
 }
