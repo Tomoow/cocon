@@ -23,7 +23,7 @@ const expertisesCards = [
     number: '01',
     title: 'Bekkenbodemtherapie',
     description:
-      'Heb je last van <strong>urineverlies</strong>, <strong>obstipatie</strong>, een <strong>zwaar gevoel</strong> of andere klachten in de bekkenbodem? Bekkenbodemtherapie kan helpen. Bij zowel <strong>vrouwen en mannen</strong>.',
+      'Heb je last van <strong>urineverlies</strong>, <strong>obstipatie</strong>, een <strong>zwaar gevoel</strong> of andere klachten in de bekkenbodem? Bekkenbodemtherapie kan helpen. Bij zowel <strong>vrouwen als mannen</strong>.',
     backParagraphs: [
       'De bekkenbodem speelt een belangrijke rol bij <strong>plassen, stoelgang en seksualiteit</strong>. Je kan terecht bij klachten zoals <strong>urineverlies, aandrang, constipatie, bekkenpijn, vaginale klachten</strong> of ander ongemak in de bekkenregio. Deze klachten kunnen een grote impact hebben op het dagelijks leven.',
       'Met een persoonlijke aanpak gaan we samen op zoek naar de oorzaak en werken we gericht aan <strong>herstel</strong>. Tijdens de behandeling besteden we onder andere aandacht aan <strong>toilethouding</strong>, het leren ontspannen en aanspannen van de <strong>bekkenbodemspieren</strong> en, indien nodig, het gebruik van <strong>biofeedback</strong> om de spieren beter te leren aanvoelen en trainen.',
@@ -33,7 +33,7 @@ const expertisesCards = [
     imageSrc: expertise2,
     imageAlt: '',
     number: '02',
-    title: 'Zwangerschap & postnatale',
+    title: 'Zwangerschap & postnataal herstel',
     description:
       'Tijdens en na een <strong>zwangerschap</strong> verandert er veel in je lichaam. Met gerichte kinesitherapie helpen we je om <strong>klachten te voorkomen</strong>, te <strong>herstellen</strong> en je lichaam opnieuw te vertrouwen.',
     backParagraphs: [
@@ -97,7 +97,10 @@ const reviewData = [
     announcementEnabled={settings.heroAnnouncementEnabled}
     announcementText={settings.heroAnnouncementText}
   />
-  <main id="content-after-hero" class="main-with-ellipses">
+  <!-- <div>, not <main>: BaseLayout already renders the single <main>
+       landmark; a nested main is invalid HTML. The id stays — it's the
+       hero scroll-button anchor. -->
+  <div id="content-after-hero" class="main-with-ellipses">
     <div class="expertise-ellipses" aria-hidden="true">
       <img class="expertise-ellipses__left" src="/images/ellipse-left.svg" alt="" width="752" height="1025" loading="lazy" />
       <img class="expertise-ellipses__right" src="/images/ellipse-right.svg" alt="" width="850" height="1159" loading="lazy" />
@@ -105,7 +108,7 @@ const reviewData = [
     <div class="container-content pt-[6.25rem] pb-24 md:pb-32 expertise-content-on-top">
       <ExpertisesCarousel cards={expertisesCards} class="fade-in" />
     </div>
-  </main>
+  </div>
   <AfspraakCta class="fade-in" />
   <PraktijkSection class="fade-in" />
   <div class="container-content pt-16 pb-24 md:pt-20 md:pb-32 fade-in">
