@@ -2,6 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import ContactForm from '../components/ContactForm.astro';
+import MapPin from '@lucide/astro/icons/map-pin';
+import Mail from '@lucide/astro/icons/mail';
+import Phone from '@lucide/astro/icons/phone';
 import sendMessageLottie from '../assets/images/send-message.lottie?url';
 import mailSentLottie from '../assets/images/mail-sent.json?url';
 ---
@@ -9,10 +12,25 @@ import mailSentLottie from '../assets/images/mail-sent.json?url';
 <BaseLayout title="Contact" description="Contacteer Cocon Kinesitherapie in Kapelle-op-den-Bos. Stuur ons een bericht via het contactformulier of bel 0456 86 46 65.">
   <div class="page-header container-content">
     <SectionHeading
-      title="Contactformulier"
-      subtitle="Heb je een vraag die je liever via mail stelt? Laat ze hieronder achter en we antwoorden zo snel mogelijk."
+      title="Contact"
+      as="h1"
+      subtitle="Heb je een vraag of wil je iets bespreken? Bel of mail ons, of laat je bericht hieronder achter — we antwoorden zo snel mogelijk."
       align="center"
     />
+    <ul class="contact-details" role="list">
+      <li class="contact-details__item">
+        <MapPin class="contact-details__icon size-5" aria-hidden="true" />
+        <span>Mechelseweg 62, 1880 Kapelle-op-den-Bos <span class="contact-details__muted">(in het gebouw van Poutrel)</span></span>
+      </li>
+      <li class="contact-details__item">
+        <Phone class="contact-details__icon size-5" aria-hidden="true" />
+        <a href="tel:+32456864665" data-umami-event="cta-phone" data-umami-event-source="contact-page">0456 86 46 65</a>
+      </li>
+      <li class="contact-details__item">
+        <Mail class="contact-details__icon size-5" aria-hidden="true" />
+        <a href="mailto:info@kine-cocon.be" data-umami-event="cta-email" data-umami-event-source="contact-page">info@kine-cocon.be</a>
+      </li>
+    </ul>
   </div>
 
   <section class="contact-section container-content fade-in" aria-labelledby="contact-heading">
@@ -42,6 +60,54 @@ import mailSentLottie from '../assets/images/mail-sent.json?url';
     .page-header {
       padding-top: 10.5rem;
     }
+  }
+
+  /* Compact NAP block under the page header: address, phone, e-mail.
+     Wraps to a column on narrow screens. */
+  .contact-details {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    column-gap: 2rem;
+    row-gap: 0.75rem;
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem;
+    color: var(--color-primary);
+  }
+
+  .contact-details__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .contact-details__icon {
+    flex-shrink: 0;
+    color: var(--color-primary);
+  }
+
+  .contact-details__muted {
+    color: var(--color-text-secondary);
+  }
+
+  .contact-details__item a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .contact-details__item a:hover {
+    opacity: 0.8;
+  }
+
+  .contact-details__item a:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 
   .sr-only {
@@ -106,8 +172,24 @@ import mailSentLottie from '../assets/images/mail-sent.json?url';
 </style>
 
 <script>
-  // Register the <dotlottie-wc> custom element. Side-effect import.
-  import '@lottiefiles/dotlottie-wc';
+  // Self-host the renderer WASM: by default dotlottie fetches it from
+  // cdn.jsdelivr.net at runtime — an extra third-party origin that can be
+  // blocked or slow. The ?url import lets Vite bundle it under /_astro/
+  // (hashed + immutable-cached) on our own origin. Imported via file path
+  // because the package's exports map doesn't expose the .wasm; the path
+  // stays version-synced with the installed package.
+  import wasmUrl from '../../node_modules/@lottiefiles/dotlottie-web/dist/dotlottie-player.wasm?url';
+  // Order matters: registering <dotlottie-wc> synchronously upgrades the
+  // element already in the DOM (connectedCallback → _init → wasm fetch), so
+  // calling setWasmUrl after the import is too late — the CDN fetch has
+  // already started. Detach the (not-yet-upgraded) element first, register
+  // and set the URL, then re-attach so its init uses our self-hosted wasm.
+  const lottieBoot = document.getElementById('contact-lottie');
+  const lottieHost = lottieBoot?.parentElement ?? null;
+  lottieBoot?.remove();
+  const { setWasmUrl } = await import('@lottiefiles/dotlottie-wc');
+  setWasmUrl(wasmUrl);
+  if (lottieBoot && lottieHost) lottieHost.appendChild(lottieBoot);
 
   /**
    * Submission animation flow:
@@ -150,6 +232,7 @@ import mailSentLottie from '../assets/images/mail-sent.json?url';
   const submitBtn = form?.querySelector<HTMLButtonElement>('.contact-form__submit');
   const submitLabel = form?.querySelector<HTMLElement>('.contact-form__submit-label');
   const errorBanner = form?.querySelector<HTMLElement>('[data-contact-error]');
+  const statusRegion = form?.querySelector<HTMLElement>('[data-contact-status]');
 
   /**
    * POST the form data to /api/contact. The endpoint sends a MIME email
@@ -211,6 +294,12 @@ import mailSentLottie from '../assets/images/mail-sent.json?url';
     lottie.renderConfig = { devicePixelRatio: window.devicePixelRatio || 2 };
 
     let state: 'idle' | 'sending' | 'sent' = 'idle';
+
+    // Anti-spam time trap: stamp when the form became interactive. The API
+    // rejects submissions that arrive suspiciously fast after page load
+    // (bots fill forms in milliseconds; humans don't).
+    const tsField = form.querySelector<HTMLInputElement>('input[name="ts"]');
+    if (tsField) tsField.value = String(Date.now());
 
     /** Run `callback` once the WC has finished initialising its inner instance. */
     function withInstance(callback: (instance: AnyInstance) => void): void {
@@ -299,6 +388,7 @@ import mailSentLottie from '../assets/images/mail-sent.json?url';
       if (state !== 'idle') return;
 
       hideError();
+      if (statusRegion) statusRegion.textContent = '';
 
       // Stage 1 — sending: disable, "Versturen ...", play send-message lottie.
       // We fire the fetch in parallel with the animation so the user perceives
@@ -334,6 +424,9 @@ import mailSentLottie from '../assets/images/mail-sent.json?url';
       // lottie, then reset everything to idle and clear the form.
       state = 'sent';
       submitLabel.textContent = sentLabel;
+      // Announce success to screen readers — the button-label swap alone is
+      // not announced (WCAG 4.1.3 status messages).
+      if (statusRegion) statusRegion.textContent = 'Je bericht is verstuurd. We antwoorden zo snel mogelijk.';
       await playOnce(successSrc);
 
       state = 'idle';

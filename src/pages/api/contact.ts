@@ -92,6 +92,23 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return jsonResponse({ ok: false, error: 'Ongeldige aanvraag.' }, 400);
   }
 
+  // --- Spam checks -------------------------------------------------------
+  // Honeypot: the "website" field is visually hidden in ContactForm.astro;
+  // humans never fill it. Time trap: the "ts" field is stamped with the
+  // page-load time by the page script; real visitors need more than a few
+  // seconds to write a message, bots submit near-instantly (or omit the
+  // field entirely because they POST directly). In both cases we return a
+  // fake success so bots don't learn to adapt — no email is sent.
+  const honeypot = (form.get('website') ?? '').toString().trim();
+  const ts = Number.parseInt((form.get('ts') ?? '').toString(), 10);
+  const elapsed = Date.now() - ts;
+  // Negative elapsed = client clock ahead of the server; let that through
+  // (a skewed clock shouldn't silently swallow a real visitor's message).
+  const tooFast = !Number.isFinite(ts) || (elapsed >= 0 && elapsed < 3000);
+  if (honeypot || tooFast) {
+    return jsonResponse({ ok: true }, 200);
+  }
+
   const parsed = parseFormData(form);
   if (!parsed.ok) {
     return jsonResponse({ ok: false, error: parsed.error }, 400);

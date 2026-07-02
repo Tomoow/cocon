@@ -13,6 +13,24 @@ import MessageSquare from '@lucide/astro/icons/message-square';
   aria-label="Contactformulier"
   data-contact-form
 >
+  <!-- Anti-spam honeypot: invisible to humans (visually hidden, out of the
+       tab order, hidden from assistive tech), but dumb bots fill it in.
+       The API treats any non-empty value as spam. The name is deliberately
+       plausible ("website") so bots take the bait. -->
+  <div class="contact-form__hp" aria-hidden="true">
+    <label for="contact-website">Website</label>
+    <input
+      id="contact-website"
+      type="text"
+      name="website"
+      tabindex="-1"
+      autocomplete="off"
+    />
+  </div>
+  <!-- Anti-spam time trap: filled with the page-load timestamp by the page
+       script; the API rejects submissions that arrive within seconds. -->
+  <input type="hidden" name="ts" value="" />
+
   <div class="contact-form__row">
     <div class="contact-form__field">
       <label for="contact-name" class="contact-form__label">
@@ -77,15 +95,19 @@ import MessageSquare from '@lucide/astro/icons/message-square';
   </div>
 
   <!-- Inline error banner — shown by the page script when /api/contact
-       returns a failure. `aria-live="polite"` so screen readers announce
-       it without interrupting whatever the user was doing. -->
+       returns a failure. role="alert" makes screen readers announce it
+       (alert implies assertive live semantics on its own). -->
   <p
     class="contact-form__error"
     data-contact-error
     role="alert"
-    aria-live="polite"
     hidden
   ></p>
+
+  <!-- Visually hidden status region: the page script announces successful
+       submission here (WCAG 4.1.3) — the "Verstuurd" button-label swap is
+       not announced by screen readers. -->
+  <p class="contact-form__status" data-contact-status role="status" aria-live="polite"></p>
 </form>
 
 <style>
@@ -126,12 +148,37 @@ import MessageSquare from '@lucide/astro/icons/message-square';
     font-weight: 400;
   }
 
+  /* Honeypot: visually gone but still fillable by bots. Not display:none —
+     some bots skip hidden fields, and we *want* them to see this one. */
+  .contact-form__hp {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Visually hidden live region for the success announcement */
+  .contact-form__status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   .contact-form__input-wrap {
     position: relative;
     display: flex;
     align-items: center;
     background-color: var(--color-white);
-    border: 1px solid #c6c6cc;
+    /* ≥3:1 against the white field fill (WCAG 1.4.11 non-text contrast) —
+       the border is the only visual affordance marking the input bounds. */
+    border: 1px solid #767676;
     border-radius: 0.75rem;
     padding: 0.75rem;
     gap: 0.5rem;
