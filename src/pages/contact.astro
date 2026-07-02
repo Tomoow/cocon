@@ -14,23 +14,9 @@ import mailSentLottie from '../assets/images/mail-sent.json?url';
     <SectionHeading
       title="Contact"
       as="h1"
-      subtitle="Heb je een vraag of wil je iets bespreken? Bel of mail ons, of laat je bericht hieronder achter — we antwoorden zo snel mogelijk."
+      subtitle="Heb je een vraag of wil je iets bespreken? Bel of mail ons, of laat je bericht hieronder achter. We antwoorden zo snel mogelijk."
       align="center"
     />
-    <ul class="contact-details" role="list">
-      <li class="contact-details__item">
-        <MapPin class="contact-details__icon size-5" aria-hidden="true" />
-        <span>Mechelseweg 62, 1880 Kapelle-op-den-Bos <span class="contact-details__muted">(in het gebouw van Poutrel)</span></span>
-      </li>
-      <li class="contact-details__item">
-        <Phone class="contact-details__icon size-5" aria-hidden="true" />
-        <a href="tel:+32456864665" data-umami-event="cta-phone" data-umami-event-source="contact-page">0456 86 46 65</a>
-      </li>
-      <li class="contact-details__item">
-        <Mail class="contact-details__icon size-5" aria-hidden="true" />
-        <a href="mailto:info@kine-cocon.be" data-umami-event="cta-email" data-umami-event-source="contact-page">info@kine-cocon.be</a>
-      </li>
-    </ul>
   </div>
 
   <section class="contact-section container-content fade-in" aria-labelledby="contact-heading">
@@ -48,6 +34,24 @@ import mailSentLottie from '../assets/images/mail-sent.json?url';
       <ContactForm />
     </div>
   </section>
+
+  <!-- NAP block below the form (desktop) / below the illustration (mobile) -->
+  <div class="contact-details-wrap container-content fade-in">
+    <ul class="contact-details" role="list">
+      <li class="contact-details__item">
+        <MapPin class="contact-details__icon size-5" aria-hidden="true" />
+        <span>Mechelseweg 62, 1880 Kapelle-op-den-Bos <span class="contact-details__muted">(in het gebouw van Poutrel)</span></span>
+      </li>
+      <li class="contact-details__item">
+        <Phone class="contact-details__icon size-5" aria-hidden="true" />
+        <a href="tel:+32456864665" data-umami-event="cta-phone" data-umami-event-source="contact-page">0456 86 46 65</a>
+      </li>
+      <li class="contact-details__item">
+        <Mail class="contact-details__icon size-5" aria-hidden="true" />
+        <a href="mailto:info@kine-cocon.be" data-umami-event="cta-email" data-umami-event-source="contact-page">info@kine-cocon.be</a>
+      </li>
+    </ul>
+  </div>
 </BaseLayout>
 
 <style>
@@ -62,8 +66,19 @@ import mailSentLottie from '../assets/images/mail-sent.json?url';
     }
   }
 
-  /* Compact NAP block under the page header: address, phone, e-mail.
-     Wraps to a column on narrow screens. */
+  /* Compact NAP block at the end of the page: sits below the form on
+     desktop and below the illustration on mobile (the section above is
+     column-reverse there, so the illustration comes last). */
+  .contact-details-wrap {
+    padding-bottom: 5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .contact-details-wrap {
+      padding-bottom: 8rem;
+    }
+  }
+
   .contact-details {
     list-style: none;
     margin: 0;
@@ -129,7 +144,7 @@ import mailSentLottie from '../assets/images/mail-sent.json?url';
     flex-direction: column-reverse;
     align-items: center;
     gap: 1.5rem;
-    padding-bottom: 5rem;
+    padding-bottom: 2.5rem;
   }
 
   .contact-section__illustration {
@@ -156,7 +171,7 @@ import mailSentLottie from '../assets/images/mail-sent.json?url';
       flex-direction: row;
       align-items: center;
       gap: 0;
-      padding-bottom: 8rem;
+      padding-bottom: 3rem;
     }
 
     .contact-section__illustration {
