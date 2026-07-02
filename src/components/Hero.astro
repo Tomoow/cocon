@@ -8,7 +8,7 @@ import Button from './Button.astro';
 import IconButton from './IconButton.astro';
 import ChevronDown from '@lucide/astro/icons/chevron-down';
 import X from '@lucide/astro/icons/x';
-import heroPicture from '../assets/images/hero/hero-picture.png';
+import heroPicture from '../assets/images/hero/lynn-hero-image.webp';
 
 interface Props {
   announcementEnabled?: boolean;
@@ -92,7 +92,7 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
           src={heroPicture}
           alt="Lynn Beunnens, kinesitherapeute en oprichter van Cocon"
           width={480}
-          height={600}
+          height={480}
           format="webp"
           widths={[316, 380, 442, 480]}
           sizes="(max-width: 768px) 316px, (max-width: 1199px) 380px, 480px"
