@@ -37,7 +37,11 @@ interface Props {
 const {
   title,
   description = 'Cocon is een kinesitherapiepraktijk in Kapelle-op-den-Bos, gespecialiseerd in bekkenbodemtherapie, zwangerschapsbegeleiding, revalidatie en algemene klachten.',
-  ogImage = '/images/og-card.png',
+  // Versioned filename: bump the suffix when the card changes — Cloudflare's
+  // edge (24h /images/* cache) and social scrapers (WhatsApp/Facebook cache
+  // by URL) both pick a new URL up immediately, a changed file at the same
+  // URL only after their caches expire.
+  ogImage = '/images/og-card-v2.png',
   isHome = false,
   plainTitle = false,
   noindex = false,
