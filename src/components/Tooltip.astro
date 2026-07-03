@@ -9,13 +9,15 @@ import IconButton from './IconButton.astro';
 
 interface Props {
   contentText: string;
-  buttonText: string;
-  buttonHref: string;
+  /** Optional CTA inside the panel; omit both for a text-only tooltip */
+  buttonText?: string;
+  buttonHref?: string;
   /** Unique id for accessibility */
   id?: string;
 }
 
 const { contentText, buttonText, buttonHref, id = 'tooltip-' + Math.random().toString(36).slice(2, 9) } = Astro.props;
+const hasButton = Boolean(buttonText && buttonHref);
 ---
 
 <div class="tooltip-wrapper" data-tooltip-wrapper>
@@ -44,11 +46,18 @@ const { contentText, buttonText, buttonHref, id = 'tooltip-' + Math.random().toS
       </IconButton>
     </div>
     <p class="tooltip-text">{contentText}</p>
-    <div class="tooltip-actions">
-      <Button href={buttonHref} variant="secondary" class="tooltip-button">
-        {buttonText}
-      </Button>
-    </div>
+    {hasButton && (
+      <div class="tooltip-actions">
+        <Button
+          href={buttonHref}
+          target={buttonHref!.startsWith('http') ? '_blank' : undefined}
+          variant="secondary"
+          class="tooltip-button"
+        >
+          {buttonText}
+        </Button>
+      </div>
+    )}
     <span class="tooltip-pointer" data-tooltip-pointer aria-hidden="true" />
   </div>
 </div>
@@ -214,49 +223,32 @@ const { contentText, buttonText, buttonHref, id = 'tooltip-' + Math.random().toS
 </style>
 
 <script>
-  const TOOLTIP_DEBUG = true;
-  function log(...args) {
-    if (typeof TOOLTIP_DEBUG !== 'undefined' && TOOLTIP_DEBUG) {
-      console.log('[Tooltip]', ...args);
-    }
-  }
+  // Supports MULTIPLE tooltips per page: every [data-tooltip-wrapper] gets
+  // its own open/close state. Astro dedupes this script, so it runs once
+  // regardless of how many <Tooltip> instances a page renders.
+  async function initTooltips() {
+    const wrappers = document.querySelectorAll<HTMLElement>('[data-tooltip-wrapper]');
+    if (!wrappers.length) return;
 
-  function initTooltip() {
-    log('initTooltip() called, document.readyState:', document.readyState);
-    const wrapper = document.querySelector('[data-tooltip-wrapper]');
-    if (!wrapper) {
-      log('FAIL: no [data-tooltip-wrapper] found in DOM');
-      return;
+    let computePosition, flip, shift, offset;
+    try {
+      ({ computePosition, flip, shift, offset } = await import('@floating-ui/dom'));
+    } catch {
+      return; // positioning lib unavailable — leave tooltips inert
     }
-    log('Found wrapper:', wrapper);
 
-    const trigger = wrapper.querySelector('[data-tooltip-trigger]');
-    const panel = wrapper.querySelector('[data-tooltip-panel]');
-    if (!trigger || !panel) {
-      log('FAIL: trigger or panel not found', { trigger: !!trigger, panel: !!panel });
-      return;
-    }
-    log('Found trigger and panel, attaching events...');
+    const HOVER_STAY_MS = 1000;
+    /** On touch devices a single tap fires mouseenter then click, so the
+     *  tooltip would open and immediately close. Use only click to toggle. */
+    const isTouchOrCoarse = 'ontouchstart' in window || window.matchMedia('(pointer: coarse)').matches;
 
-    (async function () {
-      let computePosition, flip, shift, offset;
-      try {
-        const floatingUi = await import('@floating-ui/dom');
-        computePosition = floatingUi.computePosition;
-        flip = floatingUi.flip;
-        shift = floatingUi.shift;
-        offset = floatingUi.offset;
-        log('Floating UI loaded, using computePosition + flip + shift + offset for dynamic placement');
-      } catch (err) {
-        log('FAIL: could not load @floating-ui/dom', err);
-        return;
-      }
-      const HOVER_STAY_MS = 1000;
+    wrappers.forEach((wrapper) => {
+      const trigger = wrapper.querySelector<HTMLElement>('[data-tooltip-trigger]');
+      const panel = wrapper.querySelector<HTMLElement>('[data-tooltip-panel]');
+      if (!trigger || !panel) return;
+
       let closeTimeout: ReturnType<typeof setTimeout> | null = null;
       let isOpen = false;
-
-      /** On touch devices, a single tap fires mouseenter then click, so the tooltip opens and immediately closes. Use only click to toggle. */
-      const isTouchOrCoarse = 'ontouchstart' in window || window.matchMedia('(pointer: coarse)').matches;
 
       function clearCloseTimeout() {
         if (closeTimeout) {
@@ -269,37 +261,27 @@ const { contentText, buttonText, buttonHref, id = 'tooltip-' + Math.random().toS
         computePosition(trigger, panel, {
           placement: 'bottom',
           strategy: 'fixed',
-          middleware: [
-            offset(10),
-            flip({ padding: 16 }),
-            shift({ padding: 16 }),
-          ],
+          middleware: [offset(10), flip({ padding: 16 }), shift({ padding: 16 })],
         }).then(({ x, y, placement }) => {
-          panel.style.left = `${x}px`;
-          panel.style.top = `${y}px`;
-          panel.setAttribute('data-placement', placement);
-          log('updatePosition:', { x, y, placement });
-        }).catch((err) => {
-          log('updatePosition error:', err);
-        });
+          panel!.style.left = `${x}px`;
+          panel!.style.top = `${y}px`;
+          panel!.setAttribute('data-placement', placement);
+        }).catch(() => {});
       }
 
       function open() {
-        log('open() called');
         clearCloseTimeout();
         isOpen = true;
-        document.body.appendChild(panel);
-        panel.hidden = false;
-        panel.removeAttribute('hidden');
-        panel.setAttribute('aria-hidden', 'false');
-        trigger.setAttribute('aria-expanded', 'true');
-        requestAnimationFrame(() => {
-          updatePosition();
-        });
+        // Re-parent to <body> so the fixed panel escapes any overflow
+        // clipping ancestors; restored to the wrapper on close.
+        document.body.appendChild(panel!);
+        panel!.removeAttribute('hidden');
+        panel!.setAttribute('aria-hidden', 'false');
+        trigger!.setAttribute('aria-expanded', 'true');
+        requestAnimationFrame(updatePosition);
       }
 
       function scheduleClose() {
-        log('scheduleClose() – will close in', HOVER_STAY_MS, 'ms');
         clearCloseTimeout();
         closeTimeout = setTimeout(() => {
           close();
@@ -308,47 +290,24 @@ const { contentText, buttonText, buttonHref, id = 'tooltip-' + Math.random().toS
       }
 
       function close() {
-        log('close() called');
         clearCloseTimeout();
         isOpen = false;
-        panel.hidden = true;
-        panel.setAttribute('aria-hidden', 'true');
-        trigger.setAttribute('aria-expanded', 'false');
-        if (panel.parentNode !== wrapper) {
-          wrapper.appendChild(panel);
+        panel!.hidden = true;
+        panel!.setAttribute('aria-hidden', 'true');
+        trigger!.setAttribute('aria-expanded', 'false');
+        if (panel!.parentNode !== wrapper) {
+          wrapper.appendChild(panel!);
         }
       }
 
-      function handleTriggerEnter() {
-        log('trigger mouseenter');
-        clearCloseTimeout();
-        open();
-      }
-
-      function handleTriggerLeave() {
-        log('trigger mouseleave');
-        scheduleClose();
-      }
-
-      function handlePanelEnter() {
-        log('panel mouseenter');
-        clearCloseTimeout();
-      }
-
-      function handlePanelLeave() {
-        log('panel mouseleave');
-        scheduleClose();
-      }
-
       if (!isTouchOrCoarse) {
-        trigger.addEventListener('mouseenter', handleTriggerEnter);
-        trigger.addEventListener('mouseleave', handleTriggerLeave);
-        panel.addEventListener('mouseenter', handlePanelEnter);
-        panel.addEventListener('mouseleave', handlePanelLeave);
+        trigger.addEventListener('mouseenter', () => { clearCloseTimeout(); open(); });
+        trigger.addEventListener('mouseleave', scheduleClose);
+        panel.addEventListener('mouseenter', clearCloseTimeout);
+        panel.addEventListener('mouseleave', scheduleClose);
       }
 
       trigger.addEventListener('click', (e) => {
-        log('trigger click, isOpen:', isOpen);
         e.preventDefault();
         e.stopPropagation();
         if (isOpen) close();
@@ -367,7 +326,7 @@ const { contentText, buttonText, buttonHref, id = 'tooltip-' + Math.random().toS
             // interactive content (close button, CTA) is the next Tab stop —
             // the panel is re-parented to <body>, far away in DOM order.
             requestAnimationFrame(() => {
-              panel.querySelector<HTMLElement>('[data-tooltip-close]')?.focus();
+              panel!.querySelector<HTMLElement>('[data-tooltip-close]')?.focus();
             });
           }
         }
@@ -379,26 +338,19 @@ const { contentText, buttonText, buttonHref, id = 'tooltip-' + Math.random().toS
         if (e.key !== 'Escape' || !isOpen) return;
         const focusWasInPanel = panel.contains(document.activeElement);
         close();
-        if (focusWasInPanel) (trigger as HTMLElement).focus();
+        if (focusWasInPanel) trigger.focus();
       });
 
-      const closeButton = panel.querySelector('[data-tooltip-close]');
-      if (closeButton) {
-        closeButton.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          close();
-        });
-      }
+      panel.querySelector<HTMLElement>('[data-tooltip-close]')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        close();
+      });
 
       document.addEventListener('click', (e) => {
         if (!isOpen) return;
         const target = e.target as Node;
-        const outside = !wrapper.contains(target) && !panel.contains(target);
-        if (outside) {
-          log('click outside – closing');
-          close();
-        }
+        if (!wrapper.contains(target) && !panel.contains(target)) close();
       });
 
       window.addEventListener('scroll', () => {
@@ -408,22 +360,12 @@ const { contentText, buttonText, buttonHref, id = 'tooltip-' + Math.random().toS
       window.addEventListener('resize', () => {
         if (isOpen) updatePosition();
       });
-
-      log('Tooltip init complete – hover or click the trigger to open.');
-    })();
-  }
-
-  function runInit() {
-    initTooltip();
-    if (!document.querySelector('[data-tooltip-wrapper]')) {
-      log('Wrapper not in DOM yet, retrying in 150ms...');
-      setTimeout(initTooltip, 150);
-    }
+    });
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runInit);
+    document.addEventListener('DOMContentLoaded', initTooltips);
   } else {
-    runInit();
+    initTooltips();
   }
 </script>

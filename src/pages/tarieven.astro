@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import Button from '../components/Button.astro';
+import Tooltip from '../components/Tooltip.astro';
 import BanknoteArrowDown from '@lucide/astro/icons/banknote-arrow-down';
 import Hospital from '@lucide/astro/icons/hospital';
 import IdCard from '@lucide/astro/icons/id-card';
@@ -129,27 +130,18 @@ const insurances: Insurance[] = [
       subtitle=""
       align="center"
     />
-    <p class="page-header__lead">
-      Cocon is een <button
-        type="button"
-        class="term-tooltip__trigger"
-        aria-expanded="false"
-        aria-controls="deconventie-tooltip"
-        data-term-tooltip-trigger
-      >gedeconventioneerde</button> praktijk, bij verhoogde tegemoetkoming hanteren wij de
-      <a href="https://www.riziv.fgov.be/nl/professionals/individuele-zorgverleners/kinesitherapeuten/kinesitherapieverstrekkingen-vaste-remgelden" target="_blank" rel="noopener noreferrer">prijzen van het RIZIV</a>.
-    </p>
-    <div class="term-tooltip__panel" id="deconventie-tooltip" data-term-tooltip-panel hidden>
-      <p>
-        <strong>Gedeconventioneerd</strong> betekent dat we onze eigen tarieven bepalen en niet het
-        vaste RIZIV-tarief volgen. Je mutualiteit betaalt daardoor iets minder terug dan bij een
-        geconventioneerde kinesist.
-      </p>
-      <p>
-        Heb je recht op <strong>verhoogde tegemoetkoming</strong>? Dat zie je op je klevertje van de
-        mutualiteit: de code eindigt dan op 1 (bijvoorbeeld 131/131). In dat geval rekenen we wél
-        het officiële RIZIV-tarief aan en betaal je enkel het vaste remgeld.
-      </p>
+    <!-- div, not p: the Tooltip component renders block elements, which are
+         invalid inside a paragraph (the browser would split it apart). -->
+    <div class="page-header__lead">
+      Cocon is een <Tooltip
+        contentText="Gedeconventioneerd betekent dat we onze eigen tarieven bepalen en niet het vaste RIZIV-tarief volgen. Je mutualiteit betaalt daardoor iets minder terug dan bij een geconventioneerde kinesist."
+        id="tooltip-deconventie"
+      ><span class="lead-term">gedeconventioneerde</span></Tooltip> praktijk, bij verhoogde tegemoetkoming hanteren wij de <Tooltip
+        contentText="Het RIZIV (Rijksinstituut voor Ziekte- en Invaliditeitsverzekering) legt de officiële tarieven en terugbetalingen vast. Heb je recht op verhoogde tegemoetkoming? Dat zie je op je klevertje: de code eindigt dan op 1 (bijvoorbeeld 131/131). In dat geval betaal je enkel het vaste remgeld."
+        buttonText="Bekijk de RIZIV-tarieven"
+        buttonHref="https://www.riziv.fgov.be/nl/professionals/individuele-zorgverleners/kinesitherapeuten/kinesitherapieverstrekkingen-vaste-remgelden"
+        id="tooltip-riziv"
+      ><span class="lead-term">prijzen van het RIZIV</span></Tooltip>.
     </div>
   </div>
 
@@ -328,31 +320,6 @@ const insurances: Insurance[] = [
 </BaseLayout>
 
 <script>
-  // "Gedeconventioneerd" uitleg — disclosure/toggletip pattern (WCAG 1.4.13):
-  // opens on click, stays open until the user closes it (click, outside
-  // click, or Escape), so it is dismissable, hoverable and persistent.
-  const termTrigger = document.querySelector<HTMLButtonElement>('[data-term-tooltip-trigger]');
-  const termPanel = document.querySelector<HTMLElement>('[data-term-tooltip-panel]');
-  if (termTrigger && termPanel) {
-    const setOpen = (open: boolean) => {
-      termPanel.hidden = !open;
-      termTrigger.setAttribute('aria-expanded', String(open));
-    };
-    termTrigger.addEventListener('click', () => setOpen(termPanel.hidden));
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !termPanel.hidden) {
-        setOpen(false);
-        termTrigger.focus();
-      }
-    });
-    document.addEventListener('click', (e) => {
-      const target = e.target as Node;
-      if (!termPanel.hidden && !termPanel.contains(target) && !termTrigger.contains(target)) {
-        setOpen(false);
-      }
-    });
-  }
-
   // Verzekeringen dialog open/close
   const dialog = document.getElementById('verzekeringen-dialog') as HTMLDialogElement | null;
   if (dialog) {
@@ -437,55 +404,28 @@ const insurances: Insurance[] = [
     color: var(--color-primary);
   }
 
-  /* "Gedeconventioneerd" term trigger: reads as emphasised text with a
-     dotted underline that signals "there's an explanation here". */
-  .term-tooltip__trigger {
-    padding: 0;
-    border: 0;
-    background: none;
-    cursor: pointer;
-    font: inherit;
+  /* Explained terms in the lead: dotted underline signals "there's a
+     definition here" — the Tooltip component supplies the floating panel.
+     Both terms (gedeconventioneerde, prijzen van het RIZIV) share this
+     style so they read as the same kind of interaction. */
+  .lead-term {
     font-weight: 700;
     color: var(--color-text-secondary);
     text-decoration: underline dotted;
     text-decoration-thickness: 2px;
     text-underline-offset: 3px;
+    cursor: pointer;
   }
 
-  .term-tooltip__trigger:hover {
+  .lead-term:hover {
     color: var(--color-primary);
   }
 
-  .term-tooltip__trigger:focus-visible {
+  /* Focus ring on the Tooltip trigger (component-scoped class → :global) */
+  .page-header__lead :global(.tooltip-trigger:focus-visible) {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
     border-radius: 4px;
-  }
-
-  .term-tooltip__panel {
-    max-width: 36rem;
-    margin: 1rem auto 0;
-    padding: 1rem 1.25rem;
-    background-color: var(--color-background-subtle);
-    border: 1px solid #f1ece1;
-    border-radius: 0.875rem;
-    font-family: 'Raleway', sans-serif;
-    font-size: 0.9375rem;
-    line-height: 1.6;
-    color: var(--color-primary);
-    text-align: left;
-  }
-
-  .term-tooltip__panel p {
-    margin: 0;
-  }
-
-  .term-tooltip__panel p + p {
-    margin-top: 0.625rem;
-  }
-
-  .term-tooltip__panel[hidden] {
-    display: none;
   }
 
   /* ---------- Tarieven cards ---------- */
