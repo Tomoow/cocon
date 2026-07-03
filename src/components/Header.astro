@@ -178,7 +178,11 @@ function isActive(href: string, path: string): boolean {
     aria-hidden="true"
     inert
   >
-    <div class="container-content rounded-3xl bg-surface p-6 shadow-lg" role="dialog" aria-label="Menu">
+    <!-- tabindex="-1" + outline-none: the open script focuses this container
+         (so SR/keyboard context moves into the dialog) without painting a
+         focus ring on the first menu link — some browsers apply
+         :focus-visible to programmatic focus even after a touch tap. -->
+    <div class="container-content rounded-3xl bg-surface p-6 shadow-lg outline-none" role="dialog" aria-label="Menu" tabindex="-1">
       <nav class="flex flex-col gap-4" aria-label="Main">
         {navItems.map(({ href, label, icon: Icon }) => {
           const active = isActive(href, currentPath);
@@ -283,7 +287,9 @@ function isActive(href: string, path: string): boolean {
       openIcons.forEach((el) => el.classList.add('hidden'));
       closeIcons.forEach((el) => el.classList.remove('hidden'));
       // Move focus into the dialog so keyboard/SR users land in the menu.
-      menu.querySelector<HTMLElement>('nav a')?.focus();
+      // Focus the container (tabindex="-1"), not the first link — that
+      // painted a focus ring on the link for touch users in some browsers.
+      menu.querySelector<HTMLElement>('[role="dialog"]')?.focus({ preventScroll: true });
     }
 
     function closeMenu(restoreFocus = false) {
