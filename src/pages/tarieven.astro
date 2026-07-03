@@ -10,6 +10,7 @@ import OctagonX from '@lucide/astro/icons/octagon-x';
 import Info from '@lucide/astro/icons/info';
 import X from '@lucide/astro/icons/x';
 import ArrowUpRight from '@lucide/astro/icons/arrow-up-right';
+import settings from '../../content/settings.json';
 
 // 3 tarieven cards. The middle one (Specialisatie) is highlighted.
 const tarievenCards = [
@@ -24,7 +25,7 @@ const tarievenCards = [
     ],
     cta: {
       label: 'Online afspraak maken',
-      href: '/afspraak',
+      href: settings.bookingUrl,
       showArrow: true,
       umamiEvent: 'cta-afspraak',
       umamiEventSource: 'tarieven-card-algemeen',
@@ -42,7 +43,7 @@ const tarievenCards = [
     ],
     cta: {
       label: 'Online afspraak maken',
-      href: '/afspraak',
+      href: settings.bookingUrl,
       showArrow: true,
       umamiEvent: 'cta-afspraak',
       umamiEventSource: 'tarieven-card-bekkenbodem',
@@ -187,6 +188,7 @@ const insurances: Insurance[] = [
             </ul>
             <Button
               href={card.cta.href}
+              target={card.cta.href.startsWith('http') ? '_blank' : undefined}
               showArrow={card.cta.showArrow}
               class="tarieven-card__cta"
               umamiEvent={card.cta.umamiEvent}

@@ -14,6 +14,7 @@ import Instagram from '@lucide/astro/icons/instagram';
 import Facebook from '@lucide/astro/icons/facebook';
 import Menu from '@lucide/astro/icons/menu';
 import X from '@lucide/astro/icons/x';
+import settings from '../../content/settings.json';
 
 interface Props {
   currentPath?: string;
@@ -94,7 +95,8 @@ function isActive(href: string, path: string): boolean {
           <Facebook class="size-5" />
         </IconButton>
         <Button
-          href="/afspraak"
+          href={settings.bookingUrl}
+          target="_blank"
           showArrow
           class="shrink-0"
           umamiEvent="cta-afspraak"
@@ -125,7 +127,8 @@ function isActive(href: string, path: string): boolean {
           <Facebook class="size-5" />
         </IconButton>
         <Button
-          href="/afspraak"
+          href={settings.bookingUrl}
+          target="_blank"
           showArrow
           class="shrink-0"
           umamiEvent="cta-afspraak"
@@ -148,7 +151,8 @@ function isActive(href: string, path: string): boolean {
       <!-- Mobile (< md): CTA + hamburger -->
       <div class="flex items-center gap-3 md:hidden">
         <Button
-          href="/afspraak"
+          href={settings.bookingUrl}
+          target="_blank"
           class="shrink-0"
           umamiEvent="cta-afspraak"
           umamiEventSource="header-mobile"

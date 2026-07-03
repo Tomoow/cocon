@@ -32,14 +32,15 @@ export default defineConfig({
   build: {
     inlineStylesheets: 'always',
   },
-  // /afspraak is intercepted client-side and shown as a modal/sheet (see
-  // AfspraakModal.astro). The redirect is the no-JS fallback so the link
-  // never 404s — visitors land on the home page instead.
+  // Online booking is live (Crossuite); all CTAs link the booking URL
+  // directly. This redirect catches old bookmarks/shared links to the
+  // former internal /afspraak route. Keep in sync with `bookingUrl` in
+  // content/settings.json.
   redirects: {
     // Both the no-slash and trailing-slash forms collapse to the same
     // entry in Cloudflare's _redirects (Astro normalises the key), so
     // listing both raises a duplicate-rule error at deploy time.
-    '/afspraak': '/',
+    '/afspraak': 'https://book.crossuite.app/41835b77-96e9-4af8-a5b5-cb5890baa566',
   },
   integrations: [
     sitemap({

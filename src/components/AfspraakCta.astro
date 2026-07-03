@@ -8,6 +8,7 @@
  */
 import Button from './Button.astro';
 import Phone from '@lucide/astro/icons/phone';
+import settings from '../../content/settings.json';
 
 interface Props {
   class?: string;
@@ -24,7 +25,7 @@ const {
   transparent = false,
   phoneHref = 'tel:+32456864665',
   phoneLabel = '0456 86 46 65',
-  appointmentHref = '/afspraak',
+  appointmentHref = settings.bookingUrl,
 } = Astro.props;
 ---
 
@@ -42,6 +43,7 @@ const {
     <div class="afspraak-cta__actions">
       <Button
         href={appointmentHref}
+        target={appointmentHref.startsWith('http') ? '_blank' : undefined}
         size="lg"
         showArrow
         umamiEvent="cta-afspraak"

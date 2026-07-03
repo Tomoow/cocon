@@ -16,7 +16,6 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import BackToTop from '../components/BackToTop.astro';
-import AfspraakModal from '../components/AfspraakModal.astro';
 
 interface Props {
   title: string;
@@ -107,7 +106,7 @@ const localBusinessSchema = {
   paymentAccepted: 'Payconiq',
   currenciesAccepted: 'EUR',
   vatID: 'BE 1004.016.118',
-  foundingDate: '2026-08-01',
+  foundingDate: '2026-08-10',
   founder: {
     '@type': 'Person',
     '@id': 'https://kine-cocon.be/over-ons/#lynn',
@@ -194,7 +193,6 @@ const localBusinessSchema = {
     </main>
     <Footer currentPath={Astro.url.pathname} />
     <BackToTop />
-    <AfspraakModal />
   </body>
 </html>
 

@@ -9,6 +9,7 @@ import IconButton from './IconButton.astro';
 import ChevronDown from '@lucide/astro/icons/chevron-down';
 import X from '@lucide/astro/icons/x';
 import heroPicture from '../assets/images/hero/lynn-hero-image.webp';
+import settings from '../../content/settings.json';
 
 interface Props {
   announcementEnabled?: boolean;
@@ -51,7 +52,7 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
       <div class="hero-title-block">
         <span class="hero-badge">
           <span class="hero-badge__dot" aria-hidden="true" />
-          <span class="hero-badge__text">Opent 1 augustus 2026</span>
+          <span class="hero-badge__text">Opent 10 augustus 2026</span>
         </span>
         <h1 class="hero-heading" id="hero-heading" tabindex="-1">
           <span class="hero-heading-static">Kinesitherapie op maat</span>
@@ -67,7 +68,8 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
       </p>
       <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
         <Button
-          href="/afspraak"
+          href={settings.bookingUrl}
+          target="_blank"
           showArrow
           umamiEvent="cta-afspraak"
           umamiEventSource="hero"
