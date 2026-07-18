@@ -6,10 +6,10 @@ import AfspraakCta from '../components/AfspraakCta.astro';
 import ReviewSection from '../components/ReviewSection.astro';
 import PraktijkSection from '../components/PraktijkSection.astro';
 import settings from '../../content/settings.json';
-import expertise1 from '../assets/images/expertises/expertise-1.png';
-import expertise2 from '../assets/images/expertises/expertise-2.png';
-import expertise3 from '../assets/images/expertises/expertise-3.png';
-import expertise5 from '../assets/images/expertises/expertise-5.png';
+import imgBekkenbodem from '../assets/images/expertises/bekkenbodem.webp';
+import imgZwangerschap from '../assets/images/expertises/zwangerschap.webp';
+import imgOrtopedisch from '../assets/images/expertises/ortopedisch.webp';
+import imgAlgemeneKine from '../assets/images/expertises/algemene-kine.webp';
 
 // 4 expertises in a 2×2 grid (Figma 0:648 desktop, 0:1913 mobile).
 // `description` and `backParagraphs` may contain inline HTML — they're
@@ -18,7 +18,7 @@ import expertise5 from '../assets/images/expertises/expertise-5.png';
 // also extend InfoCard's strong-styling CSS.
 const expertisesCards = [
   {
-    imageSrc: expertise1,
+    imageSrc: imgBekkenbodem,
     imageAlt: '', // Decorative; card title provides the same info (avoids redundant alt)
     number: '01',
     title: 'Bekkenbodemtherapie',
@@ -30,7 +30,7 @@ const expertisesCards = [
     ],
   },
   {
-    imageSrc: expertise2,
+    imageSrc: imgZwangerschap,
     imageAlt: '',
     number: '02',
     title: 'Zwangerschap & postnataal herstel',
@@ -42,7 +42,7 @@ const expertisesCards = [
     ],
   },
   {
-    imageSrc: expertise5,
+    imageSrc: imgOrtopedisch,
     imageAlt: '',
     number: '03',
     title: 'Orthopedische revalidatie',
@@ -55,7 +55,7 @@ const expertisesCards = [
     ],
   },
   {
-    imageSrc: expertise3,
+    imageSrc: imgAlgemeneKine,
     imageAlt: '',
     number: '04',
     title: 'Algemene kinesitherapie',
