@@ -21,8 +21,8 @@ const tarievenCards = [
     title: 'Algemene kinesitherapie',
     description: 'Voor rug-, nek-, schouder- en sportklachten en revalidatie. Ook manuele therapie behoort tot de mogelijkheden.',
     rows: [
-      { label: 'Eerste behandeling', duration: '45 min', price: '€55' },
-      { label: 'Vervolgbehandelingen', duration: '30 min', price: '€37' },
+      { label: 'Eerste behandeling', duration: '45 min', reimbursed: '€24,59', price: '€55' },
+      { label: 'Vervolgbehandelingen', duration: '30 min', reimbursed: '€19,05', price: '€37' },
     ],
     cta: {
       label: 'Online afspraak maken',
@@ -39,8 +39,8 @@ const tarievenCards = [
     title: 'Bekkenbodemtherapie',
     description: 'Pelvische reëducatie en perinatale kinesitherapie.',
     rows: [
-      { label: 'Eerste behandeling', duration: '45 min', price: '€60' },
-      { label: 'Vervolgbehandelingen', duration: '30 min', price: '€40' },
+      { label: 'Eerste behandeling', duration: '45 min', reimbursed: '€24,59', price: '€60' },
+      { label: 'Vervolgbehandelingen', duration: '30 min', reimbursed: '€19,05', price: '€40' },
     ],
     cta: {
       label: 'Online afspraak maken',
@@ -58,7 +58,7 @@ const tarievenCards = [
     title: 'Huisbezoek',
     description: 'Wanneer verplaatsen niet evident is. Online boeken niet mogelijk, bel om in te plannen.',
     rows: [
-      { label: 'Alle huisbezoeken', duration: '30 min', price: '€45' },
+      { label: 'Alle huisbezoeken', duration: '30 min', reimbursed: '€19,05', price: '€45' },
     ],
     cta: {
       label: 'Bel 0456 86 46 65',
@@ -170,11 +170,15 @@ const insurances: Insurance[] = [
                 <li class="tarieven-card__row">
                   <div class="tarieven-card__row-text">
                     <span class="tarieven-card__row-label">{row.label}</span>
-                    <span class="tarieven-card__row-duration">{row.duration}</span>
+                    <span class="tarieven-card__row-meta">
+                      <span class="tarieven-card__row-duration">{row.duration}</span>
+                      <span class="tarieven-card__row-reimbursed">
+                        <span class="tarieven-card__row-metadot" aria-hidden="true" />
+                        {row.reimbursed} terugbetaald
+                      </span>
+                    </span>
                   </div>
-                  <span class="tarieven-card__row-price">
-                    {row.price}<span class="tarieven-card__row-star" aria-hidden="true">*</span>
-                  </span>
+                  <span class="tarieven-card__row-price">{row.price}</span>
                 </li>
               ))}
             </ul>
@@ -188,9 +192,6 @@ const insurances: Insurance[] = [
             >
               {card.cta.label}
             </Button>
-            <p class="tarieven-card__disclaimer">
-              <span class="tarieven-card__disclaimer-star" aria-hidden="true">*</span> Je mutualiteit betaalt hier nog een deel van terug
-            </p>
           </div>
         </li>
       ))}
@@ -546,7 +547,7 @@ const insurances: Insurance[] = [
 
   /* Bottom section fills the remaining card height so the pricing rows sit at
      the TOP (first row aligned across all cards — incl. the single-row
-     Huisbezoek card) while the CTA + disclaimer are pushed to the bottom. */
+     Huisbezoek card) while the CTA is pushed to the bottom. */
   .tarieven-card__bottom {
     display: flex;
     flex-direction: column;
@@ -564,7 +565,7 @@ const insurances: Insurance[] = [
     gap: 0.75rem;
     /* Grow to fill the bottom section so the rows stay at the TOP (first row
        aligned across cards, incl. the single-row Huisbezoek card) while the
-       CTA + disclaimer are pushed to the bottom. */
+       CTA is pushed to the bottom. */
     flex: 1;
   }
 
@@ -598,10 +599,41 @@ const insurances: Insurance[] = [
     color: var(--color-primary);
   }
 
-  .tarieven-card__row-duration {
+  /* Sub-line under the treatment label: duration • RIZIV reimbursement */
+  .tarieven-card__row-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-top: 0.125rem;
+    min-width: 0;
+  }
+
+  .tarieven-card__row-duration,
+  .tarieven-card__row-reimbursed {
     font-size: 1rem;
-    line-height: 1;
+    line-height: 1.2;
     color: #676767;
+  }
+
+  /* Dot + reimbursement stay one unit so they wrap together (the dot never
+     dangles at the end of the duration line on narrow cards). */
+  .tarieven-card__row-reimbursed {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    white-space: nowrap;
+  }
+
+  /* Brand-skewed orange dot separating duration and reimbursement */
+  .tarieven-card__row-metadot {
+    display: inline-block;
+    width: 0.3125rem; /* 5px */
+    height: 0.375rem; /* 6px */
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    transform: rotate(43.62deg);
+    flex-shrink: 0;
   }
 
   .tarieven-card__row-price {
@@ -611,36 +643,6 @@ const insurances: Insurance[] = [
     font-size: 2rem; /* 32px */
     line-height: 1;
     color: var(--color-primary);
-  }
-
-  /* Orange asterisk after each price — small relative to the 32px price */
-  .tarieven-card__row-star {
-    color: #f87626;
-    font-family: 'Raleway', sans-serif;
-    font-size: 1.125rem; /* 18px against 32px price */
-    font-weight: 700;
-    line-height: 1;
-    vertical-align: top;
-    margin-left: 0.125rem;
-  }
-
-  /* Disclaimer below the CTA: small grey text, matches Figma 121:6848 */
-  .tarieven-card__disclaimer {
-    margin: 0;
-    color: #676767;
-    font-size: 0.875rem; /* 14px per Figma */
-    font-weight: 400;
-    line-height: 1.4;
-  }
-
-  /* Lead asterisk on the disclaimer is larger than the 14px copy for visual weight */
-  .tarieven-card__disclaimer-star {
-    color: #f87626;
-    font-size: 1.125rem; /* 18px against 14px body */
-    font-weight: 700;
-    line-height: 1;
-    margin-right: 0.25rem;
-    vertical-align: middle;
   }
 
   .tarieven-card__cta {
