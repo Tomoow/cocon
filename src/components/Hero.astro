@@ -50,10 +50,6 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
     <!-- Left: text + CTAs; min-width so right wraps when row can't fit both -->
     <div class="hero-text-block flex min-w-[320px] flex-1 flex-col gap-6 text-left">
       <div class="hero-title-block">
-        <span class="hero-badge">
-          <span class="hero-badge__dot" aria-hidden="true" />
-          <span class="hero-badge__text">Opent 10 augustus 2026</span>
-        </span>
         <h1 class="hero-heading" id="hero-heading" tabindex="-1">
           <span class="hero-heading-static">Kinesitherapie op maat</span>
           <br />
@@ -154,36 +150,12 @@ const { announcementEnabled = false, announcementText = '' } = Astro.props as Pr
     }
   }
 
-  /* Title block: badge + heading stacked; tight gap so badge sits just above title */
+  /* Title block: heading (+ optional badge above it, currently none) */
   .hero-title-block {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
-  }
-
-  /* Badge: peach pill above the title with the brand-skewed orange ellipse dot */
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: var(--color-background-subtle);
-    color: var(--color-primary);
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.5rem;
-    font-family: 'Raleway', sans-serif;
-    font-size: 0.875rem; /* 14px */
-    font-weight: 400;
-    line-height: 1.2;
-  }
-  .hero-badge__dot {
-    display: inline-block;
-    width: 0.5rem;
-    height: 0.625rem;
-    background-color: var(--color-accent);
-    border-radius: 50%;
-    transform: rotate(43.62deg);
-    flex-shrink: 0;
   }
 
   /* Heading static line: fluid Spectral Medium scaling 36px → 60px, kept on
