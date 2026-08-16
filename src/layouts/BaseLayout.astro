@@ -126,18 +126,17 @@ const localBusinessSchema = {
 <html lang="nl">
   <head>
     <meta charset="utf-8" />
-    <!-- Favicon: SVG as default (best practice), PNG fallbacks for older
-         contexts. Cache-bust query so returning visitors who already cached
-         the previous favicon actually see the updated one — browsers ignore
-         normal cache headers for favicons and only re-fetch when the URL
-         changes. Bump `?v=N` whenever the file changes.
-         The 192×192 PNG (a multiple of 48) is the one Google Search uses for
-         the result-list favicon — it ignores the SVG and needs a raster of
-         at least 48px; clean URL (no query) so the crawler picks it up. -->
+    <!-- Favicons. Clean, standard set:
+         - favicon.ico: multi-resolution 16/32/48, at the root — this is the
+           file Google's favicon fetcher probes and it wants ≥48px. Clean URL
+           (no query) so the crawler uses it directly.
+         - SVG: crisp icon for modern browser tabs (?v cache-bust for returning
+           visitors, since browsers ignore normal cache headers on favicons).
+         - 192×192 PNG (multiple of 48): high-res raster for Google Search +
+           apple-touch-icon (iOS home screen). -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48 32x32 16x16" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon-192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
