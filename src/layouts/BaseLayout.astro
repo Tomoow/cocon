@@ -182,6 +182,43 @@ const localBusinessSchema = {
          `.js` so content stays visible when JavaScript is disabled/blocked.
          Inline + first so it runs before first paint. -->
     <script is:inline>document.documentElement.classList.add('js');</script>
+
+    <!-- Keep Umami tracking from breaking link navigation. Umami hooks clicks
+         on `<a data-umami-event>` and, for same-tab links, calls
+         preventDefault + its own location.href — which silently dies when its
+         beacon is slow or blocked (common on mobile with content blockers),
+         leaving the link dead (e.g. the hero "Bekijk onze tarieven" button).
+         A window-level CAPTURE listener runs before Umami's document handler:
+         we fire the event ourselves and stopImmediatePropagation so Umami
+         never handles it, but we never preventDefault — so the browser's
+         normal navigation (same tab or _blank) always happens. -->
+    <script is:inline>
+      window.addEventListener(
+        'click',
+        function (e) {
+          var link =
+            e.target && e.target.closest
+              ? e.target.closest('a[href][data-umami-event]')
+              : null;
+          if (!link) return;
+          var data = {};
+          link.getAttributeNames().forEach(function (n) {
+            var m = n.match(/^data-umami-event-(.+)$/);
+            if (m) data[m[1]] = link.getAttribute(n);
+          });
+          try {
+            if (window.umami && window.umami.track) {
+              window.umami.track(
+                link.getAttribute('data-umami-event'),
+                Object.keys(data).length ? data : undefined
+              );
+            }
+          } catch (err) {}
+          e.stopImmediatePropagation();
+        },
+        true
+      );
+    </script>
   </head>
   <body class="min-h-screen antialiased bg-background-subtle">
     <!-- Shared clipPath for info card image: angle other way, wider, bloater (fuller oval) -->
